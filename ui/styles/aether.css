@@ -238,3 +238,85 @@ panel {
     mask-image: none !important;
   }
 }
+
+/* ---- Compact mode (scripts/compact-mode.mjs) ----
+ * The sidebar, or with top tabs the toolbar, slides out of the way; touching that edge of the
+ * window or focusing the address bar brings it back as floating glass. It waits a moment
+ * before hiding again, so a mouse that slips off doesn't make it flicker. */
+
+#aether-edge {
+  display: none;
+}
+
+:root[aether-compact]:not([inFullscreen], [inDOMFullscreen]) {
+  #aether-edge {
+    display: block;
+    position: fixed;
+    z-index: 20;
+    inset: 0 auto 0 0;
+    width: 8px;
+  }
+
+  #tabbrowser-tabbox {
+    margin: 8px !important;
+  }
+
+  /* Vertical tabs: the sidebar (and the address bar riding on it) floats in from the left. */
+  &[aether-vertical] {
+    #sidebar-container {
+      position: fixed !important;
+      inset: 8px auto 8px 8px;
+      z-index: 15;
+      width: var(--aether-sidebar-width, 250px);
+      border-radius: var(--aether-radius);
+      background: var(--aether-glass-strong) !important;
+      backdrop-filter: var(--aether-blur);
+      box-shadow: var(--aether-shadow), inset 0 1px 0 var(--aether-edge);
+    }
+
+    #sidebar-container,
+    &[aether-urlbar-in-sidebar] #navigator-toolbox {
+      transform: translateX(calc(-100% - 16px));
+      transition: transform 260ms ease-in 450ms;
+    }
+
+    &[aether-urlbar-in-sidebar] #navigator-toolbox {
+      inset: 8px auto auto 8px;
+      z-index: 16;
+    }
+
+    &:has(#aether-edge:hover, #sidebar-container:hover, #navigator-toolbox:hover, #urlbar[focused]) {
+      #sidebar-container,
+      &[aether-urlbar-in-sidebar] #navigator-toolbox {
+        transform: none;
+        transition: transform var(--aether-spring-time) var(--aether-spring);
+      }
+    }
+  }
+
+  /* Top tabs: the toolbar drops down from the top edge. */
+  &:not([aether-vertical]) {
+    #aether-edge {
+      inset: 0 0 auto 0;
+      width: auto;
+      height: 8px;
+    }
+
+    #navigator-toolbox {
+      position: fixed !important;
+      inset: 8px 8px auto 8px;
+      z-index: 15;
+      border-radius: var(--aether-radius);
+      background: var(--aether-glass-strong) !important;
+      backdrop-filter: var(--aether-blur);
+      box-shadow: var(--aether-shadow), inset 0 1px 0 var(--aether-edge);
+      transform: translateY(calc(-100% - 16px));
+      transition: transform 260ms ease-in 450ms;
+    }
+
+    &:has(#aether-edge:hover, #navigator-toolbox:hover, #urlbar[focused]) #navigator-toolbox {
+      transform: none;
+      transition: transform var(--aether-spring-time) var(--aether-spring);
+    }
+  }
+}
