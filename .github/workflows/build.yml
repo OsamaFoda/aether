@@ -1,0 +1,85 @@
+name: Build
+
+# Checks daily for a new Firefox ESR security release and builds it with our changes.
+# Builds of our own changes are started by hand (Actions tab, or `gh workflow run build.yml`):
+# the repository is private, so build minutes are limited and pushes don't build on their own.
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.find.outputs.version }}
+      tag: ${{ steps.find.outputs.tag }}
+      build: ${{ steps.find.outputs.build }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: find
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          source release.env
+          # Newest release of our ESR line, from Mozilla's version list.
+          VERSION=$(curl -fsSL https://product-details.mozilla.org/1.0/firefox_versions.json \
+            | python3 -c "import json,sys; v=[x for x in json.load(sys.stdin).values() if str(x).startswith('$ESR_MAJOR.')]; print(v[0] if v else '')")
+          test -n "$VERSION" || { echo "Mozilla lists no $ESR_MAJOR ESR release" >&2; exit 1; }
+          # A hand-started build of our own changes is a new revision of the same Firefox version.
+          REV=1
+          while gh release view "v$VERSION-$REV" >/dev/null 2>&1; do REV=$((REV + 1)); done
+          BUILD=false
+          if [ "$REV" = 1 ] || [ "${{ github.event_name }}" = workflow_dispatch ]; then BUILD=true; fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION-$REV" >> "$GITHUB_OUTPUT"
+          echo "build=$BUILD" >> "$GITHUB_OUTPUT"
+          echo "Firefox $VERSION, tag v$VERSION-$REV, build: $BUILD"
+
+  linux:
+    needs: check
+    if: needs.check.outputs.build == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          sudo docker image prune --all --force >/dev/null
+          df -h /
+
+      - name: Get Firefox source and apply our changes
+        run: scripts/prepare.sh "${{ needs.check.outputs.version }}"
+
+      - name: Build
+        working-directory: src
+        env:
+          MOZBUILD_STATE_PATH: ${{ github.workspace }}/.mozbuild
+          MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE: pip
+        run: |
+          ./mach --no-interactive build
+          ./mach package
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          source release.env
+          FILE=$(ls src/obj/dist/"$APP_NAME"-*.tar.* | head -n1)
+          cp "$FILE" "$APP_NAME-${{ needs.check.outputs.version }}-linux-x86_64.tar.${FILE##*.tar.}"
+          gh release create "${{ needs.check.outputs.tag }}" "$APP_NAME"-*-linux-x86_64.tar.* \
+            --title "${{ needs.check.outputs.tag }}" \
+            --notes "Built on Firefox ${{ needs.check.outputs.version }}."
+
+      - name: Show disk use if the build failed
+        if: failure()
+        run: df -h /
