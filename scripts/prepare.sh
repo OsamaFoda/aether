@@ -47,6 +47,13 @@ done
 grep -q "MOZ_APP_DISPLAYNAME=$DISPLAY_NAME" "$BRAND/configure.sh" \
   || { echo "Display name not set in configure.sh" >&2; exit 1; }
 
+# Our icons and wordmarks (branding/, made by branding-src/render.py) replace Firefox's file for
+# file. A name Firefox doesn't use would be silently ignored, so treat it as a mistake.
+while IFS= read -r f; do
+  test -f "$BRAND/$f" || { echo "Not a Firefox branding file: $f" >&2; exit 1; }
+  cp "branding/$f" "$BRAND/$f"
+done < <(cd branding && find . -type f -printf '%P\n')
+
 cp mozconfig src/mozconfig
 echo "ac_add_options --with-app-name=$APP_NAME" >> src/mozconfig
 echo "ac_add_options --with-branding=browser/branding/$APP_NAME" >> src/mozconfig
