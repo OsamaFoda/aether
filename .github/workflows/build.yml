@@ -1,8 +1,8 @@
 name: Build
 
 # Checks daily for a new Firefox ESR security release and builds it with our changes.
-# Builds of our own changes are started by hand (Actions tab, or `gh workflow run build.yml`):
-# the repository is private, so build minutes are limited and pushes don't build on their own.
+# Builds of our own changes are started by hand (Actions tab, or `gh workflow run build.yml`),
+# since one build takes about three hours and pushes often come in batches.
 on:
   schedule:
     - cron: "17 3 * * *"
