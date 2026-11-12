@@ -181,3 +181,54 @@ panel {
   --panel-border-radius: var(--aether-radius);
   --panel-shadow: var(--aether-shadow);
 }
+
+/* ---- Address bar in the sidebar ----
+ * While tabs are vertical and the sidebar is expanded (scripts/sidebar-urlbar.mjs sets the
+ * attribute), the toolbar floats over the top of the sidebar: buttons on one row, the address
+ * bar below, and the page gets the full height of the window. */
+
+:root[aether-urlbar-in-sidebar]:not([inFullscreen], [inDOMFullscreen]) {
+  #navigator-toolbox {
+    position: fixed !important;
+    inset: 0 auto auto 0;
+    width: var(--aether-sidebar-width, 250px) !important;
+    z-index: 10;
+  }
+
+  #nav-bar {
+    flex-wrap: wrap;
+    padding: 6px 8px 2px !important;
+    -moz-window-dragging: drag;
+  }
+
+  #nav-bar-customization-target {
+    display: contents !important;
+  }
+
+  #urlbar-container {
+    order: 99;
+    flex: 1 0 100% !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 4px 0 !important;
+  }
+
+  /* The sidebar already lists every tab. */
+  #firefox-view-button,
+  #alltabs-button {
+    display: none !important;
+  }
+
+  #sidebar-container {
+    padding-top: var(--aether-toolbox-height, 80px) !important;
+  }
+
+  #tabbrowser-tabbox {
+    margin-top: 8px !important;
+  }
+
+  /* While typing, the address bar and its suggestions widen over the page. */
+  #urlbar[breakout][breakout-extend] {
+    width: min(640px, 70vw) !important;
+  }
+}
