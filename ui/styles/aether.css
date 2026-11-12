@@ -1,1 +1,183 @@
-/* Aether's look: liquid glass over a soft gradient. Applied to browser windows only. */
+/* Aether's look: liquid glass over a soft gradient, in the colours of the Celestial Nebula Orb.
+ * Applied to browser windows only (see boot.sys.mjs). Light and dark follow the system. */
+
+:root {
+  /* Wallpaper and accent, from the orb: cyan, indigo, violet. */
+  --aether-sky-1: #dcf3fa;
+  --aether-sky-2: #e3e5fc;
+  --aether-sky-3: #eedff9;
+  --aether-accent: #6366f1;
+  --aether-accent-soft: rgba(99, 102, 241, 0.16);
+
+  /* Glass: a translucent fill, a bright top edge, a soft shadow. */
+  --aether-glass: rgba(255, 255, 255, 0.55);
+  --aether-glass-strong: rgba(255, 255, 255, 0.78);
+  --aether-glass-hover: rgba(255, 255, 255, 0.7);
+  --aether-edge: rgba(255, 255, 255, 0.85);
+  --aether-line: rgba(30, 34, 70, 0.08);
+  --aether-shadow: 0 8px 28px rgba(40, 44, 90, 0.12), 0 1px 3px rgba(40, 44, 90, 0.08);
+  --aether-text: #1d2033;
+  --aether-blur: blur(24px) saturate(160%);
+  --aether-radius: 12px;
+
+  /* A spring that overshoots a little and settles. */
+  --aether-spring: linear(0, 0.013 0.6%, 0.05 1.2%, 0.2 2.9%, 0.785 9.2%, 1.006 13.2%, 1.081 16.1%,
+    1.095 18%, 1.093 19.9%, 1.034 26.4%, 1.002 32.6%, 0.993 37.7%, 1.001 52.1%, 1);
+  --aether-spring-time: 420ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --aether-sky-1: #0b1424;
+    --aether-sky-2: #141433;
+    --aether-sky-3: #1f1236;
+    --aether-accent: #818cf8;
+    --aether-accent-soft: rgba(129, 140, 248, 0.22);
+    --aether-glass: rgba(28, 30, 52, 0.5);
+    --aether-glass-strong: rgba(34, 36, 62, 0.82);
+    --aether-glass-hover: rgba(52, 55, 90, 0.6);
+    --aether-edge: rgba(255, 255, 255, 0.1);
+    --aether-line: rgba(255, 255, 255, 0.07);
+    --aether-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
+    --aether-text: #e9eaf6;
+  }
+}
+
+/* ---- Firefox's own colour variables, pointed at the glass ---- */
+
+:root:root {
+  --toolbar-bgcolor: transparent;
+  --toolbar-color: var(--aether-text);
+  --toolbar-field-background-color: var(--aether-glass);
+  --toolbar-field-focus-background-color: var(--aether-glass-strong);
+  --toolbar-field-color: var(--aether-text);
+  --toolbar-field-focus-color: var(--aether-text);
+  --toolbar-field-border-color: var(--aether-edge);
+  --tab-selected-bgcolor: var(--aether-glass-strong);
+  --tab-selected-textcolor: var(--aether-text);
+  --tabs-navbar-separator-style: none;
+  --sidebar-background-color: transparent;
+  --sidebar-text-color: var(--aether-text);
+  --arrowpanel-background: var(--aether-glass-strong);
+  --arrowpanel-color: var(--aether-text);
+  --arrowpanel-border-color: var(--aether-edge);
+  --arrowpanel-border-radius: var(--aether-radius);
+  --panel-separator-color: var(--aether-line);
+  --focus-outline-color: var(--aether-accent);
+  --toolbarbutton-border-radius: 8px;
+  --chrome-content-separator-color: transparent;
+}
+
+/* Firefox sets toolbar colours on the toolbars themselves, so set ours there too. */
+#navigator-toolbox,
+.browser-toolbar,
+#nav-bar,
+#sidebar-container,
+sidebar-main,
+#vertical-tabs {
+  --sidebar-text-color: var(--aether-text) !important;
+  --toolbox-textcolor: var(--aether-text) !important;
+  --toolbar-color: var(--aether-text) !important;
+  --toolbar-field-color: var(--aether-text) !important;
+  --toolbar-field-focus-color: var(--aether-text) !important;
+  --toolbarbutton-icon-fill: var(--aether-text) !important;
+  color: var(--aether-text) !important;
+}
+
+/* ---- The wallpaper ---- */
+
+body,
+#navigator-toolbox,
+#browser {
+  background-color: transparent !important;
+}
+
+:root:root {
+  background: radial-gradient(ellipse at 15% 0%, var(--aether-sky-1), transparent 60%),
+              radial-gradient(ellipse at 100% 100%, var(--aether-sky-3), transparent 55%),
+              var(--aether-sky-2) !important;
+}
+
+#navigator-toolbox {
+  border-bottom: none !important;
+}
+
+#nav-bar {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* ---- The page floats as a rounded card ---- */
+
+#tabbrowser-tabbox {
+  margin: 0 8px 8px 0 !important;
+  border-radius: var(--aether-radius);
+  overflow: clip;
+  box-shadow: var(--aether-shadow);
+  outline: 1px solid var(--aether-line);
+}
+
+/* ---- Sidebar and tabs ---- */
+
+#sidebar-container,
+sidebar-main,
+#vertical-tabs {
+  background: transparent !important;
+  border: none !important;
+}
+
+.tabbrowser-tab .tab-background {
+  border-radius: 10px !important;
+  transition: background-color 200ms ease, box-shadow 200ms ease, transform var(--aether-spring-time) var(--aether-spring);
+}
+
+.tabbrowser-tab:hover > .tab-stack > .tab-background:not([selected]) {
+  background-color: var(--aether-glass-hover) !important;
+}
+
+.tabbrowser-tab .tab-background[selected] {
+  background-color: var(--aether-glass-strong) !important;
+  box-shadow: inset 0 1px 0 var(--aether-edge), var(--aether-shadow) !important;
+  outline: none !important;
+}
+
+.tabbrowser-tab:active > .tab-stack > .tab-background {
+  transform: scale(0.97);
+}
+
+/* ---- Address bar: a glass pill ---- */
+
+#urlbar-background {
+  border-radius: 10px !important;
+  border: 1px solid var(--aether-edge) !important;
+  box-shadow: inset 0 1px 0 var(--aether-edge), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  backdrop-filter: var(--aether-blur);
+}
+
+#urlbar[focused] > #urlbar-background {
+  outline: 2px solid var(--aether-accent) !important;
+  outline-offset: -1px;
+}
+
+/* ---- Buttons: springy press ---- */
+
+toolbarbutton .toolbarbutton-icon,
+toolbarbutton .toolbarbutton-badge-stack {
+  transition: transform var(--aether-spring-time) var(--aether-spring), background-color 160ms ease;
+}
+
+toolbarbutton:hover:active .toolbarbutton-icon,
+toolbarbutton:hover:active .toolbarbutton-badge-stack {
+  transform: scale(0.9);
+}
+
+/* ---- Menus and popups: glass ---- */
+
+menupopup,
+panel {
+  --panel-background: var(--aether-glass-strong);
+  --panel-border-color: var(--aether-edge);
+  --panel-border-radius: var(--aether-radius);
+  --panel-shadow: var(--aether-shadow);
+}
