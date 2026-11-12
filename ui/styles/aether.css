@@ -13,6 +13,7 @@
   --aether-glass: rgba(255, 255, 255, 0.55);
   --aether-glass-strong: rgba(255, 255, 255, 0.78);
   --aether-glass-hover: rgba(255, 255, 255, 0.7);
+  --aether-glass-solid: rgba(250, 250, 255, 0.95); /* over web pages, where blur can't reach */
   --aether-edge: rgba(255, 255, 255, 0.85);
   --aether-line: rgba(30, 34, 70, 0.08);
   --aether-shadow: 0 8px 28px rgba(40, 44, 90, 0.12), 0 1px 3px rgba(40, 44, 90, 0.08);
@@ -36,6 +37,7 @@
     --aether-glass: rgba(28, 30, 52, 0.5);
     --aether-glass-strong: rgba(34, 36, 62, 0.82);
     --aether-glass-hover: rgba(52, 55, 90, 0.6);
+    --aether-glass-solid: rgba(30, 32, 56, 0.95);
     --aether-edge: rgba(255, 255, 255, 0.1);
     --aether-line: rgba(255, 255, 255, 0.07);
     --aether-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -319,4 +321,77 @@ panel {
       transition: transform var(--aether-spring-time) var(--aether-spring);
     }
   }
+}
+
+/* ---- Peek (scripts/peek.mjs): a link in a floating glass window over the page ---- */
+
+#aether-peek {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 22, 45, 0.28);
+  animation: aether-fade-in 160ms ease;
+}
+
+#aether-peek[closing] {
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.aether-peek-card {
+  width: min(1100px, 82vw);
+  height: 84vh;
+  border-radius: 16px;
+  overflow: clip;
+  background: var(--aether-glass-solid);
+  backdrop-filter: var(--aether-blur);
+  box-shadow: var(--aether-shadow), 0 30px 80px rgba(0, 0, 0, 0.25), inset 0 1px 0 var(--aether-edge);
+  animation: aether-peek-in var(--aether-spring-time) var(--aether-spring);
+}
+
+#aether-peek[closing] .aether-peek-card {
+  transform: scale(0.96);
+  transition: transform 160ms ease;
+}
+
+.aether-peek-bar {
+  gap: 6px;
+  padding: 6px 8px 6px 14px;
+  color: var(--aether-text);
+}
+
+.aether-peek-title {
+  margin: 0;
+  opacity: 0.75;
+}
+
+.aether-peek-button {
+  appearance: none;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--aether-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.aether-peek-button:hover {
+  background: var(--aether-glass-hover);
+}
+
+.aether-peek-card > browser {
+  border-radius: 0 0 12px 12px;
+  margin: 0 6px 6px;
+  overflow: clip;
+}
+
+@keyframes aether-peek-in {
+  from { transform: translateY(24px) scale(0.94); opacity: 0; }
+}
+
+@keyframes aether-fade-in {
+  from { opacity: 0; }
 }
