@@ -57,6 +57,19 @@ jobs:
           sudo docker image prune --all --force >/dev/null
           df -h /
 
+      # A Firefox build can briefly need more than the machine's 16 GB; without swap the
+      # compile gets killed partway (exit code 143). Ubuntu's systemd-oomd also kills big
+      # builds under memory pressure, so it's stopped for the build.
+      - name: Add swap and stop the low-memory killer
+        run: |
+          sudo swapoff -a || true
+          sudo fallocate -l 24G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile >/dev/null
+          sudo swapon /swapfile
+          sudo systemctl stop systemd-oomd 2>/dev/null || true
+          free -h
+
       - name: Get Firefox source and apply our changes
         run: scripts/prepare.sh "${{ needs.check.outputs.version }}"
 
@@ -66,6 +79,8 @@ jobs:
           MOZBUILD_STATE_PATH: ${{ github.workspace }}/.mozbuild
           MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE: pip
         run: |
+          # Memory use once a minute, shown if the build fails.
+          ( while true; do echo "$(date -u +%T) $(free -m | awk '/Mem/ {print "mem used " $3 " MB"} /Swap/ {print "swap used " $3 " MB"}' | paste -sd' ')"; sleep 60; done ) > ../memory.log 2>&1 &
           ./mach --no-interactive build
           ./mach package
 
@@ -84,6 +99,10 @@ jobs:
             --title "${{ needs.check.outputs.tag }}" \
             --notes "Built on Firefox ${{ needs.check.outputs.version }}."
 
-      - name: Show disk use if the build failed
+      - name: Show disk, memory and kills if the build failed
         if: failure()
-        run: df -h /
+        run: |
+          df -h /
+          tail -n 15 memory.log || true
+          sudo dmesg | grep -iE "out of memory|oom|killed process" | tail -n 10 || true
+          journalctl -u systemd-oomd --no-pager 2>/dev/null | tail -n 10 || true
