@@ -1,5 +1,6 @@
-// Puts the address bar and navigation buttons at the top of the sidebar while tabs are vertical
-// and the sidebar is expanded, like Zen and Arc; otherwise they stay in the top toolbar.
+// Puts the address bar and navigation buttons in the top slot of the sidebar whenever tabs are
+// vertical, like Zen and Arc, expanded or collapsed (a narrow address ends in "…"). With top tabs
+// they stay in the top toolbar.
 // The moving itself is CSS (styles/aether.css, :root[aether-urlbar-in-sidebar]), so Firefox's
 // toolbar and address bar code never sees its elements move. This script only decides when,
 // and tells the CSS how wide the sidebar and how tall the toolbar are.
@@ -14,11 +15,9 @@ export function init(win) {
   if (!container || !toolbox) return;
 
   const update = () => {
-    const inSidebar =
-      Services.prefs.getBoolPref(VERTICAL_TABS, false) &&
-      container.hasAttribute("sidebar-launcher-expanded") &&
-      !container.hidden;
+    const inSidebar = Services.prefs.getBoolPref(VERTICAL_TABS, false) && !container.hidden;
     root.toggleAttribute("aether-urlbar-in-sidebar", inSidebar);
+    root.toggleAttribute("aether-sidebar-collapsed", !container.hasAttribute("sidebar-launcher-expanded"));
   };
 
   const sizes = new win.ResizeObserver(() => {

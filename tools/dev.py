@@ -133,6 +133,7 @@ def main():
     ap.add_argument("--url", default="about:newtab")
     ap.add_argument("--wait", type=float, default=2)
     ap.add_argument("--dark", action="store_true", help="dark mode (default: light)")
+    ap.add_argument("--before", help="JS file to run in the browser window before a screenshot")
     args = ap.parse_args()
 
     proc, m = start(dark=args.dark)
@@ -143,6 +144,10 @@ def main():
         if args.command == "check":
             print(json.dumps(m.js(CHECK), indent=2))
         elif args.command == "shot":
+            if args.before:
+                with open(args.before) as f:
+                    m.js(f.read())
+                time.sleep(1)
             png = m.call("WebDriver:TakeScreenshot", {"full": False, "hash": False})["value"]
             with open(args.arg, "wb") as f:
                 f.write(base64.b64decode(png))

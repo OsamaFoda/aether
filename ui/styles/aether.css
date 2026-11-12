@@ -183,9 +183,9 @@ panel {
 }
 
 /* ---- Address bar in the sidebar ----
- * While tabs are vertical and the sidebar is expanded (scripts/sidebar-urlbar.mjs sets the
- * attribute), the toolbar floats over the top of the sidebar: buttons on one row, the address
- * bar below, and the page gets the full height of the window. */
+ * While tabs are vertical (scripts/sidebar-urlbar.mjs sets the attribute), the toolbar floats
+ * over the top slot of the sidebar: buttons, then the address bar, and the page gets the full
+ * height of the window. An address too long for the slot ends in "…". */
 
 :root[aether-urlbar-in-sidebar]:not([inFullscreen], [inDOMFullscreen]) {
   #navigator-toolbox {
@@ -230,5 +230,35 @@ panel {
   /* While typing, the address bar and its suggestions widen over the page. */
   #urlbar[breakout][breakout-extend] {
     width: min(640px, 70vw) !important;
+  }
+
+  /* A long address ends in "…" instead of fading out. */
+  #urlbar:not([focused]) #urlbar-input {
+    text-overflow: ellipsis;
+    mask-image: none !important;
+  }
+
+  /* Collapsed sidebar: the buttons stack like the sidebar's icons, and the address bar keeps
+   * only the address (as "…" if it doesn't fit). Clicking it opens the full bar. */
+  &[aether-sidebar-collapsed] {
+    #nav-bar {
+      justify-content: center;
+      padding-inline: 4px !important;
+    }
+
+    #urlbar:not([breakout-extend]) {
+      #identity-box,
+      #trust-icon-container,
+      #tracking-protection-icon-container,
+      .searchmode-switcher,
+      #page-action-buttons,
+      .urlbar-page-action {
+        display: none !important;
+      }
+
+      #urlbar-input {
+        min-width: 0 !important;
+      }
+    }
   }
 }
