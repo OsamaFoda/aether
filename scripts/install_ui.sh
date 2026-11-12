@@ -17,3 +17,7 @@ put "$UI/autoconfig.js" "$INSTALL/defaults/pref/autoconfig.js"
 put "$UI/aether.cfg" "$INSTALL/aether.cfg"
 put "$UI/policies.json" "$INSTALL/distribution/policies.json"
 put "$UI" "$INSTALL/aether-ui"
+
+# Built-in add-ons (Sip). Firefox installs these into each profile on first run.
+mkdir -p "$INSTALL/distribution/extensions"
+cp "$UI"/extensions/*.xpi "$INSTALL/distribution/extensions/"

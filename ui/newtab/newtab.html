@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>New Tab</title>
+  <link rel="icon" href="chrome://branding/content/icon32.png">
+  <link rel="stylesheet" href="newtab.css">
+  <script type="module" src="newtab.mjs"></script>
+</head>
+<body>
+  <main>
+    <form id="search" role="search">
+      <input id="query" type="search" placeholder="Search or enter address" autocomplete="off" aria-label="Search or enter address">
+    </form>
+
+    <section id="shortcuts" aria-label="Shortcuts"></section>
+    <p id="no-shortcuts" hidden>Sites you visit often will show up here.</p>
+
+    <section id="data" class="glass" aria-label="Data use" hidden>
+      <div class="row">
+        <span class="label">Today</span>
+        <span id="today" class="big"></span>
+      </div>
+      <div id="budget" hidden>
+        <div class="bar"><div id="bar-fill"></div></div>
+        <div class="row small">
+          <span id="period"></span>
+          <span id="safe"></span>
+        </div>
+      </div>
+      <div id="no-budget" class="row small" hidden>
+        <span id="period-only"></span>
+      </div>
+    </section>
+  </main>
+
+  <template id="tile">
+    <div class="tile">
+      <a class="link glass">
+        <img class="icon" alt="">
+        <span class="letter" hidden></span>
+      </a>
+      <span class="title"></span>
+      <button class="pin" type="button"></button>
+      <button class="remove" type="button" title="Remove">×</button>
+    </div>
+  </template>
+</body>
+</html>
