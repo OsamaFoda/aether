@@ -5,7 +5,7 @@ const BASE = "chrome://aether/content/";
 const BROWSER_WINDOW = "chrome://browser/content/browser.xhtml";
 
 const STYLES = ["styles/aether.css"];
-const SCRIPTS = ["scripts/sidebar-urlbar.mjs"];
+const SCRIPTS = ["scripts/sidebar-urlbar.mjs", "scripts/tab-close.mjs"];
 
 function addStyles(win) {
   for (const sheet of STYLES) {
