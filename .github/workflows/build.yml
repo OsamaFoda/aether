@@ -75,8 +75,12 @@ jobs:
         run: |
           source release.env
           FILE=$(ls src/obj/dist/"$APP_NAME"-*.tar.* | head -n1)
-          cp "$FILE" "$APP_NAME-${{ needs.check.outputs.version }}-linux-x86_64.tar.${FILE##*.tar.}"
-          gh release create "${{ needs.check.outputs.tag }}" "$APP_NAME"-*-linux-x86_64.tar.* \
+          # Add Aether's interface layer (ui/) to the packaged browser.
+          mkdir pkg
+          tar -xf "$FILE" -C pkg
+          scripts/install_ui.sh "pkg/$APP_NAME"
+          XZ_OPT=-T0 tar -cJf "$APP_NAME-${{ needs.check.outputs.version }}-linux-x86_64.tar.xz" -C pkg "$APP_NAME"
+          gh release create "${{ needs.check.outputs.tag }}" "$APP_NAME"-*-linux-x86_64.tar.xz \
             --title "${{ needs.check.outputs.tag }}" \
             --notes "Built on Firefox ${{ needs.check.outputs.version }}."
 

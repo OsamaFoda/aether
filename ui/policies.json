@@ -1,0 +1,8 @@
+{
+  "policies": {
+    "SearchEngines": { "Default": "DuckDuckGo" },
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DontCheckDefaultBrowser": true
+  }
+}
