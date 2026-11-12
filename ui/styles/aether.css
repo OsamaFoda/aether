@@ -395,3 +395,40 @@ panel {
 @keyframes aether-fade-in {
   from { opacity: 0; }
 }
+
+/* ---- Split view (Firefox's own): each page becomes its own floating card ---- */
+
+#tabbrowser-tabbox:has(> #tabbrowser-tabpanels[splitview]) {
+  box-shadow: none;
+  outline: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+#tabbrowser-tabpanels[splitview] {
+  background: transparent !important;
+
+  > .split-view-panel {
+    border-radius: var(--aether-radius);
+    overflow: clip;
+    box-shadow: var(--aether-shadow);
+    outline: 1px solid var(--aether-line) !important;
+  }
+
+  > .split-view-panel.deck-selected {
+    outline: 2px solid var(--aether-accent) !important;
+    outline-offset: -1px;
+  }
+
+  > .split-view-splitter {
+    min-width: 8px;
+    background: transparent !important;
+    border: none !important;
+  }
+}
+
+/* ---- Tab groups (Firefox's own): rounded labels to match the tabs ---- */
+
+.tab-group-label {
+  border-radius: 8px !important;
+}
