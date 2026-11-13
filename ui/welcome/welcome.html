@@ -66,6 +66,21 @@
         </div>
       </section>
 
+      <section class="step" data-step="icon" hidden>
+        <p class="eyebrow">Icon</p>
+        <h1>Pick your icon</h1>
+        <p class="lead">It's how Aether shows up in your dock and app list.</p>
+        <div class="app-icons" data-pref="icon">
+          <button class="app-icon" data-value="aurora"><img src="../icons/aurora.svg" alt="">Aurora</button>
+          <button class="app-icon" data-value="eclipse"><img src="../icons/eclipse.svg" alt="">Eclipse</button>
+          <button class="app-icon" data-value="comet"><img src="../icons/comet.svg" alt="">Comet</button>
+          <button class="app-icon" data-value="galaxy"><img src="../icons/galaxy.svg" alt="">Galaxy</button>
+        </div>
+        <div class="actions">
+          <button class="primary go" data-next>Continue</button>
+        </div>
+      </section>
+
       <section class="step" data-step="layout" hidden>
         <p class="eyebrow">Layout</p>
         <h1>Choose your layout</h1>
@@ -178,7 +193,7 @@
             <circle class="planet small" r="4"><animateMotion dur="36s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear" path="M150 0A150 46 0 1 1-150 0 150 46 0 1 1 150 0"/></circle>
           </g>
         </svg>
-        <img class="orb" src="chrome://branding/content/about-logo.svg" alt="">
+        <img class="orb" src="../icons/aurora.svg" alt="">
       </div>
 
       <!-- Light or dark, colours and layout: a little Aether window that follows each choice -->
@@ -199,6 +214,15 @@
             <span class="tiles"><b></b><b></b><b></b></span>
           </div>
           <i class="pv-edge"></i>
+        </div>
+      </div>
+
+      <!-- Icon: the chosen icon up close, and sitting in a dock among other apps -->
+      <div class="scene icon-scene" data-scenes="icon">
+        <span class="halo"></span>
+        <span class="hero"><img id="icon-hero" src="../icons/aurora.svg" alt=""></span>
+        <div class="dock">
+          <i></i><i></i><span class="me"><img id="icon-dock" src="../icons/aurora.svg" alt=""></span><i></i><i></i>
         </div>
       </div>
       <div class="scene badge" data-scenes="theme">
@@ -279,7 +303,7 @@
       <div class="scene done" data-scenes="done">
         <span class="ring r1"></span><span class="ring r2"></span>
         <span class="sparks"></span>
-        <img class="orb" src="chrome://branding/content/about-logo.svg" alt="">
+        <img class="orb" src="../icons/aurora.svg" alt="">
         <span class="done-check"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span>
       </div>
     </div>

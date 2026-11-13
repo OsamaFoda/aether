@@ -1,5 +1,6 @@
-"""Renders Aether's branding from orb.svg ("Celestial Nebula Orb") into ../branding/,
+"""Renders Aether's branding from its default app icon (ui/icons/aurora.svg) into ../branding/,
 using the same file names and sizes as Firefox's own branding folder, which they replace.
+The other icons (ui/icons/) are picked in the browser; see ui/scripts/app-icon.mjs.
 
     python3 branding-src/render.py
 """
@@ -12,7 +13,7 @@ gi.require_version("GdkPixbuf", "2.0")
 from gi.repository import GdkPixbuf
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ORB = os.path.join(HERE, "orb.svg")
+ORB = os.path.join(HERE, "..", "ui", "icons", "aurora.svg")
 OUT = os.path.join(HERE, "..", "branding")
 
 # Firefox branding file -> square size in pixels.

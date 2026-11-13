@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#101221"/>
+      <stop offset=".55" stop-color="#05060b"/>
+      <stop offset="1" stop-color="#010103"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a5b4fc" stop-opacity=".7"/>
+      <stop offset=".5" stop-color="#818cf8" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#c084fc" stop-opacity=".15"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".08"/>
+      <stop offset=".4" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="b4" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="b10" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="10"/></filter>
+    <filter id="b22" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="22"/></filter>
+    <clipPath id="tile"><rect x="32" y="32" width="448" height="448" rx="108"/></clipPath>
+    <radialGradient id="corona" cx="256" cy="256" r="214" gradientUnits="userSpaceOnUse">
+      <stop offset=".58" stop-color="#ffffff"/>
+      <stop offset=".63" stop-color="#c7d2fe" stop-opacity=".9"/>
+      <stop offset=".74" stop-color="#818cf8" stop-opacity=".5"/>
+      <stop offset=".87" stop-color="#7c3aed" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="limb" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".6" stop-color="#a5b4fc" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#a5b4fc" stop-opacity=".15"/>
+    </linearGradient>
+  </defs>
+  <g clip-path="url(#tile)">
+    <rect x="32" y="32" width="448" height="448" fill="url(#bg)"/>
+    <circle cx="65" cy="388" r="2.2" fill="#fff" opacity="0.68"/>
+    <circle cx="66" cy="365" r="1.6" fill="#fff" opacity="0.78"/>
+    <circle cx="72" cy="399" r="2.2" fill="#fff" opacity="0.70"/>
+    <circle cx="438" cy="113" r="2.2" fill="#fff" opacity="0.45"/>
+    <circle cx="396" cy="448" r="3" fill="#fff" opacity="0.75"/>
+    <circle cx="86" cy="412" r="1.6" fill="#fff" opacity="0.55"/>
+    <circle cx="72" cy="137" r="2.2" fill="#fff" opacity="0.55"/>
+    <circle cx="100" cy="441" r="3" fill="#fff" opacity="0.54"/>
+    <circle cx="379" cy="441" r="3" fill="#fff" opacity="0.77"/>
+    <circle cx="62" cy="430" r="3" fill="#fff" opacity="0.89"/>
+    <circle cx="256" cy="256" r="214" fill="url(#corona)"/>
+    <circle cx="256" cy="256" r="126" fill="#020205"/>
+    <circle cx="256" cy="256" r="126" fill="none" stroke="url(#limb)" stroke-width="4"/>
+    <circle cx="341.6" cy="160.9" r="46" fill="#e0f2fe" opacity=".85" filter="url(#b22)"/>
+    <ellipse cx="342" cy="161" rx="70" ry="5" fill="#fff" filter="url(#b4)"/><ellipse cx="342" cy="161" rx="5" ry="52" fill="#fff" filter="url(#b4)"/>
+    <circle cx="341.6" cy="160.9" r="13" fill="#fff"/>
+    <rect x="32" y="32" width="448" height="448" fill="url(#sheen)"/>
+  </g>
+  <rect x="33.5" y="33.5" width="445" height="445" rx="106.5" fill="none" stroke="url(#edge)" stroke-width="3"/>
+</svg>

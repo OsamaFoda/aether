@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#101221"/>
+      <stop offset=".55" stop-color="#05060b"/>
+      <stop offset="1" stop-color="#010103"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a5b4fc" stop-opacity=".7"/>
+      <stop offset=".5" stop-color="#818cf8" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#c084fc" stop-opacity=".15"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".08"/>
+      <stop offset=".4" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="b4" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="b10" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="10"/></filter>
+    <filter id="b22" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="22"/></filter>
+    <clipPath id="tile"><rect x="32" y="32" width="448" height="448" rx="108"/></clipPath>
+    <linearGradient id="tail" x1="104" y1="408" x2="346" y2="166" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7c3aed" stop-opacity="0"/>
+      <stop offset=".45" stop-color="#6366f1" stop-opacity=".55"/>
+      <stop offset=".8" stop-color="#67e8f9" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="tail2" x1="150" y1="440" x2="346" y2="166" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ec4899" stop-opacity="0"/>
+      <stop offset=".6" stop-color="#c084fc" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity=".8"/>
+    </linearGradient>
+  </defs>
+  <g clip-path="url(#tile)">
+    <rect x="32" y="32" width="448" height="448" fill="url(#bg)"/>
+    <circle cx="187" cy="119" r="3" fill="#fff" opacity="0.42"/>
+    <circle cx="288" cy="417" r="1.6" fill="#fff" opacity="0.42"/>
+    <circle cx="230" cy="87" r="1.6" fill="#fff" opacity="0.68"/>
+    <circle cx="83" cy="282" r="1.6" fill="#fff" opacity="0.72"/>
+    <circle cx="289" cy="84" r="3" fill="#fff" opacity="0.60"/>
+    <circle cx="117" cy="106" r="2.2" fill="#fff" opacity="0.68"/>
+    <circle cx="422" cy="202" r="1.6" fill="#fff" opacity="0.80"/>
+    <circle cx="403" cy="346" r="2.2" fill="#fff" opacity="0.70"/>
+    <circle cx="89" cy="261" r="1.6" fill="#fff" opacity="0.78"/>
+    <circle cx="120" cy="252" r="1.6" fill="#fff" opacity="0.88"/>
+    <circle cx="90" cy="279" r="2.2" fill="#fff" opacity="0.57"/>
+    <circle cx="97" cy="166" r="3" fill="#fff" opacity="0.73"/>
+    <circle cx="314" cy="449" r="2.2" fill="#fff" opacity="0.54"/>
+    <circle cx="69" cy="241" r="1.6" fill="#fff" opacity="0.71"/>
+    <path d="M 330 150 Q 230 236 104 408 Q 252 286 362 182 Z" fill="url(#tail)" filter="url(#b22)" opacity=".9"/>
+    <path d="M 334 156 Q 260 260 150 440 Q 280 300 358 178 Z" fill="url(#tail2)" filter="url(#b4)"/>
+    <path d="M 330 150 Q 230 236 104 408 Q 252 286 362 182 Z" fill="url(#tail)"/>
+    <circle cx="346" cy="166" r="48" fill="#a5f3fc" opacity=".8" filter="url(#b22)"/>
+    <ellipse cx="346" cy="166" rx="62" ry="5" fill="#fff" filter="url(#b4)"/><ellipse cx="346" cy="166" rx="5" ry="46" fill="#fff" filter="url(#b4)"/>
+    <circle cx="346" cy="166" r="22" fill="#fff"/>
+    <rect x="32" y="32" width="448" height="448" fill="url(#sheen)"/>
+  </g>
+  <rect x="33.5" y="33.5" width="445" height="445" rx="106.5" fill="none" stroke="url(#edge)" stroke-width="3"/>
+</svg>

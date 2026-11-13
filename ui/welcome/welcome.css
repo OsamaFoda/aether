@@ -581,6 +581,45 @@ kbd {
   outline-offset: 3px;
 }
 
+/* ---- App icons ---- */
+
+.app-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+}
+
+.app-icon {
+  appearance: none;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* The drawings leave a small margin around the tile, so the ring sits just outside it. */
+.app-icon img {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  filter: drop-shadow(0 8px 10px rgba(10, 12, 30, 0.3));
+  transition: transform 420ms var(--spring);
+}
+
+.app-icon:hover img { transform: translateY(-3px) scale(1.06); }
+.app-icon.pop img { animation: pop 520ms var(--spring); }
+
+.app-icon[aria-pressed="true"] img {
+  outline: 3px solid var(--accent);
+  outline-offset: -1px;
+}
+
 /* ---- Sip's budget ---- */
 
 .budget {
@@ -1379,6 +1418,97 @@ kbd {
 
 /* ---- Narrow windows: the illustration goes on top ---- */
 
+/* ---- Icon: the chosen icon up close, and in a dock ---- */
+
+.icon-scene .halo,
+.icon-scene .hero {
+  margin-bottom: 96px;
+}
+
+.icon-scene .hero {
+  display: grid;
+}
+
+.scene[active] .hero {
+  animation: orb-in 1000ms var(--spring) both 150ms, float 6s ease-in-out 1150ms infinite alternate;
+}
+
+#icon-hero {
+  width: 210px;
+  height: 210px;
+  filter: drop-shadow(0 28px 34px rgba(8, 10, 30, 0.45));
+}
+
+/* A new pick lands with a little spin. */
+#icon-hero.pop {
+  animation: swap 750ms var(--spring);
+}
+
+@keyframes swap {
+  from { scale: 0.6; rotate: -16deg; opacity: 0.4; }
+}
+
+.dock {
+  align-self: end;
+  margin-bottom: 8%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px 14px;
+  border-radius: 24px;
+  background: var(--sheen), var(--glass);
+  box-shadow: var(--rim), var(--shadow);
+  backdrop-filter: blur(14px) saturate(160%);
+  transition: var(--fade);
+}
+
+.scene[active] .dock {
+  animation: dock-in 900ms var(--spring) both 350ms;
+}
+
+@keyframes dock-in {
+  from { opacity: 0; translate: 0 40px; }
+}
+
+.dock i {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-image: linear-gradient(135deg, var(--p-glow-1), var(--p-glow-2));
+  opacity: 0.5;
+}
+
+.dock i:nth-child(2) { background-image: linear-gradient(135deg, var(--p-glow-2), var(--p-glow-3)); }
+.dock i:nth-child(4) { background-image: linear-gradient(135deg, var(--p-glow-3), var(--p-accent)); }
+.dock i:nth-child(5) { background-image: linear-gradient(135deg, var(--p-accent), var(--p-glow-1)); }
+
+.dock .me {
+  position: relative;
+  display: grid;
+}
+
+#icon-dock {
+  width: 60px;
+  height: 60px;
+}
+
+#icon-dock.pop {
+  animation: pop 520ms var(--spring);
+}
+
+/* The dot under a running app. */
+.dock .me::after {
+  content: "";
+  position: absolute;
+  left: calc(50% - 2.5px);
+  bottom: -9px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text);
+  opacity: 0.6;
+}
+
 @media (max-width: 920px) {
   main {
     grid-template-columns: minmax(0, 560px);
@@ -1393,6 +1523,8 @@ kbd {
   }
 
   .orb { width: 130px; height: 130px; }
+  #icon-hero { width: 130px; height: 130px; }
+  .icon-scene .halo, .icon-scene .hero { margin-bottom: 70px; }
   .orbits { width: 360px; }
   .chip { display: none; }
 }

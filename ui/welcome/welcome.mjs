@@ -1,6 +1,7 @@
 // Aether's welcome (opened once by scripts/welcome.mjs, and again from "Customize Aether…").
-// First run walks through light or dark, colours, layout, glass, protection (installs uBlock
-// Origin from Mozilla's add-on site) and Sip (the built-in data saver, off unless chosen).
+// First run walks through light or dark, colours, the app icon, layout, glass, protection
+// (installs uBlock Origin from Mozilla's add-on site) and Sip (the built-in data saver, off
+// unless chosen).
 // Opened as welcome.html#customize it shows only the look-and-feel steps. Every choice applies
 // at once, and the illustration on the right follows it. This page is part of the browser
 // (chrome://), so it can set preferences, install add-ons and write Sip's settings directly.
@@ -9,6 +10,7 @@ const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/Addo
 const { ExtensionPermissions } = ChromeUtils.importESModule("resource://gre/modules/ExtensionPermissions.sys.mjs");
 const { ExtensionStorageIDB } = ChromeUtils.importESModule("resource://gre/modules/ExtensionStorageIDB.sys.mjs");
 import { follow } from "../scripts/palette.mjs";
+import { chosen as chosenIcon, iconURL } from "../scripts/app-icon.mjs";
 
 const UBLOCK = "uBlock0@raymondhill.net";
 const SIP = "sip@osama.local";
@@ -21,7 +23,7 @@ const DARK = "ui.systemUsesDarkTheme";
 const $ = id => document.getElementById(id);
 const customizing = location.hash === "#customize";
 const flow = customizing
-  ? ["theme", "colors", "layout", "glass", "done"]
+  ? ["theme", "colors", "icon", "layout", "glass", "done"]
   : [...document.querySelectorAll(".step")].map(step => step.dataset.step);
 const chosen = { protection: false, sip: false };
 
@@ -104,6 +106,10 @@ const CHOICES = {
     get: () => Services.prefs.getStringPref("aether.palette", "nebula"),
     set: value => Services.prefs.setStringPref("aether.palette", value),
   },
+  icon: {
+    get: chosenIcon,
+    set: value => Services.prefs.setStringPref("aether.appIcon", value),
+  },
 };
 
 function refresh() {
@@ -122,6 +128,12 @@ function refresh() {
   preview.toggleAttribute("compact", compact);
   preview.toggleAttribute("liquid", liquid);
   $("theme-badge").dataset.theme = CHOICES.theme.get();
+  const icon = iconURL(CHOICES.icon.get());
+  for (const img of document.querySelectorAll(".orb, #icon-hero, #icon-dock")) {
+    if (img.src === icon) continue;
+    img.src = icon;
+    if (img.id) pop(img);
+  }
 }
 
 for (const group of document.querySelectorAll("[data-pref]")) {

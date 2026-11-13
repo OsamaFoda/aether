@@ -82,7 +82,8 @@ def start(width=1280, height=800, dark=None, show=False):
         f.write(f'user_pref("marionette.port", {PORT});\n')
         if dark is not None:
             f.write(f'user_pref("ui.systemUsesDarkTheme", {1 if dark else 0});\n')
-    env = dict(os.environ, MOZ_REMOTE_ALLOW_SYSTEM_ACCESS="1")
+    # Its own XDG data folder, so a test run never repoints the real desktop launcher's icon.
+    env = dict(os.environ, MOZ_REMOTE_ALLOW_SYSTEM_ACCESS="1", XDG_DATA_HOME=os.path.join(PROFILE, "xdg-data"))
     proc = subprocess.Popen(
         [find_browser(), *([] if show else ["--headless"]), "--marionette", "--no-remote", "-purgecaches",
          "--profile", PROFILE, "--width", str(width), "--height", str(height)],
