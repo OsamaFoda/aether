@@ -159,13 +159,11 @@ body,
 }
 
 /* The search engine button at the start of the address bar is part of it, not a pill of its own. */
-#urlbar-searchmode-switcher {
-  background-color: transparent !important;
-  box-shadow: none !important;
-}
-
-#urlbar-searchmode-switcher:hover {
-  background-color: var(--aether-glass-hover) !important;
+.searchmode-switcher {
+  --button-background-color: transparent !important;
+  --button-background-color-hover: var(--aether-glass-hover) !important;
+  --button-background-color-active: var(--aether-glass-hover) !important;
+  --button-border-color: transparent !important;
 }
 
 /* ---- Sidebar and tabs ---- */
