@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Welcome to Aether</title>
+  <link rel="icon" href="chrome://branding/content/icon32.png">
+  <link rel="stylesheet" href="welcome.css">
+  <script type="module" src="welcome.mjs"></script>
+</head>
+<body>
+  <main>
+    <section class="step glass" data-step="hello">
+      <img class="orb" src="chrome://branding/content/about-logo.svg" alt="">
+      <h1>Welcome to Aether</h1>
+      <p class="lead">A calm, fast browser that's light on your data. Two quick choices and you're set.</p>
+      <div class="actions">
+        <button class="primary" data-next>Get started</button>
+      </div>
+    </section>
+
+    <section class="step glass" data-step="protection" hidden>
+      <div class="emblem" aria-hidden="true">🛡️</div>
+      <h1>Turn on protection?</h1>
+      <p class="lead">Aether can block ads, trackers and harmful sites for you.</p>
+      <ul class="points">
+        <li>Pages load faster and use less data.</li>
+        <li>Fewer companies follow you from site to site.</li>
+        <li>Uses <b>uBlock Origin</b>, a free, open-source blocker trusted by millions.</li>
+      </ul>
+      <p class="note">One-time download of about 4 MB from Mozilla's add-on site.</p>
+      <p class="status" id="protection-status" role="status" hidden></p>
+      <div class="actions">
+        <button class="secondary" data-next>Not now</button>
+        <button class="primary" id="protection-on">Turn on protection</button>
+      </div>
+    </section>
+
+    <section class="step glass" data-step="sip" hidden>
+      <div class="emblem" aria-hidden="true">💧</div>
+      <h1>Save data with Sip?</h1>
+      <p class="lead">Sip is Aether's data saver, made for capped internet.</p>
+      <ul class="points">
+        <li>Shows how much data you use today, this month, and on which sites.</li>
+        <li>Keeps you inside a monthly budget, with a heads-up at 75%, 90% and 100%.</li>
+        <li>Stops videos from playing and loading by themselves.</li>
+        <li>Everything stays on your computer.</li>
+      </ul>
+      <fieldset class="budget">
+        <legend>Your monthly data <span>(optional)</span></legend>
+        <label>Budget <input id="budget-gb" type="number" min="0" step="0.5" placeholder="e.g. 140"> GB</label>
+        <label>Renews on day <input id="reset-day" type="number" min="1" max="31" value="1"></label>
+      </fieldset>
+      <div class="actions">
+        <button class="secondary" id="sip-off">Not now</button>
+        <button class="primary" id="sip-on">Turn on Sip</button>
+      </div>
+    </section>
+
+    <section class="step glass" data-step="done" hidden>
+      <img class="orb" src="chrome://branding/content/about-logo.svg" alt="">
+      <h1>You're all set</h1>
+      <p class="lead">A few things worth knowing:</p>
+      <ul class="tips">
+        <li><kbd>Shift</kbd> + click a link to <b>Peek</b> at it without leaving the page.</li>
+        <li><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd> puts two tabs side by side.</li>
+        <li><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd> hides the sidebar until you need it.</li>
+        <li>Workspaces sit under the address bar: <b>+</b> makes a new one.</li>
+        <li>Right-click the sidebar for <b>Liquid Glass</b>.</li>
+      </ul>
+      <p class="summary" id="summary"></p>
+      <div class="actions">
+        <button class="primary" id="start">Start browsing</button>
+      </div>
+    </section>
+
+    <nav class="dots" aria-hidden="true"><span></span><span></span><span></span><span></span></nav>
+  </main>
+</body>
+</html>
