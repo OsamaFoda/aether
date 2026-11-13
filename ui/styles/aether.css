@@ -805,6 +805,7 @@ notification-message {
 /* Whatever wallpaper was chosen, a private window's is the purple one. */
 :root[privatebrowsingmode="temporary"] {
   --aether-wallpaper: var(--p-wallpaper) !important;
+  --aether-wallpaper-frosted: var(--p-wallpaper) !important;
   --p-wall-1: #d8b4fe;
   --p-wall-2: #a5b4fc;
   --p-sky-1: #ede4ff;
@@ -934,6 +935,13 @@ notification-message {
   background-color: color-mix(in srgb, var(--aether-accent) 28%, transparent);
 }
 
+/* In Frosted Glass, a pill of glass like a touched button. */
+:root[aether-liquid] :is(#aether-split-view, #aether-compact-mode)[checked] > .toolbarbutton-icon {
+  border-radius: 999px !important;
+  background: var(--aether-liquid-fill);
+  box-shadow: var(--aether-liquid-light), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
 /* ---- The Liquid Glass setting (scripts/liquid-glass.mjs) ----
  * See-through glass. The window itself can be see-through (mozilla.widget.use-argb-visuals in
  * aether.cfg), so the desktop shows behind the sidebar and toolbar under a light tint of the
@@ -1024,6 +1032,19 @@ notification-message {
   #urlbar[breakout-extend] > .urlbar-background {
     border-radius: 20px !important;
     background: var(--aether-panel) !important;
+  }
+
+  /* Over the wallpaper, frosted like the sidebar. Firefox can't blur the tabs or the page beneath
+   * it, so it shows a frosted copy of the wallpaper (scripts/wallpaper.mjs), lined up with it. */
+  &[aether-wallpaper] #urlbar[breakout-extend] > .urlbar-background {
+    background: linear-gradient(var(--aether-frost), var(--aether-frost)),
+                var(--aether-wallpaper-frosted, var(--aether-wallpaper)) center / cover no-repeat fixed,
+                var(--aether-panel) !important;
+  }
+
+  #urlbar {
+    --urlbarview-background-color-selected: color-mix(in srgb, var(--aether-accent) 35%, transparent);
+    --urlbarview-text-color-selected: inherit;
   }
 
   /* Touching a tab or a button lifts it, like a drop of glass. */

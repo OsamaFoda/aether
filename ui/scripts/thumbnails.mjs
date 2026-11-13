@@ -23,7 +23,7 @@ let worker = null;
 let asked = 0;
 let queue = Promise.resolve(); // one at a time, so making them doesn't hog the computer
 
-function makeCopy(win, path, copy) {
+function makeCopy(win, path, copy, frosted) {
   worker ??= new win.ChromeWorker("chrome://aether/content/settings/thumbnail-worker.js");
   const id = ++asked;
   return new Promise(resolve => {
@@ -33,21 +33,21 @@ function makeCopy(win, path, copy) {
       resolve(data);
     };
     worker.addEventListener("message", answer);
-    worker.postMessage({ id, path, copy });
+    worker.postMessage({ id, path, copy, frosted });
   });
 }
 
 // The copy's file: URL (making it first if needed), or null if the picture can't be read.
-export function thumbnail(url, win) {
+export function thumbnail(url, win, { frosted = false } = {}) {
   const job = queue.then(async () => {
     if (!url?.startsWith("file:")) return url;
     try {
       const path = Services.io.newURI(url).QueryInterface(Ci.nsIFileURL).file.path;
       const { lastModified } = await IOUtils.stat(path);
-      const key = new Uint8Array(await win.crypto.subtle.digest("SHA-1", new TextEncoder().encode(`${path}|${lastModified}`)));
+      const key = new Uint8Array(await win.crypto.subtle.digest("SHA-1", new TextEncoder().encode(`${path}|${lastModified}${frosted ? "|frosted" : ""}`)));
       const copy = PathUtils.join(THUMBNAILS, `${[...key].map(b => b.toString(16).padStart(2, "0")).join("")}.jpg`);
       if (!(await IOUtils.exists(copy))) {
-        const { ok, error } = await makeCopy(win, path, copy);
+        const { ok, error } = await makeCopy(win, path, copy, frosted);
         if (!ok) throw new Error(error);
       }
       return PathUtils.toFileURI(copy);

@@ -70,8 +70,16 @@ export function init(win) {
     if (asked !== latest) return; // a newer look is on its way
     if (!url) root.removeAttribute("aether-wallpaper");
     else root.setAttribute("aether-wallpaper", url === "theme" ? "theme" : "picture");
-    if (url && url !== "theme") root.style.setProperty("--aether-wallpaper", `url("${url.replaceAll('"', "%22")}")`);
-    else root.style.removeProperty("--aether-wallpaper");
+    const css = url => `url("${url.replaceAll('"', "%22")}")`;
+    root.style.removeProperty("--aether-wallpaper-frosted");
+    if (url && url !== "theme") {
+      root.style.setProperty("--aether-wallpaper", css(url));
+      // A frosted copy, for glass floating where nothing behind it blurs (the address bar's list).
+      const frosted = await thumbnail(url, win, { frosted: true });
+      if (asked === latest && frosted) root.style.setProperty("--aether-wallpaper-frosted", css(frosted));
+    } else {
+      root.style.removeProperty("--aether-wallpaper");
+    }
   };
 
   PREFS.forEach(pref => Services.prefs.addObserver(pref, update));

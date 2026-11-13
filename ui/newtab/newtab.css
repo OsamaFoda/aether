@@ -8,8 +8,8 @@
   --sky-2: var(--p-sky-2);
   --sky-3: var(--p-sky-3);
   --accent: var(--p-accent);
-  --glass: rgba(255, 255, 255, 0.55);
-  --glass-strong: rgba(255, 255, 255, 0.8);
+  --glass: color-mix(in srgb, var(--p-sky-2) 55%, transparent);
+  --glass-strong: color-mix(in srgb, var(--p-sky-2) 85%, transparent);
   --edge: rgba(255, 255, 255, 0.85);
   --line: rgba(30, 34, 70, 0.1);
   --shadow: 0 8px 28px rgba(40, 44, 90, 0.12), 0 1px 3px rgba(40, 44, 90, 0.08);
@@ -24,8 +24,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --glass: rgba(28, 30, 52, 0.55);
-    --glass-strong: rgba(40, 42, 70, 0.85);
     --edge: rgba(255, 255, 255, 0.1);
     --line: rgba(255, 255, 255, 0.08);
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -207,6 +205,57 @@ main {
   background-repeat: no-repeat;
 }
 
-:root[aether-wallpaper] .glass {
-  backdrop-filter: blur(18px) saturate(160%);
+/* On it, the same glass as the sidebar (styles/aether.css): the wallpaper frosted behind a light
+ * tint, a thin edge that catches the light, and light pooling inside. */
+:root[aether-wallpaper] {
+  --frost: rgba(255, 255, 255, 0.28);
+  --ring: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.25) 30%,
+          color-mix(in srgb, var(--accent) 45%, transparent) 55%, rgba(255, 255, 255, 0.1) 70%, rgba(255, 255, 255, 0.7));
+  --light: inset 0 12px 16px -12px rgba(255, 255, 255, 0.75), inset 0 -8px 14px -10px rgba(255, 255, 255, 0.45);
+  --drop: 0 10px 26px -8px rgba(20, 22, 60, 0.3), 0 2px 6px rgba(20, 22, 60, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[aether-wallpaper] {
+    --frost: rgba(14, 16, 30, 0.3);
+    --ring: linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.14) 30%,
+            color-mix(in srgb, var(--accent) 50%, transparent) 55%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.4));
+    --light: inset 0 12px 16px -12px rgba(255, 255, 255, 0.25), inset 0 -8px 14px -10px rgba(255, 255, 255, 0.14);
+    --drop: 0 10px 26px -8px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+}
+
+:root[aether-wallpaper] :is(.glass, #search) {
+  position: relative;
+  border: none;
+  background: var(--frost);
+  backdrop-filter: blur(30px) saturate(170%);
+  box-shadow: var(--light), var(--drop);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: var(--ring);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+/* The search box's glass is its form, as a text box can't draw the edge. */
+:root[aether-wallpaper] #search {
+  border-radius: 18px;
+
+  &:focus-within {
+    box-shadow: var(--light), var(--drop), 0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+}
+
+:root[aether-wallpaper] #query {
+  border: none;
+  background: transparent;
+  box-shadow: none;
 }
