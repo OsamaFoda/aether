@@ -8,6 +8,7 @@
 // look is in aether.css (:root[aether-wallpaper]).
 
 const { Subprocess } = ChromeUtils.importESModule("resource://gre/modules/Subprocess.sys.mjs");
+import { thumbnail, wallpaperFiles } from "./thumbnails.mjs";
 
 const BACKGROUND = "aether.background";
 const WALLPAPER = "aether.wallpaper";
@@ -39,7 +40,24 @@ export async function wallpaperURL(win) {
   return chosen || "theme";
 }
 
+// A little after Aether starts, while nothing else is going on, make the wallpaper thumbnails
+// Aether Settings shows (scripts/thumbnails.mjs), so they're ready when it's opened.
+let thumbnailsMade = false;
+function makeThumbnails(win) {
+  if (thumbnailsMade) return;
+  thumbnailsMade = true;
+  win.setTimeout(async () => {
+    const urls = [await desktopWallpaper(win.matchMedia("(prefers-color-scheme: dark)").matches), ...await wallpaperFiles()];
+    for (const url of urls.filter(Boolean)) {
+      await new Promise(resolve => ChromeUtils.idleDispatch(resolve, { timeout: 10000 }));
+      if (win.closed) return;
+      await thumbnail(url, win);
+    }
+  }, 20000);
+}
+
 export function init(win) {
+  makeThumbnails(win);
   const root = win.document.documentElement;
   const dark = win.matchMedia("(prefers-color-scheme: dark)");
 

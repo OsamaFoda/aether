@@ -7,6 +7,7 @@ const { FileUtils } = ChromeUtils.importESModule("resource://gre/modules/FileUti
 import { follow } from "../scripts/palette.mjs";
 import { iconURL } from "../scripts/app-icon.mjs";
 import { desktopWallpaper } from "../scripts/wallpaper.mjs";
+import { thumbnail, wallpaperFiles, wallpaperFolder } from "../scripts/thumbnails.mjs";
 import { CHOICES, protectionState, setProtection, sipState, setSip, readSipBudget, saveSipBudget } from "../scripts/choices.mjs";
 
 const $ = id => document.getElementById(id);
@@ -72,36 +73,6 @@ for (const pref of WATCHED) Services.prefs.addObserver(pref, refresh);
 // ---- Wallpapers ----
 
 const WALLPAPER = "aether.wallpaper"; // "" for the theme's, "desktop", or a file: URL
-const FOLDER = PathUtils.join(Services.dirsvc.get("Home", Ci.nsIFile).path, "Pictures", "Wallpapers");
-let queue = Promise.resolve(); // one thumbnail at a time, so making them doesn't hog the computer
-const PICTURE = /\.(jpe?g|png|webp|avif|gif)$/i;
-
-// Small copies of the wallpapers for the tiles, made once and kept in the profile: the pictures
-// themselves are several megabytes each, far too much to decode and draw while scrolling.
-const THUMBNAILS = PathUtils.join(PathUtils.profileDir, "aether-thumbnails");
-
-async function thumbnail(url) {
-  if (!url?.startsWith("file:")) return url;
-  try {
-    const path = Services.io.newURI(url).QueryInterface(Ci.nsIFileURL).file.path;
-    const { lastModified } = await IOUtils.stat(path);
-    const key = new Uint8Array(await crypto.subtle.digest("SHA-1", new TextEncoder().encode(`${path}|${lastModified}`)));
-    const copy = PathUtils.join(THUMBNAILS, `${[...key].map(b => b.toString(16).padStart(2, "0")).join("")}.jpg`);
-    if (!(await IOUtils.exists(copy))) {
-      const picture = await createImageBitmap(new Blob([await IOUtils.read(path)]));
-      const canvas = new OffscreenCanvas(320, Math.round(320 * picture.height / picture.width));
-      canvas.getContext("2d").drawImage(picture, 0, 0, canvas.width, canvas.height);
-      picture.close();
-      const jpeg = await canvas.convertToBlob({ type: "image/jpeg", quality: 0.82 });
-      await IOUtils.makeDirectory(THUMBNAILS);
-      await IOUtils.write(copy, new Uint8Array(await jpeg.arrayBuffer()));
-    }
-    return PathUtils.toFileURI(copy);
-  } catch (e) {
-    console.error("Aether settings: thumbnail", e);
-    return null;
-  }
-}
 
 function wallpaperTile(url, image, label) {
   const tile = document.createElement("button");
@@ -113,7 +84,7 @@ function wallpaperTile(url, image, label) {
     img.decoding = "async";
     img.alt = "";
     tile.append(img);
-    queue = queue.then(() => thumbnail(image)).then(src => src && (img.src = src));
+    thumbnail(image, window).then(src => src && (img.src = src));
   }
   if (label) tile.append(Object.assign(document.createElement("span"), { textContent: label }));
   tile.addEventListener("click", () => {
@@ -127,7 +98,7 @@ async function choosePicture() {
   const picker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
   picker.init(window.browsingContext, "Choose a wallpaper", Ci.nsIFilePicker.modeOpen);
   picker.appendFilters(Ci.nsIFilePicker.filterImages);
-  if (await IOUtils.exists(FOLDER)) picker.displayDirectory = new FileUtils.File(FOLDER);
+  if (await IOUtils.exists(wallpaperFolder)) picker.displayDirectory = new FileUtils.File(wallpaperFolder);
   const result = await new Promise(resolve => picker.open(resolve));
   if (result === Ci.nsIFilePicker.returnOK) {
     Services.prefs.setStringPref(WALLPAPER, PathUtils.toFileURI(picker.file.path));
@@ -142,14 +113,7 @@ async function buildWallpapers() {
     wallpaperTile("", null, "Your theme"),
     wallpaperTile("desktop", await desktopWallpaper(matchMedia("(prefers-color-scheme: dark)").matches), "Your desktop"),
   ];
-  const urls = [];
-  try {
-    for (const path of (await IOUtils.getChildren(FOLDER)).sort()) {
-      if (PICTURE.test(path)) urls.push(PathUtils.toFileURI(path));
-    }
-  } catch {
-    // No Wallpapers folder.
-  }
+  const urls = await wallpaperFiles();
   const chosen = Services.prefs.getStringPref(WALLPAPER, "");
   if (chosen && chosen !== "desktop" && !urls.includes(chosen)) urls.unshift(chosen);
   tiles.push(...urls.map(url => wallpaperTile(url, url)));
