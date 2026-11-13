@@ -120,10 +120,18 @@ export function init(win) {
   }
 
   // Focusing the address bar shows it for a moment (styles/aether.css, [aether-just-focused]);
-  // after that only typing or its suggestions keep the bars out.
+  // after that only typing or its suggestions keep the bars out. Not when coming back to the
+  // window, which hands the address bar its focus back by itself.
   const urlbar = doc.getElementById("urlbar");
   let justFocused = 0;
+  let returning = false, returned = 0;
+  win.addEventListener("deactivate", () => (returning = true));
+  win.addEventListener("activate", () => {
+    win.clearTimeout(returned);
+    returned = win.setTimeout(() => (returning = false), 300);
+  });
   urlbar?.addEventListener("focus", () => {
+    if (returning) return;
     urlbar.setAttribute("aether-just-focused", "");
     win.clearTimeout(justFocused);
     justFocused = win.setTimeout(() => urlbar.removeAttribute("aether-just-focused"), 2500);
