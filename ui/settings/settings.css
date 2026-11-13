@@ -7,6 +7,11 @@ html {
   scroll-behavior: smooth;
 }
 
+/* The sky stays still here: drifting, it has to be drawn again on every frame of a scroll. */
+.sky b {
+  animation: none;
+}
+
 .settings {
   --enter-x: 0px;
   position: relative;
@@ -51,7 +56,7 @@ html {
   gap: 4px;
   padding: 5px;
   border-radius: 14px;
-  background: var(--sheen), var(--glass-strong);
+  background: var(--sheen), var(--sky-2); /* solid: nothing blurs behind it */
   box-shadow: var(--rim), var(--shadow);
 }
 

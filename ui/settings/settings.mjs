@@ -73,7 +73,35 @@ for (const pref of WATCHED) Services.prefs.addObserver(pref, refresh);
 
 const WALLPAPER = "aether.wallpaper"; // "" for the theme's, "desktop", or a file: URL
 const FOLDER = PathUtils.join(Services.dirsvc.get("Home", Ci.nsIFile).path, "Pictures", "Wallpapers");
+let queue = Promise.resolve(); // one thumbnail at a time, so making them doesn't hog the computer
 const PICTURE = /\.(jpe?g|png|webp|avif|gif)$/i;
+
+// Small copies of the wallpapers for the tiles, made once and kept in the profile: the pictures
+// themselves are several megabytes each, far too much to decode and draw while scrolling.
+const THUMBNAILS = PathUtils.join(PathUtils.profileDir, "aether-thumbnails");
+
+async function thumbnail(url) {
+  if (!url?.startsWith("file:")) return url;
+  try {
+    const path = Services.io.newURI(url).QueryInterface(Ci.nsIFileURL).file.path;
+    const { lastModified } = await IOUtils.stat(path);
+    const key = new Uint8Array(await crypto.subtle.digest("SHA-1", new TextEncoder().encode(`${path}|${lastModified}`)));
+    const copy = PathUtils.join(THUMBNAILS, `${[...key].map(b => b.toString(16).padStart(2, "0")).join("")}.jpg`);
+    if (!(await IOUtils.exists(copy))) {
+      const picture = await createImageBitmap(new Blob([await IOUtils.read(path)]));
+      const canvas = new OffscreenCanvas(320, Math.round(320 * picture.height / picture.width));
+      canvas.getContext("2d").drawImage(picture, 0, 0, canvas.width, canvas.height);
+      picture.close();
+      const jpeg = await canvas.convertToBlob({ type: "image/jpeg", quality: 0.82 });
+      await IOUtils.makeDirectory(THUMBNAILS);
+      await IOUtils.write(copy, new Uint8Array(await jpeg.arrayBuffer()));
+    }
+    return PathUtils.toFileURI(copy);
+  } catch (e) {
+    console.error("Aether settings: thumbnail", e);
+    return null;
+  }
+}
 
 function wallpaperTile(url, image, label) {
   const tile = document.createElement("button");
@@ -82,11 +110,10 @@ function wallpaperTile(url, image, label) {
   tile.title = label || decodeURIComponent(url.split("/").pop());
   if (image) {
     const img = document.createElement("img");
-    img.src = image;
-    img.loading = "lazy";
     img.decoding = "async";
     img.alt = "";
     tile.append(img);
+    queue = queue.then(() => thumbnail(image)).then(src => src && (img.src = src));
   }
   if (label) tile.append(Object.assign(document.createElement("span"), { textContent: label }));
   tile.addEventListener("click", () => {
