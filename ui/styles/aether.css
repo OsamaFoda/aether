@@ -367,6 +367,7 @@ panel {
                    margin 300ms cubic-bezier(0.22, 1, 0.36, 1), opacity 200ms ease;
   --aether-conceal: transform 240ms cubic-bezier(0.55, 0, 1, 0.45) 400ms, translate 240ms cubic-bezier(0.55, 0, 1, 0.45) 400ms,
                     margin 240ms cubic-bezier(0.55, 0, 1, 0.45) 400ms, opacity 200ms ease 440ms;
+  --aether-glide: cubic-bezier(0.22, 1, 0.36, 1);
   /* How far the bars sit from the window's edges: flush, or floating in Liquid Glass. */
   --aether-compact-inset: 0px;
 }
@@ -457,6 +458,13 @@ panel {
         margin-inline-start: 0 !important;
       }
     }
+  }
+
+  /* Just after a sidebar panel closes (scripts/sidebar-panels.mjs), the sidebar goes at once,
+   * gliding off with the page, rather than after the usual pause. */
+  &[aether-panel-closed] :is(#sidebar-container, #navigator-toolbox, #urlbar, #tabbrowser-tabbox) {
+    transition: transform 360ms var(--aether-glide), translate 360ms var(--aether-glide),
+                margin 360ms var(--aether-glide), opacity 200ms ease !important;
   }
 
   /* Top tabs: the toolbar comes down from the top edge. */
