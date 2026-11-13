@@ -3,12 +3,35 @@
 // scripts/compact-mode.mjs keeps the sidebar shown otherwise, so they did nothing), so they make
 // way for a Compact mode switch; "Move sidebar to the right" goes, as Aether's layout is built
 // with the sidebar on the left; and "Manage Aether settings" opens Aether Settings.
+//
+// The gear at the bottom of the sidebar opens Aether Settings rather than this panel, which is
+// reached from there ("Sidebar tools", through window.aetherCustomizeSidebar).
 
 const PAGE = "chrome://browser/content/sidebar/sidebar-customize.html";
 const COMPACT = "aether.compactMode";
 const STYLE = "chrome://aether/content/styles/customize-sidebar.css";
 
 export function init(win) {
+  const sidebar = win.SidebarController;
+  for (const name of ["toggle", "show"]) {
+    const firefox = sidebar[name];
+    sidebar[name] = function (commandID, ...rest) {
+      if (commandID === "viewCustomizeSidebar" && !win.aetherCustomizingSidebar) {
+        win.switchToTabHavingURI("about:aether", true);
+        return Promise.resolve();
+      }
+      return firefox.call(this, commandID, ...rest);
+    };
+  }
+  win.aetherCustomizeSidebar = async () => {
+    win.aetherCustomizingSidebar = true;
+    try {
+      await sidebar.show("viewCustomizeSidebar");
+    } finally {
+      win.aetherCustomizingSidebar = false;
+    }
+  };
+
   // The panel loads in this process, so its events reach the window.
   win.addEventListener("DOMContentLoaded", async event => {
     const doc = event.target;

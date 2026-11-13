@@ -190,6 +190,9 @@ for (const button of document.querySelectorAll("[data-open]")) {
   button.addEventListener("click", () => window.browsingContext.topChromeWindow.openTrustedLinkIn(button.dataset.open, "tab"));
 }
 
+// Firefox's panel for choosing the sidebar's tools (the gear opens this page instead).
+$("sidebar-tools").addEventListener("click", () => window.browsingContext.topChromeWindow.aetherCustomizeSidebar());
+
 window.addEventListener("unload", () => {
   for (const pref of WATCHED) Services.prefs.removeObserver(pref, refresh);
   AddonManager.removeAddonListener(addonListener);
