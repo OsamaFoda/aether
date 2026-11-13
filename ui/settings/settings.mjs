@@ -8,6 +8,7 @@ import { iconURL } from "../scripts/app-icon.mjs";
 import { CHOICES, protectionState, setProtection, sipState, setSip, readSipBudget, saveSipBudget } from "../scripts/choices.mjs";
 
 const $ = id => document.getElementById(id);
+const BOOKMARKS_BAR = "browser.toolbars.bookmarks.visibility"; // "always", "never", or "newtab" (on new tabs only)
 follow(document, window);
 
 // A quick spring on whatever was just picked.
@@ -29,6 +30,7 @@ function refresh() {
   for (const box of document.querySelectorAll("[data-bool-pref]")) {
     box.checked = Services.prefs.getBoolPref(box.dataset.boolPref, box.dataset.default === "true");
   }
+  $("bookmarks-bar").checked = Services.prefs.getStringPref(BOOKMARKS_BAR, "never") !== "never";
   const icon = iconURL();
   $("logo").src = icon;
   document.querySelector('link[rel="icon"]').href = icon;
@@ -47,7 +49,15 @@ for (const box of document.querySelectorAll("[data-bool-pref]")) {
   box.addEventListener("change", () => Services.prefs.setBoolPref(box.dataset.boolPref, box.checked));
 }
 
-const WATCHED = ["aether.", "sidebar.verticalTabs", "ui.systemUsesDarkTheme"];
+// Through Firefox's own switch (what Ctrl+Shift+B uses), which also shows or hides the bar in
+// each window; the preference alone only takes effect on restart.
+$("bookmarks-bar").addEventListener("change", event => {
+  for (const win of Services.wm.getEnumerator("navigator:browser")) {
+    win.setToolbarVisibility(win.BookmarkingUI.toolbar, event.target.checked ? "always" : "never");
+  }
+});
+
+const WATCHED = ["aether.", "sidebar.verticalTabs", "ui.systemUsesDarkTheme", BOOKMARKS_BAR];
 for (const pref of WATCHED) Services.prefs.addObserver(pref, refresh);
 
 // ---- Add-ons: protection and Sip ----
