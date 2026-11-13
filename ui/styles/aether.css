@@ -361,8 +361,10 @@ panel {
 /* ---- Compact mode (scripts/compact-mode.mjs) ----
  * The sidebar, or with top tabs the toolbar, slides out of the way and the page takes the whole
  * window. Touching that edge of the window or focusing the address bar brings it back, pushing
- * the page aside as it comes, so it looks just as it does outside compact mode (the two move
- * together and never overlap). It also comes back while one of its menus or panels is open,
+ * the page aside as it comes (the two move together and never overlap). The page slides rather
+ * than shrinking, its far edge running off the window for a moment, so it doesn't have to lay
+ * itself out again twice for every peek. With a sidebar panel open, which stays a while, the
+ * page makes room for it instead. It also comes back while one of its menus or panels is open,
  * like a "save this password?" prompt, which points at an icon in the address bar. It glides without bouncing, and waits a moment before hiding
  * again, so a mouse that slips off doesn't make it flicker. */
 
@@ -443,7 +445,7 @@ panel {
       }
 
       #tabbrowser-tabbox {
-        margin-inline-start: calc(var(--aether-sidebar-width, 250px) + 2 * var(--aether-compact-inset)) !important;
+        transform: translateX(calc(var(--aether-sidebar-width, 250px) + 2 * var(--aether-compact-inset) - 8px));
         transition: var(--aether-reveal);
       }
     }
@@ -462,8 +464,11 @@ panel {
         margin-inline-start: calc(var(--aether-sidebar-width, 250px) + 2 * var(--aether-compact-inset)) !important;
       }
 
+      /* At once: laid out after the panel, it's where it had slid to. */
       #tabbrowser-tabbox {
         margin-inline-start: 0 !important;
+        transform: none;
+        transition: none;
       }
     }
   }
@@ -509,7 +514,7 @@ panel {
       }
 
       #tabbrowser-tabbox {
-        margin-top: var(--aether-toolbox-height, 80px) !important;
+        transform: translateY(calc(var(--aether-toolbox-height, 80px) - 8px));
         transition: var(--aether-reveal);
       }
     }
