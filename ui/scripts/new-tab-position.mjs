@@ -21,6 +21,31 @@ export function init(win) {
   }, { once: true });
   update();
 
+  // In the sidebar, the right end of "+ New Tab" opens a private window instead (Firefox keeps
+  // private tabs in windows of their own). Its icon and highlight are in styles/aether.css.
+  const PRIVATE_WIDTH = 40;
+  for (const id of ["tabs-newtab-button", "vertical-tabs-newtab-button"]) {
+    const button = win.document.getElementById(id);
+    if (!button) continue;
+    const tooltip = button.getAttribute("tooltiptext");
+    const onPrivate = event => Services.prefs.getBoolPref(VERTICAL_TABS, false) &&
+      event.clientX > button.getBoundingClientRect().right - PRIVATE_WIDTH;
+    button.addEventListener("mousemove", event => {
+      const hover = onPrivate(event);
+      button.toggleAttribute("aether-private-hover", hover);
+      if (hover) button.setAttribute("tooltiptext", "New private window (Ctrl+Shift+P)");
+      else if (tooltip) button.setAttribute("tooltiptext", tooltip);
+      else button.removeAttribute("tooltiptext");
+    });
+    button.addEventListener("mouseleave", () => button.removeAttribute("aether-private-hover"));
+    button.addEventListener("click", event => {
+      if (event.button !== 0 || !onPrivate(event)) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      win.OpenBrowserWindow({ private: true });
+    }, true);
+  }
+
   const firefoxOpenTab = BrowserCommands.openTab;
   BrowserCommands.openTab = function (options) {
     let opened = null;
