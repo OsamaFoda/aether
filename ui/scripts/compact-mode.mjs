@@ -110,6 +110,28 @@ export function init(win) {
     });
   }
 
+  // A menu opened from the sidebar or toolbar (a right-click, or the containers menu of "+") is a
+  // window of its own, so using it takes the mouse off them: hold them out until it closes.
+  const toolbox = doc.getElementById("navigator-toolbox");
+  const inBars = node => {
+    for (let n = node; n; n = n.parentNode ?? n.host) {
+      if (n === container || n === toolbox) return true;
+    }
+    return false;
+  };
+  const held = new Set();
+  const hold = () => root.toggleAttribute("aether-hold", held.size > 0);
+  win.addEventListener("popupshown", event => {
+    const popup = event.target;
+    if (popup.localName === "menupopup" && inBars(popup.triggerNode ?? popup.anchorNode)) {
+      held.add(popup);
+      hold();
+    }
+  }, true);
+  win.addEventListener("popuphidden", event => {
+    if (held.delete(event.target)) hold();
+  }, true);
+
   Services.prefs.addObserver(PREF, update);
   Services.prefs.addObserver(VERTICAL_TABS, update);
   win.addEventListener("unload", () => {
