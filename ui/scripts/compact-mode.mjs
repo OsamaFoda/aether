@@ -130,10 +130,15 @@ export function init(win) {
     returning = true;
     const bars = doc.getElementById(vertical() ? "sidebar-container" : "navigator-toolbox").getBoundingClientRect();
     wasOut = vertical() ? bars.right > 0 : bars.bottom > 0;
+    // Leaving takes the address bar's focus, which would hide the bars while you're away.
+    root.toggleAttribute("aether-kept", wasOut);
   });
   win.addEventListener("activate", () => {
     win.clearTimeout(returned);
-    returned = win.setTimeout(() => (returning = false), 300);
+    returned = win.setTimeout(() => {
+      returning = false;
+      root.removeAttribute("aether-kept");
+    }, 300);
   });
   urlbar?.addEventListener("focus", () => {
     win.clearTimeout(justFocused);
