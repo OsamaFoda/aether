@@ -19,7 +19,7 @@ export function init(win) {
     if (!menu) continue;
     const item = doc.createXULElement("menuitem");
     item.setAttribute("type", "checkbox");
-    item.setAttribute("label", "Liquid Glass");
+    item.setAttribute("label", "Frosted Glass");
     item.addEventListener("command", toggle);
     menu.prepend(item);
     menu.addEventListener("popupshowing", () => {

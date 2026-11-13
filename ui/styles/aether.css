@@ -153,6 +153,21 @@ body,
   }
 }
 
+/* With top tabs there's no sidebar on the left, so the page gets a margin there too. */
+:root:not([aether-vertical], [inDOMFullscreen]) #tabbrowser-tabbox {
+  margin-inline-start: 8px !important;
+}
+
+/* The search engine button at the start of the address bar is part of it, not a pill of its own. */
+#urlbar-searchmode-switcher {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+#urlbar-searchmode-switcher:hover {
+  background-color: var(--aether-glass-hover) !important;
+}
+
 /* ---- Sidebar and tabs ---- */
 
 #sidebar-container,
