@@ -368,6 +368,9 @@ panel {
  * like a "save this password?" prompt, which points at an icon in the address bar. It glides without bouncing, and waits a moment before hiding
  * again, so a mouse that slips off doesn't make it flicker. */
 
+/* The address bar brings the bars out for a moment when it gets focus (scripts/compact-mode.mjs,
+ * [aether-just-focused]), then for as long as you're typing or its suggestions are open, but not
+ * merely for having focus: a new window or tab puts the cursor there by itself. */
 #aether-edge {
   display: none;
 }
@@ -433,7 +436,7 @@ panel {
       transition: var(--aether-conceal);
     }
 
-    &:is([aether-hold], :has(#aether-edge:hover, #sidebar-container:hover, #navigator-toolbox:hover, #urlbar[focused],
+    &:is([aether-hold], :has(#aether-edge:hover, #sidebar-container:hover, #navigator-toolbox:hover, #urlbar[focused]:is([usertyping], [open], [aether-just-focused]),
           #navigator-toolbox [open="true"], :is(#notification-popup, #identity-popup, #permission-popup, #protections-popup, #appMenu-popup, #downloadsPanel,
           #unified-extensions-panel, #widget-overflow, #customizationui-widget-panel, #editBookmarkPanel)[panelopen])) {
       #sidebar-container,
@@ -504,7 +507,7 @@ panel {
       transition: var(--aether-conceal);
     }
 
-    &:is([aether-hold], :has(#aether-edge:hover, #navigator-toolbox:hover, #urlbar[focused],
+    &:is([aether-hold], :has(#aether-edge:hover, #navigator-toolbox:hover, #urlbar[focused]:is([usertyping], [open], [aether-just-focused]),
           #navigator-toolbox [open="true"], :is(#notification-popup, #identity-popup, #permission-popup, #protections-popup, #appMenu-popup, #downloadsPanel,
           #unified-extensions-panel, #widget-overflow, #customizationui-widget-panel, #editBookmarkPanel)[panelopen])) {
       :is(#navigator-toolbox, #urlbar) {

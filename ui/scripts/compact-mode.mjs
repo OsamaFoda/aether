@@ -119,6 +119,16 @@ export function init(win) {
     });
   }
 
+  // Focusing the address bar shows it for a moment (styles/aether.css, [aether-just-focused]);
+  // after that only typing or its suggestions keep the bars out.
+  const urlbar = doc.getElementById("urlbar");
+  let justFocused = 0;
+  urlbar?.addEventListener("focus", () => {
+    urlbar.setAttribute("aether-just-focused", "");
+    win.clearTimeout(justFocused);
+    justFocused = win.setTimeout(() => urlbar.removeAttribute("aether-just-focused"), 2500);
+  }, true);
+
   // A menu opened from the sidebar or toolbar (a right-click, or the containers menu of "+") is a
   // window of its own, so using it takes the mouse off them: hold them out until it closes.
   const toolbox = doc.getElementById("navigator-toolbox");
