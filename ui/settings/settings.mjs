@@ -49,6 +49,7 @@ for (const group of document.querySelectorAll("[data-pref]")) {
     button.addEventListener("click", () => {
       CHOICES[group.dataset.pref].set(button.dataset.value);
       pop(button);
+      refresh(); // not every choice is an aether. pref the page watches
     });
   }
 }
