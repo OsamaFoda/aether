@@ -5,7 +5,9 @@
 //
 // With tabs down the side, compact mode is the only way the sidebar hides: it's otherwise always
 // there and expanded, with the address bar in it. Firefox's own sidebar button and Ctrl+Alt+Z,
-// which would collapse it to icons or hide it (tabs and all), toggle compact mode instead.
+// which would collapse it to icons or hide it (tabs and all), toggle compact mode instead, and
+// its "Expand sidebar on hover" (in its Settings) turns compact mode on rather than running its
+// own hover tracking, which fought this and made the sidebar flicker.
 
 const { CustomizableUI } = ChromeUtils.importESModule("moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs");
 
@@ -59,10 +61,17 @@ export function init(win) {
     return vertical() ? toggle() : firefoxToggle.call(this);
   };
 
+  const firefoxExpandOnHover = sidebar.toggleExpandOnHover;
+  sidebar.toggleExpandOnHover = function (enabled, ...rest) {
+    return firefoxExpandOnHover.call(this, enabled && !vertical(), ...rest);
+  };
+
   const container = doc.getElementById("sidebar-container");
   const keepSidebar = () => {
     if (!vertical() || !sidebar._state) return;
-    if (Services.prefs.getStringPref(VISIBILITY, "always-show") !== "always-show") {
+    const visibility = Services.prefs.getStringPref(VISIBILITY, "always-show");
+    if (visibility !== "always-show") {
+      if (visibility === "expand-on-hover") Services.prefs.setBoolPref(PREF, true);
       Services.prefs.setStringPref(VISIBILITY, "always-show"); // Firefox then shows and expands it
     } else if (container.hidden || !container.hasAttribute("sidebar-launcher-expanded")) {
       sidebar._state.updateVisibility(true, true);
