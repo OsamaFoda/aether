@@ -158,7 +158,15 @@ body,
   margin-inline-start: 8px !important;
 }
 
-/* The search engine button at the start of the address bar is part of it, not a pill of its own. */
+/* The boxes at the start of the address bar (the site's identity, like "Aether" on Aether's own
+ * pages, and the search engine button) are part of it, not pills of their own. */
+#urlbar {
+  --urlbar-box-background-color: transparent !important;
+  --urlbar-box-background-color-focus: transparent !important;
+  --urlbar-box-background-color-hover: var(--aether-glass-hover) !important;
+  --urlbar-box-background-color-active: var(--aether-glass-hover) !important;
+}
+
 .searchmode-switcher {
   --button-background-color: transparent !important;
   --button-background-color-hover: var(--aether-glass-hover) !important;
