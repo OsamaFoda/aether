@@ -37,6 +37,10 @@ export const CHOICES = {
     get: chosenIcon,
     set: value => Services.prefs.setStringPref("aether.appIcon", value),
   },
+  lastTab: {
+    get: () => Services.prefs.getBoolPref("browser.tabs.closeWindowWithLastTab", true) ? "close" : "keep",
+    set: value => Services.prefs.setBoolPref("browser.tabs.closeWindowWithLastTab", value === "close"),
+  },
   newTabs: {
     get: () => Services.prefs.getStringPref("aether.newTabsAt", "top") === "bottom" ? "bottom" : "top",
     set: value => Services.prefs.setStringPref("aether.newTabsAt", value),

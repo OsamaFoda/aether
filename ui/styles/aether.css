@@ -23,19 +23,18 @@
   --aether-line: rgba(30, 34, 70, 0.08);
   --aether-shadow: 0 8px 28px rgba(40, 44, 90, 0.12), 0 1px 3px rgba(40, 44, 90, 0.08);
   --aether-text: #1d2033;
-  --aether-blur: blur(24px) saturate(160%);
   --aether-radius: 12px;
 
   /* Glass edges: a bright rim that catches the light (strongest on top) and a sheen across the
-   * surface. Firefox only blurs what's behind an element where that's the window's own
-   * background, not the tab list or a web page, so the glass is drawn with light and edges,
-   * and over pages it's nearly solid. */
+   * surface. Firefox blurs what's behind an element (backdrop-filter) only when the two share
+   * the browser area (#browser): the sidebar, its tabs and #browser's own background, never a
+   * web page and not from the toolbar. So the glass is drawn with light and edges, and over
+   * pages it's solid. */
   --aether-rim: inset 0 1px 0.5px rgba(255, 255, 255, 0.95), inset 0 -1px 0.5px rgba(255, 255, 255, 0.35),
                 inset 1px 0 0.5px rgba(255, 255, 255, 0.5), inset -1px 0 0.5px rgba(255, 255, 255, 0.35),
                 inset 0 0 12px rgba(255, 255, 255, 0.35);
   --aether-sheen: linear-gradient(165deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 45%,
                   rgba(255, 255, 255, 0) 75%, rgba(255, 255, 255, 0.22));
-  --aether-lens: blur(12px) saturate(170%);
 
   /* A spring that overshoots a little and settles. */
   --aether-spring: linear(0, 0.013 0.6%, 0.05 1.2%, 0.2 2.9%, 0.785 9.2%, 1.006 13.2%, 1.081 16.1%,
@@ -162,7 +161,6 @@ sidebar-main,
 .tabbrowser-tab .tab-background[selected] {
   background: var(--aether-sheen), var(--aether-glass) !important;
   box-shadow: var(--aether-rim), var(--aether-shadow) !important;
-  backdrop-filter: var(--aether-lens);
   outline: none !important;
 }
 
@@ -183,6 +181,10 @@ sidebar-main,
   overflow: visible !important;
 }
 
+.tabbrowser-tab[aether-lens-moving] > .tab-stack > .tab-background {
+  will-change: translate, scale;
+}
+
 /* ---- Address bar: a glass pill ---- */
 
 .urlbar-background {
@@ -190,7 +192,6 @@ sidebar-main,
   border: none !important;
   background-image: var(--aether-sheen) !important;
   box-shadow: var(--aether-rim), 0 2px 8px rgba(40, 44, 90, 0.08) !important;
-  backdrop-filter: var(--aether-lens);
 }
 
 /* Opening the address bar swells it a little, like a drop of glass. */
@@ -325,7 +326,8 @@ panel {
  * The sidebar, or with top tabs the toolbar, slides out of the way and the page takes the whole
  * window. Touching that edge of the window or focusing the address bar brings it back, pushing
  * the page aside as it comes, so it looks just as it does outside compact mode (the two move
- * together and never overlap). It glides without bouncing, and waits a moment before hiding
+ * together and never overlap). It also comes back while one of its menus or panels is open,
+ * like a "save this password?" prompt, which points at an icon in the address bar. It glides without bouncing, and waits a moment before hiding
  * again, so a mouse that slips off doesn't make it flicker. */
 
 #aether-edge {
@@ -388,7 +390,9 @@ panel {
       transition: var(--aether-conceal);
     }
 
-    &:has(#aether-edge:hover, #sidebar-container:hover, #navigator-toolbox:hover, #urlbar[focused]) {
+    &:has(#aether-edge:hover, #sidebar-container:hover, #navigator-toolbox:hover, #urlbar[focused],
+          #navigator-toolbox [open="true"], :is(#notification-popup, #identity-popup, #permission-popup, #protections-popup, #appMenu-popup, #downloadsPanel,
+          #unified-extensions-panel, #widget-overflow, #customizationui-widget-panel, #editBookmarkPanel)[panelopen]) {
       #sidebar-container,
       &[aether-urlbar-in-sidebar] :is(#navigator-toolbox, #urlbar) {
         transform: none;
@@ -427,7 +431,9 @@ panel {
       transition: var(--aether-conceal);
     }
 
-    &:has(#aether-edge:hover, #navigator-toolbox:hover, #urlbar[focused]) {
+    &:has(#aether-edge:hover, #navigator-toolbox:hover, #urlbar[focused],
+          #navigator-toolbox [open="true"], :is(#notification-popup, #identity-popup, #permission-popup, #protections-popup, #appMenu-popup, #downloadsPanel,
+          #unified-extensions-panel, #widget-overflow, #customizationui-widget-panel, #editBookmarkPanel)[panelopen]) {
       :is(#navigator-toolbox, #urlbar) {
         transform: none;
         translate: none;
@@ -466,7 +472,6 @@ panel {
   border-radius: 16px;
   overflow: clip;
   background: var(--aether-glass-solid);
-  backdrop-filter: var(--aether-blur);
   box-shadow: var(--aether-shadow), 0 30px 80px rgba(0, 0, 0, 0.25), inset 0 1px 0 var(--aether-edge);
   animation: aether-peek-in var(--aether-spring-time) var(--aether-spring);
 }
@@ -616,7 +621,6 @@ panel {
 .aether-ws[active] {
   background: var(--aether-sheen), var(--aether-glass);
   box-shadow: var(--aether-rim), var(--aether-shadow);
-  backdrop-filter: var(--aether-lens);
   color: var(--aether-accent);
   font-weight: 600;
 }

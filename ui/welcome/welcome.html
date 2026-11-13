@@ -122,6 +122,23 @@
         </div>
       </section>
 
+      <section class="step" data-step="lasttab" hidden>
+        <p class="eyebrow">Closing tabs</p>
+        <h1>When the last tab closes</h1>
+        <p class="lead">Should Aether close too, or stay open?</p>
+        <div class="choices" data-pref="lastTab">
+          <button class="choice slim" data-value="close">
+            <b>Close Aether</b><small>Like most browsers: closing the last tab closes the window.</small>
+          </button>
+          <button class="choice slim" data-value="keep">
+            <b>Keep it open</b><small>Aether stays open, on a fresh new tab.</small>
+          </button>
+        </div>
+        <div class="actions">
+          <button class="primary go" data-next>Continue</button>
+        </div>
+      </section>
+
       <section class="step" data-step="protection" hidden>
         <p class="eyebrow">Protection</p>
         <h1>Turn on protection?</h1>
@@ -197,7 +214,7 @@
       </div>
 
       <!-- Light or dark, colours and layout: a little Aether window that follows each choice -->
-      <div class="scene preview" data-scenes="theme colors layout">
+      <div class="scene preview" data-scenes="theme colors layout lasttab">
         <div class="pv" id="pv" data-layout="sidebar">
           <i class="pv-glow g1"></i><i class="pv-glow g2"></i><i class="pv-glow g3"></i>
           <i class="pv-part pv-nav"><b></b><b></b><b></b></i>

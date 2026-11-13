@@ -1,8 +1,9 @@
 // Aether's welcome (opened once, on first run, by scripts/welcome.mjs). It walks through light or
-// dark, colours, the app icon, layout, glass, protection (installs uBlock Origin from Mozilla's
-// add-on site) and Sip (the built-in data saver, off unless chosen). Every choice applies at
-// once, and the illustration on the right follows it. All of it can be changed later in Aether
-// Settings (about:aether, settings/), which shares the choices in scripts/choices.mjs.
+// dark, colours, the app icon, layout, glass, what closing the last tab does, protection
+// (installs uBlock Origin from Mozilla's add-on site) and Sip (the built-in data saver, off
+// unless chosen). Every choice applies at once, and the illustration on the right follows it.
+// All of it can be changed later in Aether Settings (about:aether, settings/), which shares the
+// choices in scripts/choices.mjs.
 
 import { follow } from "../scripts/palette.mjs";
 import { iconURL } from "../scripts/app-icon.mjs";

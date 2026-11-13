@@ -154,7 +154,7 @@ main[data-dir="back"] {
 }
 
 @keyframes leave {
-  to { opacity: 0; transform: translateX(var(--leave-x)); filter: blur(6px); }
+  to { opacity: 0; transform: translateX(var(--leave-x)); }
 }
 
 .step > * {
@@ -171,7 +171,7 @@ main[data-dir="back"] {
 .step > :nth-child(8) { --i: 7; }
 
 @keyframes rise {
-  from { opacity: 0; transform: translate(var(--enter-x), 12px); filter: blur(8px); }
+  from { opacity: 0; transform: translate(var(--enter-x), 12px); }
 }
 
 /* Headings appear word by word (welcome.mjs wraps the words). */
@@ -186,7 +186,7 @@ main[data-dir="back"] {
 }
 
 @keyframes word {
-  from { opacity: 0; transform: translateY(0.45em); filter: blur(10px); }
+  from { opacity: 0; transform: translateY(0.45em); }
 }
 
 .eyebrow {
@@ -693,7 +693,7 @@ kbd {
 }
 
 @keyframes art-in {
-  from { opacity: 0; transform: translateY(26px) scale(0.97); filter: blur(10px); }
+  from { opacity: 0; transform: translateY(26px) scale(0.97); }
 }
 
 .scene {
@@ -705,16 +705,14 @@ kbd {
   opacity: 0;
   visibility: hidden;
   transform: scale(0.94);
-  filter: blur(10px);
-  transition: opacity 450ms ease, transform 700ms var(--ease-out), filter 450ms ease, visibility 0s 450ms;
+  transition: opacity 450ms ease, transform 700ms var(--ease-out), visibility 0s 450ms;
 }
 
 .scene[active] {
   opacity: 1;
   visibility: visible;
   transform: none;
-  filter: none;
-  transition: opacity 500ms ease 120ms, transform 800ms var(--ease-out) 120ms, filter 500ms ease 120ms, visibility 0s;
+  transition: opacity 500ms ease 120ms, transform 800ms var(--ease-out) 120ms, visibility 0s;
 }
 
 .scene > * {

@@ -1,16 +1,20 @@
 // The sliding tab highlight: when you switch tabs, the selected tab's glass slides over from the
-// tab you left, stretching a little along the way like a drop of liquid, and settles with a
-// spring. It passes over the tabs in between like a lens. Switched off with the aether.tabLens
-// pref (in Aether Settings), and still when the computer asks for reduced motion.
+// tab you left, stretching a little along the way like a drop of liquid, and settles. It glides
+// beneath the names of the tabs in between. Switched off with the aether.tabLens pref (in Aether
+// Settings), and still when the computer asks for reduced motion.
+//
+// The slide and the stretch are two animations (of translate and scale), so the slide follows
+// one smooth curve while the stretch swells and relaxes on its own. Neither names an end value:
+// each ends on whatever the tab's own style is, so nothing jumps when they finish.
 
 const PREF = "aether.tabLens";
-// A soft spring, so the slide can be seen: it reaches the new tab a little before half way,
-// overshoots it by about 7% and settles (damping 0.65).
+// A soft spring: glides in, overshoots by about 1% and settles (damping 0.82).
 const SPRING = `linear(${Array.from({ length: 41 }, (_, i) => {
-  const t = i / 40, damping = 0.65, stiffness = 7.1, wobble = stiffness * Math.sqrt(1 - damping ** 2);
+  const t = i / 40, damping = 0.82, stiffness = 6.1, wobble = stiffness * Math.sqrt(1 - damping ** 2);
   const x = 1 - Math.exp(-damping * stiffness * t) * (Math.cos(wobble * t) + (damping * stiffness / wobble) * Math.sin(wobble * t));
   return i === 40 ? 1 : x.toFixed(4);
 }).join(", ")})`;
+const SWELL = "cubic-bezier(0.45, 0, 0.55, 1)";
 
 export function init(win) {
   const reducedMotion = win.matchMedia("(prefers-reduced-motion: reduce)");
@@ -32,15 +36,23 @@ export function init(win) {
     if (distance < 1 || distance > 2000) return;
 
     // Longer trips stretch more, along the way it travels, and thin out across it.
-    const stretch = Math.min(1 + distance / 700, 1.3);
+    const stretch = Math.min(1 + distance / 1200, 1.15);
     const [midX, midY] = Math.abs(dy) > Math.abs(dx) ? [1 / Math.sqrt(stretch), stretch] : [stretch, 1 / Math.sqrt(stretch)];
+    const duration = Math.min(380 + distance * 0.35, 620);
 
+    for (const running of glass.getAnimations()) {
+      if (running.id === "aether-lens") running.cancel();
+    }
     to.setAttribute("aether-lens-moving", "");
+    const slide = glass.animate([{ translate: `${dx}px ${dy}px`, offset: 0 }], { id: "aether-lens", duration, easing: SPRING });
     glass.animate([
-      { transform: `translate(${dx}px, ${dy}px) scale(${start.width / end.width}, ${start.height / end.height})` },
-      { transform: `translate(${dx * 0.45}px, ${dy * 0.45}px) scale(${midX}, ${midY})`, offset: 0.3 },
-      { transform: "none" },
-    ], { duration: Math.min(340 + distance * 0.5, 680), easing: SPRING })
-      .finished.catch(() => {}).finally(() => to.removeAttribute("aether-lens-moving"));
+      { scale: `${start.width / end.width} ${start.height / end.height}`, easing: SWELL },
+      { scale: `${midX} ${midY}`, offset: 0.4, easing: SWELL },
+    ], { id: "aether-lens", duration: duration * 0.9 });
+    slide.finished.catch(() => {}).finally(() => {
+      if (!glass.getAnimations().some(a => a.id === "aether-lens" && a.playState === "running")) {
+        to.removeAttribute("aether-lens-moving");
+      }
+    });
   });
 }
