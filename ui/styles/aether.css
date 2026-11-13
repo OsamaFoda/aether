@@ -796,6 +796,51 @@ notification-message {
   }
 }
 
+/* ---- Private windows: purple whatever the colour theme, and labelled at the top of the tab
+ * list, so it's plain that every tab in them is private (Firefox keeps private tabs in windows
+ * of their own, and in the sidebar its own label isn't shown). ---- */
+
+:root[privatebrowsingmode="temporary"] {
+  --p-sky-1: #ede4ff;
+  --p-sky-2: #f5efff;
+  --p-sky-3: #e6d9ff;
+  --p-glow-1: #c4b5fd;
+  --p-glow-2: #e9d5ff;
+  --p-glow-3: #f0abfc;
+  --p-accent: #7c3aed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[privatebrowsingmode="temporary"] {
+    --p-sky-1: #1c0f33;
+    --p-sky-2: #150b26;
+    --p-sky-3: #2a1247;
+    --p-glow-1: #5b21b6;
+    --p-glow-2: #7e22ce;
+    --p-glow-3: #a21caf;
+    --p-accent: #c084fc;
+  }
+}
+
+:root[privatebrowsingmode="temporary"][aether-vertical] #tabbrowser-tabs::before {
+  content: "Private window · nothing is saved";
+  order: -10;
+  display: block;
+  margin: 2px 4px 6px;
+  padding: 6px 10px 6px 30px;
+  border-radius: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--aether-accent);
+  background: url("chrome://browser/skin/privateBrowsing.svg") 9px center / 14px no-repeat,
+              color-mix(in srgb, var(--aether-accent) 16%, transparent);
+  -moz-context-properties: fill;
+  fill: var(--aether-accent);
+}
+
 /* ---- Tab groups (Firefox's own): rounded labels to match the tabs ---- */
 
 .tab-group-label {
