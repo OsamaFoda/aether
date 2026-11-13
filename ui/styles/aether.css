@@ -1187,3 +1187,8 @@ notification-message {
     --arrowpanel-border-color: rgba(255, 255, 255, 0.16);
   }
 }
+
+/* Split view: the address strip under a pane is left off Aether's own pages (scripts/split-view.mjs). */
+split-view-footer[aether-own-page] {
+  display: none !important;
+}
