@@ -137,11 +137,43 @@ export function init(win) {
     win.clearTimeout(returned);
     returned = win.setTimeout(() => {
       returning = false;
-      root.removeAttribute("aether-kept");
       // Back by clicking the page, not the address bar: now its list can go.
       if (!urlbar.hasAttribute("focused")) view.close();
+      for (const { popup, anchor } of closedByLeaving.splice(0)) reopen(popup, anchor);
     }, 300);
   });
+
+  // Bars kept out stay out until you've been and gone from them, clicked elsewhere (the address
+  // bar losing focus, below), or switched tabs.
+  const release = () => doc.hasFocus() && root.removeAttribute("aether-kept");
+  for (const id of ["sidebar-container", "navigator-toolbox"]) doc.getElementById(id)?.addEventListener("mouseleave", release);
+  win.addEventListener("mousedown", e => inBars(e.target) || release(), true);
+  win.gBrowser.tabContainer.addEventListener("TabSelect", release);
+
+  // Switching to another app closes menus and panels (the desktop does it, and Aether can't stop
+  // it), so the ones opened from a button there open again when you come back. (Right-click menus
+  // can't: they belong to the click that opened them.)
+  const closedByLeaving = [];
+  let recentlyClosed = [];
+  const anchors = new WeakMap(); // Firefox forgets a popup's anchor before it says it's closed
+  win.addEventListener("popupshowing", e => e.target.anchorNode && anchors.set(e.target, e.target.anchorNode), true);
+  win.addEventListener("popuphidden", e => {
+    const popup = e.target, anchor = anchors.get(popup);
+    if (!anchor || popup.localName === "tooltip" || popup.closest?.("#urlbar")) return;
+    recentlyClosed.push({ popup, anchor, when: Date.now() });
+    recentlyClosed = recentlyClosed.filter(c => Date.now() - c.when < 500);
+  }, true);
+  win.addEventListener("deactivate", () => {
+    closedByLeaving.push(...recentlyClosed.filter(c => Date.now() - c.when < 500));
+    recentlyClosed = [];
+  });
+  const reopen = (popup, anchor) => {
+    if (!anchor.isConnected) return;
+    if (popup.id === "appMenu-popup") win.PanelUI.show();
+    else if (popup.querySelector("panelmultiview")) win.PanelMultiView.openPopup(popup, anchor, { position: "bottomleft topleft" }).catch(() => {});
+    else if ("open" in anchor && anchor.getAttribute("type") === "menu") anchor.open = true;
+    else popup.openPopup(anchor, { position: "bottomleft topleft" });
+  };
 
   // The address bar's list of suggestions stays open while you're away from the window, rather
   // than closing because the window lost focus.
@@ -161,6 +193,7 @@ export function init(win) {
     justFocused = win.setTimeout(() => urlbar.removeAttribute("aether-just-focused"), 2500);
   }, true);
   urlbar?.addEventListener("blur", () => {
+    if (!returning) release();
     win.clearTimeout(justFocused);
     urlbar.removeAttribute("aether-just-focused");
   }, true);
