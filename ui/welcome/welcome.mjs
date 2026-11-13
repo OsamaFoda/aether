@@ -129,6 +129,7 @@ function refresh() {
   preview.toggleAttribute("liquid", liquid);
   $("theme-badge").dataset.theme = CHOICES.theme.get();
   const icon = iconURL(CHOICES.icon.get());
+  document.querySelector('link[rel="icon"]').href = icon;
   for (const img of document.querySelectorAll(".orb, #icon-hero, #icon-dock")) {
     if (img.src === icon) continue;
     img.src = icon;

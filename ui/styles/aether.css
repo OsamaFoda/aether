@@ -17,7 +17,8 @@
   --aether-glass: rgba(255, 255, 255, 0.55);
   --aether-glass-strong: rgba(255, 255, 255, 0.78);
   --aether-glass-hover: rgba(255, 255, 255, 0.7);
-  --aether-glass-solid: rgba(250, 250, 255, 0.95); /* over web pages, where blur can't reach */
+  --aether-glass-solid: rgba(250, 250, 255, 0.95);
+  --aether-panel: rgb(246, 247, 253); /* floating over web pages, where nothing blurs */
   --aether-edge: rgba(255, 255, 255, 0.85);
   --aether-line: rgba(30, 34, 70, 0.08);
   --aether-shadow: 0 8px 28px rgba(40, 44, 90, 0.12), 0 1px 3px rgba(40, 44, 90, 0.08);
@@ -25,14 +26,16 @@
   --aether-blur: blur(24px) saturate(160%);
   --aether-radius: 12px;
 
-  /* Liquid glass: a bright rim that catches the light (strongest on top), a sheen across the
-   * surface, and a lens that bends what's behind near the edges (styles/lens.svg). */
+  /* Glass edges: a bright rim that catches the light (strongest on top) and a sheen across the
+   * surface. Firefox only blurs what's behind an element where that's the window's own
+   * background, not the tab list or a web page, so the glass is drawn with light and edges,
+   * and over pages it's nearly solid. */
   --aether-rim: inset 0 1px 0.5px rgba(255, 255, 255, 0.95), inset 0 -1px 0.5px rgba(255, 255, 255, 0.35),
                 inset 1px 0 0.5px rgba(255, 255, 255, 0.5), inset -1px 0 0.5px rgba(255, 255, 255, 0.35),
                 inset 0 0 12px rgba(255, 255, 255, 0.35);
   --aether-sheen: linear-gradient(165deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 45%,
                   rgba(255, 255, 255, 0) 75%, rgba(255, 255, 255, 0.22));
-  --aether-lens: blur(6px) saturate(180%) url("chrome://aether/content/styles/lens.svg#lens");
+  --aether-lens: blur(12px) saturate(170%);
 
   /* A spring that overshoots a little and settles. */
   --aether-spring: linear(0, 0.013 0.6%, 0.05 1.2%, 0.2 2.9%, 0.785 9.2%, 1.006 13.2%, 1.081 16.1%,
@@ -46,6 +49,7 @@
     --aether-glass-strong: rgba(34, 36, 62, 0.82);
     --aether-glass-hover: rgba(52, 55, 90, 0.6);
     --aether-glass-solid: rgba(30, 32, 56, 0.95);
+    --aether-panel: rgb(27, 29, 50);
     --aether-edge: rgba(255, 255, 255, 0.1);
     --aether-line: rgba(255, 255, 255, 0.07);
     --aether-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -219,8 +223,10 @@ panel {
 
 /* ---- Address bar in the sidebar ----
  * While tabs are vertical and the sidebar is expanded (scripts/sidebar-urlbar.mjs sets the
- * attribute), the toolbar floats over the top slot of the sidebar: buttons, then the address
- * bar, and the page gets the full height of the window. A long address ends in "…". */
+ * attribute), the toolbar floats over the top slot of the sidebar in three rows: back, forward
+ * and reload with the window buttons; the address bar; then workspaces with the add-on, Split
+ * View, Compact Mode and menu buttons. The page gets the full height of the window. A long
+ * address ends in "…". */
 
 :root[aether-urlbar-in-sidebar]:not([inFullscreen], [inDOMFullscreen]) {
   #navigator-toolbox {
@@ -240,8 +246,17 @@ panel {
     display: contents !important;
   }
 
+  #nav-bar > .titlebar-buttonbox-container {
+    order: 1;
+    margin-inline-start: auto;
+  }
+
+  #vertical-spacer {
+    display: none !important;
+  }
+
   #urlbar-container {
-    order: 99;
+    order: 2;
     flex: 1 0 100% !important;
     width: auto !important;
     min-width: 0 !important;
@@ -276,11 +291,19 @@ panel {
 
 /* ---- Compact mode (scripts/compact-mode.mjs) ----
  * The sidebar, or with top tabs the toolbar, slides out of the way; touching that edge of the
- * window or focusing the address bar brings it back as floating glass. It waits a moment
- * before hiding again, so a mouse that slips off doesn't make it flicker. */
+ * window or focusing the address bar brings it back as floating glass. It glides in without
+ * bouncing, and waits a moment before hiding again, so a mouse that slips off doesn't make it
+ * flicker. */
 
 #aether-edge {
   display: none;
+}
+
+:root {
+  --aether-reveal: transform 300ms cubic-bezier(0.22, 1, 0.36, 1), translate 300ms cubic-bezier(0.22, 1, 0.36, 1),
+                   opacity 200ms ease;
+  --aether-conceal: transform 240ms cubic-bezier(0.55, 0, 1, 0.45) 400ms, translate 240ms cubic-bezier(0.55, 0, 1, 0.45) 400ms,
+                    opacity 200ms ease 440ms;
 }
 
 :root[aether-compact]:not([inFullscreen], [inDOMFullscreen]) {
@@ -304,15 +327,15 @@ panel {
       z-index: 15;
       width: var(--aether-sidebar-width, 250px);
       border-radius: var(--aether-radius);
-      background: var(--aether-sheen), var(--aether-glass-strong) !important;
-      backdrop-filter: var(--aether-blur);
+      background: var(--aether-sheen), var(--aether-panel) !important;
       box-shadow: var(--aether-shadow), var(--aether-rim);
     }
 
     #sidebar-container,
     &[aether-urlbar-in-sidebar] #navigator-toolbox {
       transform: translateX(calc(-100% - 16px));
-      transition: transform 260ms ease-in 450ms;
+      opacity: 0;
+      transition: var(--aether-conceal);
     }
 
     &[aether-urlbar-in-sidebar] #navigator-toolbox {
@@ -320,11 +343,21 @@ panel {
       z-index: 16;
     }
 
+    /* Firefox draws the address bar in the top layer, out of reach of the toolbar's transform
+     * and opacity, so it slides and fades on its own. */
+    &[aether-urlbar-in-sidebar] #urlbar {
+      translate: calc(-1 * var(--aether-sidebar-width, 250px) - 24px) 0;
+      opacity: 0;
+      transition: var(--aether-conceal);
+    }
+
     &:has(#aether-edge:hover, #sidebar-container:hover, #navigator-toolbox:hover, #urlbar[focused]) {
       #sidebar-container,
-      &[aether-urlbar-in-sidebar] #navigator-toolbox {
+      &[aether-urlbar-in-sidebar] :is(#navigator-toolbox, #urlbar) {
         transform: none;
-        transition: transform var(--aether-spring-time) var(--aether-spring);
+        translate: none;
+        opacity: 1;
+        transition: var(--aether-reveal);
       }
     }
   }
@@ -342,16 +375,24 @@ panel {
       inset: 8px 8px auto 8px;
       z-index: 15;
       border-radius: var(--aether-radius);
-      background: var(--aether-sheen), var(--aether-glass-strong) !important;
-      backdrop-filter: var(--aether-blur);
+      background: var(--aether-sheen), var(--aether-panel) !important;
       box-shadow: var(--aether-shadow), var(--aether-rim);
       transform: translateY(calc(-100% - 16px));
-      transition: transform 260ms ease-in 450ms;
+      opacity: 0;
+      transition: var(--aether-conceal);
     }
 
-    &:has(#aether-edge:hover, #navigator-toolbox:hover, #urlbar[focused]) #navigator-toolbox {
+    #urlbar {
+      translate: 0 calc(-1 * var(--aether-toolbox-height, 80px) - 24px);
+      opacity: 0;
+      transition: var(--aether-conceal);
+    }
+
+    &:has(#aether-edge:hover, #navigator-toolbox:hover, #urlbar[focused]) :is(#navigator-toolbox, #urlbar) {
       transform: none;
-      transition: transform var(--aether-spring-time) var(--aether-spring);
+      translate: none;
+      opacity: 1;
+      transition: var(--aether-reveal);
     }
   }
 }
@@ -513,10 +554,18 @@ panel {
   font-size: 15px;
 }
 
-/* In the sidebar it gets its own row, under the address bar. */
-:root[aether-urlbar-in-sidebar] #aether-workspaces {
-  order: 100;
-  flex: 1 0 100%;
+/* In the sidebar it starts the row under the address bar, with the other buttons after it. */
+:root[aether-urlbar-in-sidebar] {
+  #aether-workspaces {
+    order: 3;
+    flex: 1 1 60px;
+    min-width: 0;
+  }
+
+  :is(#unified-extensions-button, #nav-bar-customization-target > [id$="-browser-action"],
+      #aether-split-view, #aether-compact-mode, #reset-pbm-toolbar-button, #PanelUI-button) {
+    order: 4;
+  }
 }
 
 /* ---- Split View and Compact Mode toolbar buttons ---- */
@@ -534,38 +583,118 @@ panel {
 }
 
 /* ---- The Liquid Glass setting (scripts/liquid-glass.mjs) ----
- * A stronger lens that splits colours at the edges, and the address bar becomes a glass panel
- * that the tab list scrolls under, so the glass has something real to bend. */
+ * Thicker, shinier glass: an edge that catches the light (bright top-left, a glint bottom-right,
+ * a hint of colour where it splits), light pooling inside, pill shapes that lift when touched,
+ * and a sidebar that floats as a slab of glass. */
 
 :root[aether-liquid] {
-  --aether-lens: blur(4px) saturate(190%) url("chrome://aether/content/styles/lens.svg#liquid");
+  --aether-liquid-fill: rgba(255, 255, 255, 0.34);
+  --aether-liquid-edge: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.3) 30%,
+                        color-mix(in srgb, var(--aether-accent) 25%, transparent) 55%,
+                        rgba(255, 255, 255, 0.12) 70%, rgba(255, 255, 255, 0.75));
+  --aether-liquid-light: inset 0 12px 16px -12px rgba(255, 255, 255, 0.9),
+                         inset 0 -8px 14px -10px rgba(255, 255, 255, 0.55);
+  --aether-liquid-drop: 0 10px 26px -8px rgba(20, 22, 60, 0.35), 0 2px 6px rgba(20, 22, 60, 0.12);
+  --aether-radius: 16px;
 }
 
-:root[aether-liquid][aether-urlbar-in-sidebar]:not([aether-compact], [inFullscreen], [inDOMFullscreen]) {
-  /* Frosted enough to read over the tabs passing under it, even without the blur. */
-  #navigator-toolbox {
-    background: var(--aether-sheen), var(--aether-glass-strong) !important;
-    backdrop-filter: var(--aether-lens);
-    box-shadow: var(--aether-rim), 0 6px 18px rgba(40, 44, 90, 0.1);
-    border-radius: 0 0 var(--aether-radius) var(--aether-radius);
+@media (prefers-color-scheme: dark) {
+  :root[aether-liquid] {
+    --aether-liquid-fill: rgba(255, 255, 255, 0.07);
+    --aether-liquid-edge: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.12) 30%,
+                          color-mix(in srgb, var(--aether-accent) 35%, transparent) 55%,
+                          rgba(255, 255, 255, 0.04) 70%, rgba(255, 255, 255, 0.35));
+    --aether-liquid-light: inset 0 12px 16px -12px rgba(255, 255, 255, 0.22),
+                           inset 0 -8px 14px -10px rgba(255, 255, 255, 0.12);
+    --aether-liquid-drop: 0 10px 26px -8px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
   }
+}
 
-  #sidebar-container {
-    padding-top: 0 !important;
-  }
-
+:root[aether-liquid] {
+  /* The pills: address bar, the open tab, workspaces. */
   .urlbar-background,
+  .tabbrowser-tab .tab-background[selected],
   .aether-ws[active] {
-    background-color: var(--aether-glass-solid) !important;
+    border: 1.5px solid transparent !important;
+    background: linear-gradient(var(--aether-liquid-fill), var(--aether-liquid-fill)) padding-box,
+                var(--aether-liquid-edge) border-box !important;
+    box-shadow: var(--aether-liquid-light), var(--aether-liquid-drop) !important;
   }
 
-  /* The tab list starts under the bar and scrolls beneath it. Pinned tabs don't scroll, so when
-   * there are some, the list starts below the bar as usual. */
-  #tabbrowser-tabs:not(:has(#pinned-tabs-container > .tabbrowser-tab)) #tabbrowser-arrowscrollbox::part(scrollbox) {
-    padding-top: var(--aether-toolbox-height, 80px);
+  .urlbar-background {
+    border-radius: 999px !important;
   }
 
-  #tabbrowser-tabs:has(#pinned-tabs-container > .tabbrowser-tab) {
-    padding-top: var(--aether-toolbox-height, 80px);
+  .tabbrowser-tab .tab-background {
+    border-radius: 14px !important;
+  }
+
+  #urlbar[breakout-extend] > .urlbar-background {
+    border-radius: 20px !important;
+    background: linear-gradient(var(--aether-panel), var(--aether-panel)) padding-box,
+                var(--aether-liquid-edge) border-box !important;
+  }
+
+  /* Touching a tab or a button lifts it, like a drop of glass. */
+  .tabbrowser-tab:hover > .tab-stack > .tab-background {
+    transform: scale(1.02);
+  }
+
+  .tabbrowser-tab:hover > .tab-stack > .tab-background:not([selected]) {
+    border: 1.5px solid transparent !important;
+    background: linear-gradient(var(--aether-liquid-fill), var(--aether-liquid-fill)) padding-box,
+                var(--aether-liquid-edge) border-box !important;
+    box-shadow: var(--aether-liquid-light) !important;
+  }
+
+  toolbar toolbarbutton:not([disabled]):hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack) {
+    border-radius: 999px !important;
+    box-shadow: var(--aether-liquid-light), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+    transform: scale(1.08);
+  }
+
+  /* Menus and popups. */
+  menupopup,
+  panel {
+    --panel-background: var(--aether-panel);
+    --panel-border-radius: 18px;
+  }
+
+  /* The page card gets the same edge. */
+  #tabbrowser-tabbox {
+    outline: none;
+    box-shadow: var(--aether-liquid-drop), 0 0 0 1px rgba(255, 255, 255, 0.14);
+  }
+}
+
+/* The sidebar floats as a slab of glass, with the toolbar riding on it. */
+:root[aether-liquid][aether-urlbar-in-sidebar]:not([aether-compact], [inFullscreen], [inDOMFullscreen]) {
+  #sidebar-container {
+    margin: 8px 0 8px 8px;
+    border: 1.5px solid transparent !important;
+    border-radius: 20px;
+    background: linear-gradient(var(--aether-liquid-fill), var(--aether-liquid-fill)) padding-box,
+                var(--aether-liquid-edge) border-box !important;
+    box-shadow: var(--aether-liquid-light), var(--aether-liquid-drop);
+  }
+
+  #navigator-toolbox {
+    inset: 8px auto auto 8px;
+  }
+
+  #tabbrowser-tabbox {
+    margin-inline-start: 8px !important;
+  }
+}
+
+/* In compact mode the floating panels get the edge too, over a nearly solid fill. */
+:root[aether-liquid][aether-compact]:not([inFullscreen], [inDOMFullscreen]) {
+  &[aether-vertical] #sidebar-container,
+  &:not([aether-vertical]) #navigator-toolbox {
+    border: 1.5px solid transparent !important;
+    border-radius: 20px;
+    background: linear-gradient(var(--aether-panel), var(--aether-panel)) padding-box,
+                var(--aether-liquid-edge) border-box !important;
+    box-shadow: var(--aether-liquid-light), var(--aether-liquid-drop);
   }
 }

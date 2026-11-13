@@ -5,7 +5,7 @@ const BASE = "chrome://aether/content/";
 const BROWSER_WINDOW = "chrome://browser/content/browser.xhtml";
 
 const STYLES = ["styles/palettes.css", "styles/aether.css"];
-const SCRIPTS = ["scripts/palette.mjs", "scripts/app-icon.mjs", "scripts/sidebar-urlbar.mjs", "scripts/tab-close.mjs", "scripts/new-tab-position.mjs", "scripts/compact-mode.mjs", "scripts/newtab.mjs", "scripts/peek.mjs", "scripts/workspaces.mjs", "scripts/split-view.mjs", "scripts/liquid-glass.mjs", "scripts/welcome.mjs"];
+const SCRIPTS = ["scripts/palette.mjs", "scripts/app-icon.mjs", "scripts/sidebar-urlbar.mjs", "scripts/tab-close.mjs", "scripts/new-tab-position.mjs", "scripts/compact-mode.mjs", "scripts/newtab.mjs", "scripts/peek.mjs", "scripts/workspaces.mjs", "scripts/split-view.mjs", "scripts/liquid-glass.mjs", "scripts/welcome.mjs", "scripts/toolbar.mjs"];
 
 function addStyles(win) {
   for (const sheet of STYLES) {

@@ -1106,7 +1106,7 @@ kbd {
 
 .glass-demo[liquid] .demo-bar {
   background: var(--sheen), color-mix(in srgb, var(--glass) 55%, transparent);
-  backdrop-filter: blur(3px) saturate(190%) url("chrome://aether/content/styles/lens.svg#liquid");
+  backdrop-filter: blur(3px) saturate(190%);
   box-shadow: var(--rim), 0 14px 32px -14px rgba(20, 22, 60, 0.5);
 }
 
@@ -1137,7 +1137,7 @@ kbd {
   height: 78px;
   border-radius: 50%;
   background: var(--sheen), color-mix(in srgb, var(--glass) 40%, transparent);
-  backdrop-filter: blur(2px) saturate(190%) url("chrome://aether/content/styles/lens.svg#liquid");
+  backdrop-filter: blur(2px) saturate(190%);
   box-shadow: var(--rim), 0 16px 32px -12px rgba(20, 22, 60, 0.5);
   opacity: 0;
   transform: scale(0.4);

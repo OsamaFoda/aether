@@ -6,6 +6,7 @@ const { NewTabUtils } = ChromeUtils.importESModule("resource://gre/modules/NewTa
 const { ExtensionStorageIDB } = ChromeUtils.importESModule("resource://gre/modules/ExtensionStorageIDB.sys.mjs");
 const { PlacesUtils } = ChromeUtils.importESModule("resource://gre/modules/PlacesUtils.sys.mjs");
 import { follow } from "../scripts/palette.mjs";
+import { iconURL } from "../scripts/app-icon.mjs";
 
 const PINNED = "aether.newtab.pinned"; // [{ url, title }]
 const HIDDEN = "aether.newtab.hidden"; // [url]
@@ -13,6 +14,8 @@ const SHORTCUTS = 8;
 const SIP = "sip@osama.local";
 
 const $ = id => document.getElementById(id);
+
+document.querySelector('link[rel="icon"]').href = iconURL(); // the app icon picked in the welcome
 const chromeWindow = () => window.browsingContext.topChromeWindow;
 
 function readList(pref) {
