@@ -1,9 +1,9 @@
 // Aether's welcome (opened once by scripts/welcome.mjs, and again from "Customize Aether…").
-// First run walks through light or dark, layout, glass, colours, protection (installs uBlock
+// First run walks through light or dark, colours, layout, glass, protection (installs uBlock
 // Origin from Mozilla's add-on site) and Sip (the built-in data saver, off unless chosen).
 // Opened as welcome.html#customize it shows only the look-and-feel steps. Every choice applies
-// at once. This page is part of the browser (chrome://), so it can set preferences, install
-// add-ons and write Sip's settings directly.
+// at once, and the illustration on the right follows it. This page is part of the browser
+// (chrome://), so it can set preferences, install add-ons and write Sip's settings directly.
 
 const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
 const { ExtensionPermissions } = ChromeUtils.importESModule("resource://gre/modules/ExtensionPermissions.sys.mjs");
@@ -21,7 +21,7 @@ const DARK = "ui.systemUsesDarkTheme";
 const $ = id => document.getElementById(id);
 const customizing = location.hash === "#customize";
 const flow = customizing
-  ? ["theme", "layout", "glass", "colors", "done"]
+  ? ["theme", "colors", "layout", "glass", "done"]
   : [...document.querySelectorAll(".step")].map(step => step.dataset.step);
 const chosen = { protection: false, sip: false };
 
@@ -29,12 +29,42 @@ follow(document, window);
 
 // ---- Moving between steps ----
 
+const stage = $("stage");
+const back = $("back");
 const dots = document.querySelector(".dots");
+const scenes = [...document.querySelectorAll(".scene")];
 dots.replaceChildren(...flow.map(() => document.createElement("span")));
+let current = null;
 
-function show(name) {
-  for (const step of document.querySelectorAll(".step")) step.hidden = step.dataset.step !== name;
-  [...dots.children].forEach((dot, i) => dot.toggleAttribute("current", flow[i] === name));
+// The leaving step slides and blurs away while the next one springs in from the other side;
+// the illustrations for the step crossfade on the right.
+function show(name, dir = "forward") {
+  const incoming = document.querySelector(`.step[data-step="${name}"]`);
+  if (incoming === current) return;
+  stage.dataset.dir = dir;
+  if (current) {
+    const leaving = current;
+    leaving.setAttribute("leaving", "");
+    setTimeout(() => {
+      leaving.removeAttribute("leaving");
+      if (leaving !== current) leaving.hidden = true;
+    }, 300);
+  }
+  incoming.removeAttribute("leaving");
+  incoming.hidden = false;
+  current = incoming;
+
+  const index = flow.indexOf(name);
+  [...dots.children].forEach((dot, i) => {
+    dot.toggleAttribute("current", i === index);
+    dot.toggleAttribute("seen", i < index);
+  });
+  back.hidden = index === 0 || name === "done";
+  for (const scene of scenes) scene.toggleAttribute("active", scene.dataset.scenes.split(" ").includes(name));
+  // The orbiting planets are SVG animations, which CSS can't pause: run them only while seen.
+  const orbits = document.querySelector(".orbits");
+  if (name === "hello" && !matchMedia("(prefers-reduced-motion: reduce)").matches) orbits.unpauseAnimations();
+  else orbits.pauseAnimations();
   if (name === "done") summarize();
 }
 
@@ -44,6 +74,15 @@ function next(from) {
 
 for (const button of document.querySelectorAll("[data-next]")) {
   button.addEventListener("click", () => next(button.closest(".step")));
+}
+
+back.addEventListener("click", () => show(flow[flow.indexOf(current.dataset.step) - 1], "back"));
+
+// A quick spring on whatever was just picked.
+function pop(element) {
+  element.classList.remove("pop");
+  void element.offsetWidth;
+  element.classList.add("pop");
 }
 
 // ---- Look and feel: each choice is a preference, applied as soon as it's picked ----
@@ -69,25 +108,36 @@ const CHOICES = {
 
 function refresh() {
   for (const group of document.querySelectorAll("[data-pref]")) {
-    const current = CHOICES[group.dataset.pref].get();
+    const value = CHOICES[group.dataset.pref].get();
     for (const button of group.querySelectorAll("[data-value]")) {
-      button.setAttribute("aria-pressed", button.dataset.value === current);
+      button.setAttribute("aria-pressed", button.dataset.value === value);
     }
   }
-  $("glass-demo").toggleAttribute("liquid", CHOICES.glass.get() === "liquid");
-  $("compact").checked = Services.prefs.getBoolPref("aether.compactMode", false);
+  const compact = Services.prefs.getBoolPref("aether.compactMode", false);
+  const liquid = CHOICES.glass.get() === "liquid";
+  $("compact").checked = compact;
+  $("glass-demo").toggleAttribute("liquid", liquid);
+  const preview = $("pv");
+  preview.dataset.layout = CHOICES.layout.get();
+  preview.toggleAttribute("compact", compact);
+  preview.toggleAttribute("liquid", liquid);
+  $("theme-badge").dataset.theme = CHOICES.theme.get();
 }
 
 for (const group of document.querySelectorAll("[data-pref]")) {
   for (const button of group.querySelectorAll("[data-value]")) {
     button.addEventListener("click", () => {
       CHOICES[group.dataset.pref].set(button.dataset.value);
+      pop(button);
       refresh();
     });
   }
 }
 
-$("compact").addEventListener("change", event => Services.prefs.setBoolPref("aether.compactMode", event.target.checked));
+$("compact").addEventListener("change", event => {
+  Services.prefs.setBoolPref("aether.compactMode", event.target.checked);
+  refresh();
+});
 
 // ---- Protection: uBlock Origin ----
 
@@ -123,8 +173,9 @@ $("protection-on").addEventListener("click", async () => {
   try {
     await installProtection();
     chosen.protection = true;
+    $("protect-scene").setAttribute("on", "");
     status.textContent = "Protection is on ✓";
-    setTimeout(() => next(step), 700);
+    setTimeout(() => next(step), 900);
   } catch (e) {
     console.error("Aether welcome: protection", e);
     status.className = "status error";
@@ -166,6 +217,7 @@ for (const [id, on] of [["sip-on", true], ["sip-off", false]]) {
     } catch (e) {
       console.error("Aether welcome: Sip", e);
     }
+    step.querySelectorAll("button").forEach(b => (b.disabled = false));
     next(step);
   });
 }
@@ -190,11 +242,54 @@ $("start").addEventListener("click", () => {
   else win.openTrustedLinkIn(NEW_TAB, "current");
 });
 
+// ---- Decoration ----
+
+// Headings appear word by word.
+function splitWords(heading) {
+  const words = heading.textContent.trim().split(/\s+/);
+  heading.replaceChildren(...words.flatMap((text, i) => {
+    const word = document.createElement("span");
+    word.className = "word";
+    word.style.setProperty("--w", i);
+    word.textContent = text;
+    return i ? [" ", word] : [word];
+  }));
+}
+
+function decorate() {
+  const colours = ["var(--p-glow-1)", "var(--p-glow-2)", "var(--p-glow-3)", "var(--p-accent)"];
+  const make = (className, style) => {
+    const element = document.createElement("i");
+    if (className) element.className = className;
+    element.style.cssText = style;
+    return element;
+  };
+
+  // Stars scattered evenly-but-not-quite around the orb.
+  document.querySelector(".stars").replaceChildren(...Array.from({ length: 18 }, (_, i) =>
+    make("", `--x: ${(i * 37 + 11) % 94 + 2}%; --y: ${(i * 53 + 7) % 90 + 4}%; --s: ${2 + (i % 3)}px; --d: ${(i * 0.37) % 3}s`)));
+
+  // Feed cards for the glass demo, twice over so the scroll loops without a seam.
+  const cards = Array.from({ length: 8 }, (_, i) => {
+    const card = make("card", `--c: ${colours[i % 4]}`);
+    card.append(document.createElement("b"), document.createElement("span"));
+    return card;
+  });
+  $("feed").replaceChildren(...cards, ...cards.map(card => card.cloneNode(true)));
+
+  // Sparkles for the end, a ring of them in the theme's colours.
+  document.querySelector(".sparks").replaceChildren(...Array.from({ length: 14 }, (_, i) =>
+    make(i % 2 ? "square" : "", `--a: ${i * (360 / 14)}deg; --r: ${150 + (i % 3) * 32}px; --c: ${colours[i % 4]}`)));
+}
+
 if (customizing) {
   document.title = "Customize Aether";
   document.querySelector('[data-step="done"] h1').textContent = "All done";
+  document.querySelector('[data-step="done"] .eyebrow').textContent = "Saved";
   $("start").textContent = "Done";
 }
 
+document.querySelectorAll(".step h1").forEach(splitWords);
+decorate();
 refresh();
 show(flow[0]);
