@@ -614,42 +614,81 @@ panel {
 }
 
 /* ---- The Liquid Glass setting (scripts/liquid-glass.mjs) ----
- * Thicker, shinier glass: an edge that catches the light (bright top-left, a glint bottom-right,
- * a hint of colour where it splits), light pooling inside, pill shapes that lift when touched,
- * and a sidebar that floats as a slab of glass. */
+ * See-through glass. The window itself can be see-through (mozilla.widget.use-argb-visuals in
+ * aether.cfg), so the desktop shows behind the sidebar and toolbar under a light tint of the
+ * theme's colours; where GNOME's Blur my Shell blurs Aether, it's frosted. On it: clear pills with
+ * a thin edge that catches the light (bright top-left, a glint bottom-right, a hint of colour),
+ * light pooling inside, and a sidebar that floats as a slab of glass. Pages stay solid, and so
+ * does anything floating over them (compact mode), as nothing can be seen through a page. */
 
 :root[aether-liquid] {
-  --aether-liquid-fill: rgba(255, 255, 255, 0.34);
-  --aether-liquid-edge: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.3) 30%,
-                        color-mix(in srgb, var(--aether-accent) 25%, transparent) 55%,
-                        rgba(255, 255, 255, 0.12) 70%, rgba(255, 255, 255, 0.75));
-  --aether-liquid-light: inset 0 12px 16px -12px rgba(255, 255, 255, 0.9),
-                         inset 0 -8px 14px -10px rgba(255, 255, 255, 0.55);
-  --aether-liquid-drop: 0 10px 26px -8px rgba(20, 22, 60, 0.35), 0 2px 6px rgba(20, 22, 60, 0.12);
+  --aether-liquid-tint: 45%;
+  --aether-liquid-fill: rgba(255, 255, 255, 0.24);
+  --aether-liquid-edge: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.25) 30%,
+                        color-mix(in srgb, var(--aether-accent) 45%, transparent) 55%,
+                        rgba(255, 255, 255, 0.1) 70%, rgba(255, 255, 255, 0.7));
+  --aether-liquid-light: inset 0 12px 16px -12px rgba(255, 255, 255, 0.75),
+                         inset 0 -8px 14px -10px rgba(255, 255, 255, 0.45);
+  --aether-liquid-drop: 0 10px 26px -8px rgba(20, 22, 60, 0.3), 0 2px 6px rgba(20, 22, 60, 0.1);
   --aether-radius: 16px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root[aether-liquid] {
+    --aether-liquid-tint: 55%;
     --aether-liquid-fill: rgba(255, 255, 255, 0.07);
-    --aether-liquid-edge: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.12) 30%,
-                          color-mix(in srgb, var(--aether-accent) 35%, transparent) 55%,
-                          rgba(255, 255, 255, 0.04) 70%, rgba(255, 255, 255, 0.35));
-    --aether-liquid-light: inset 0 12px 16px -12px rgba(255, 255, 255, 0.22),
-                           inset 0 -8px 14px -10px rgba(255, 255, 255, 0.12);
-    --aether-liquid-drop: 0 10px 26px -8px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
+    --aether-liquid-edge: linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.14) 30%,
+                          color-mix(in srgb, var(--aether-accent) 50%, transparent) 55%,
+                          rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.4));
+    --aether-liquid-light: inset 0 12px 16px -12px rgba(255, 255, 255, 0.25),
+                           inset 0 -8px 14px -10px rgba(255, 255, 255, 0.14);
+    --aether-liquid-drop: 0 10px 26px -8px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.25);
   }
 }
 
+/* The window: the theme's glows and sky, as a tint over the desktop. */
+:root[aether-liquid]:root {
+  background: radial-gradient(circle 260px at 0% 18%, color-mix(in srgb, var(--aether-glow-1) var(--aether-liquid-tint), transparent), transparent),
+              radial-gradient(circle 300px at 22% 55%, color-mix(in srgb, var(--aether-glow-2) var(--aether-liquid-tint), transparent), transparent),
+              radial-gradient(circle 280px at 2% 92%, color-mix(in srgb, var(--aether-glow-3) var(--aether-liquid-tint), transparent), transparent),
+              color-mix(in srgb, var(--aether-sky-2) var(--aether-liquid-tint), transparent) !important;
+}
+
 :root[aether-liquid] {
-  /* The pills: address bar, the open tab, workspaces. */
+  /* The pills (address bar, the open tab, a touched tab, the workspace): clear, with light
+   * pooling inside and the bright edge drawn as a ring around them. */
   .urlbar-background,
   .tabbrowser-tab .tab-background[selected],
+  .tabbrowser-tab:hover > .tab-stack > .tab-background,
   .aether-ws[active] {
-    border: 1.5px solid transparent !important;
-    background: linear-gradient(var(--aether-liquid-fill), var(--aether-liquid-fill)) padding-box,
-                var(--aether-liquid-edge) border-box !important;
+    border: none !important;
+    background: var(--aether-liquid-fill) !important;
     box-shadow: var(--aether-liquid-light), var(--aether-liquid-drop) !important;
+  }
+
+  .tabbrowser-tab:hover > .tab-stack > .tab-background:not([selected]) {
+    box-shadow: var(--aether-liquid-light) !important;
+  }
+
+  .tabbrowser-tab .tab-background,
+  .aether-ws {
+    position: relative;
+  }
+
+  /* (Firefox uses the address bar's ::before itself.) */
+  .urlbar-background::after,
+  .tabbrowser-tab .tab-background[selected]::before,
+  .tabbrowser-tab:hover > .tab-stack > .tab-background::before,
+  .aether-ws[active]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: var(--aether-liquid-edge);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
   }
 
   .urlbar-background {
@@ -660,22 +699,15 @@ panel {
     border-radius: 14px !important;
   }
 
+  /* While typing, the address bar and its suggestions sit over the page, so they're solid. */
   #urlbar[breakout-extend] > .urlbar-background {
     border-radius: 20px !important;
-    background: linear-gradient(var(--aether-panel), var(--aether-panel)) padding-box,
-                var(--aether-liquid-edge) border-box !important;
+    background: var(--aether-panel) !important;
   }
 
   /* Touching a tab or a button lifts it, like a drop of glass. */
   .tabbrowser-tab:hover > .tab-stack > .tab-background {
     transform: scale(1.02);
-  }
-
-  .tabbrowser-tab:hover > .tab-stack > .tab-background:not([selected]) {
-    border: 1.5px solid transparent !important;
-    background: linear-gradient(var(--aether-liquid-fill), var(--aether-liquid-fill)) padding-box,
-                var(--aether-liquid-edge) border-box !important;
-    box-shadow: var(--aether-liquid-light) !important;
   }
 
   toolbar toolbarbutton:not([disabled]):hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack) {
@@ -684,14 +716,12 @@ panel {
     transform: scale(1.08);
   }
 
-  /* Menus and popups. */
   menupopup,
   panel {
     --panel-background: var(--aether-panel);
     --panel-border-radius: 18px;
   }
 
-  /* The page card gets the same edge. */
   #tabbrowser-tabbox {
     outline: none;
     box-shadow: var(--aether-liquid-drop), 0 0 0 1px rgba(255, 255, 255, 0.14);
@@ -701,11 +731,10 @@ panel {
 /* The sidebar floats as a slab of glass, with the toolbar riding on it. */
 :root[aether-liquid][aether-urlbar-in-sidebar]:not([aether-compact], [inFullscreen], [inDOMFullscreen]) {
   #sidebar-container {
+    position: relative;
     margin: 8px 0 8px 8px;
-    border: 1.5px solid transparent !important;
     border-radius: 20px;
-    background: linear-gradient(var(--aether-liquid-fill), var(--aether-liquid-fill)) padding-box,
-                var(--aether-liquid-edge) border-box !important;
+    background: var(--aether-liquid-fill) !important;
     box-shadow: var(--aether-liquid-light), var(--aether-liquid-drop);
   }
 
@@ -718,14 +747,25 @@ panel {
   }
 }
 
-/* In compact mode the floating panels get the edge too, over a nearly solid fill. */
+/* The edge ring around the floating sidebar, docked or in compact mode. */
+:root[aether-liquid]:not([inFullscreen], [inDOMFullscreen]):is([aether-urlbar-in-sidebar], [aether-compact][aether-vertical]) #sidebar-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: var(--aether-liquid-edge);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* In compact mode the panels float over pages: solid, with the glass's light. */
 :root[aether-liquid][aether-compact]:not([inFullscreen], [inDOMFullscreen]) {
   &[aether-vertical] #sidebar-container,
   &:not([aether-vertical]) #navigator-toolbox {
-    border: 1.5px solid transparent !important;
     border-radius: 20px;
-    background: linear-gradient(var(--aether-panel), var(--aether-panel)) padding-box,
-                var(--aether-liquid-edge) border-box !important;
-    box-shadow: var(--aether-liquid-light), var(--aether-liquid-drop);
+    background: var(--aether-sheen), var(--aether-panel) !important;
+    box-shadow: var(--aether-liquid-light), var(--aether-liquid-drop), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
   }
 }

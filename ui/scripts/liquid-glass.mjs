@@ -1,7 +1,8 @@
-// The Liquid Glass setting: a stronger take on Aether's glass, closer to Apple's. Thicker, shinier
-// pills with edges that catch the light, and a sidebar that floats as a slab of glass. Off by
-// default; switch it in the welcome, Customize Aether, or "Liquid Glass" in the sidebar and toolbar
-// right-click menus. Remembered in the aether.liquidGlass pref. The look is in aether.css.
+// The Liquid Glass setting: see-through glass, closer to Apple's. The window lets the desktop
+// show through the sidebar and toolbar, with clear pills and edges that catch the light; the
+// other choice is Standard. Off by default; switch it in the welcome, Aether Settings, or "Liquid
+// Glass" in the sidebar and toolbar right-click menus. Remembered in the aether.liquidGlass pref.
+// The look is in aether.css.
 
 const PREF = "aether.liquidGlass";
 const MENUS = ["toolbar-context-menu", "sidebar-context-menu"];
