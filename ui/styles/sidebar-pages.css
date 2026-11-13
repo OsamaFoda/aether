@@ -1,0 +1,14 @@
+/* Firefox's own pages in a sidebar panel (bookmarks, history, passwords, synced tabs, the
+ * customize page), as scripts/sidebar-panels.mjs loads them: transparent, so the panel's glass
+ * card (aether.css, #sidebar-box) shows through, in the theme's colours. Most of their parts live
+ * in shadow trees a sheet can't reach, so this sets the colour variables those parts read. */
+
+:root {
+  --background-color-canvas: transparent !important;
+  --sidebar-background-color: transparent !important;
+  --sidebar-box-background: light-dark(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.06)) !important;
+  --focus-outline-color: var(--p-accent) !important;
+  --color-accent-primary: var(--p-accent) !important;
+  --link-color: var(--p-accent) !important;
+  background: transparent !important;
+}

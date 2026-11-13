@@ -426,7 +426,7 @@ panel {
       }
 
       #tabbrowser-tabbox {
-        margin-inline-start: 8px !important;
+        margin-inline-start: 0 !important;
       }
     }
   }
@@ -470,6 +470,48 @@ panel {
       }
     }
   }
+}
+
+/* ---- Sidebar panels (scripts/sidebar-panels.mjs): bookmarks, history, passwords, an add-on's,
+ * a chatbot. A card of glass beside the sidebar, lined up with it and the page, with the
+ * splitter (which resizes it) as the gap to the page. Web pages inside keep their own look,
+ * rounded to fit. ---- */
+
+#sidebar-box:not([hidden]) {
+  margin: 0 0 8px 8px !important;
+  padding: 0 !important;
+  z-index: auto !important; /* Firefox's would keep its glass from blurring the wallpaper */
+  border-radius: var(--aether-radius);
+  overflow: clip;
+  background: var(--aether-sheen), var(--aether-glass) !important;
+  box-shadow: var(--aether-rim), var(--aether-shadow);
+}
+
+:root[aether-urlbar-in-sidebar] #sidebar-box:not([hidden]) {
+  margin: 8px 0 8px 4px !important;
+}
+
+#sidebar-box #sidebar {
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+#sidebar-header {
+  background: transparent !important;
+  border: none !important;
+  color: var(--aether-text) !important;
+}
+
+#sidebar-splitter {
+  min-width: 0 !important;
+  width: 8px !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+#browser:has(#sidebar-box:not([hidden])) #tabbrowser-tabbox {
+  margin-inline-start: 0 !important;
 }
 
 /* ---- Peek (scripts/peek.mjs): a link in a floating glass window over the page ---- */
@@ -865,6 +907,32 @@ panel {
 }
 
 :root[aether-liquid][aether-wallpaper]:not([inFullscreen], [inDOMFullscreen]):is([aether-urlbar-in-sidebar], [aether-compact][aether-vertical]) #sidebar-container {
+  background: var(--aether-frost) !important;
+  backdrop-filter: blur(30px) saturate(170%);
+}
+
+/* Sidebar panels in Liquid Glass: the same slab as the sidebar, frosted over the wallpaper. */
+:root[aether-liquid]:not([inFullscreen], [inDOMFullscreen]) #sidebar-box:not([hidden]) {
+  position: relative;
+  border-radius: 20px;
+  background: var(--aether-liquid-fill) !important;
+  box-shadow: var(--aether-liquid-light), var(--aether-liquid-drop);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: var(--aether-liquid-edge);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+:root[aether-liquid][aether-wallpaper]:not([inFullscreen], [inDOMFullscreen]) #sidebar-box:not([hidden]) {
   background: var(--aether-frost) !important;
   backdrop-filter: blur(30px) saturate(170%);
 }
