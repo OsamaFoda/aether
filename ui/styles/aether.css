@@ -483,3 +483,17 @@ panel {
   order: 100;
   flex: 1 0 100%;
 }
+
+/* ---- Split View and Compact Mode toolbar buttons ---- */
+
+#aether-split-view {
+  list-style-image: url("chrome://browser/skin/split-view-left-16.svg");
+}
+
+#aether-compact-mode {
+  list-style-image: url("chrome://browser/skin/sidebar-collapsed.svg");
+}
+
+:is(#aether-split-view, #aether-compact-mode)[checked] > .toolbarbutton-icon {
+  background-color: color-mix(in srgb, var(--aether-accent) 28%, transparent);
+}

@@ -1,11 +1,33 @@
 // Compact mode: the sidebar (or, with top tabs, the toolbar) slides away so the page fills the
 // window, and springs back as floating glass when the mouse reaches that edge or the address
-// bar is focused. Toggled with Ctrl+Alt+C or "Compact Mode" in the sidebar and toolbar
-// right-click menus; remembered in the aether.compactMode pref. The look is in aether.css.
+// bar is focused. Toggled with Ctrl+Alt+C, its toolbar button, or "Compact Mode" in the sidebar
+// and toolbar right-click menus; remembered in the aether.compactMode pref. The look is in aether.css.
+
+const { CustomizableUI } = ChromeUtils.importESModule("moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs");
 
 const PREF = "aether.compactMode";
 const VERTICAL_TABS = "sidebar.verticalTabs";
 const MENUS = ["toolbar-context-menu", "sidebar-context-menu"];
+const WIDGET = "aether-compact-mode";
+
+// A toolbar button too, so it's easy to find.
+try {
+  CustomizableUI.createWidget({
+    id: WIDGET,
+    label: "Compact Mode",
+    tooltiptext: "Compact Mode: hide the sidebar until the mouse reaches the edge (Ctrl+Alt+C)",
+    defaultArea: CustomizableUI.AREA_NAVBAR,
+    overflows: false, // always visible, never tucked into the » menu
+    onCreated(node) {
+      node.setAttribute("overflows", "false");
+    },
+    onCommand() {
+      Services.prefs.setBoolPref(PREF, !Services.prefs.getBoolPref(PREF, false));
+    },
+  });
+} catch {
+  // Already created this session.
+}
 
 export function init(win) {
   const doc = win.document;
@@ -19,6 +41,7 @@ export function init(win) {
   const update = () => {
     root.toggleAttribute("aether-compact", Services.prefs.getBoolPref(PREF, false));
     root.toggleAttribute("aether-vertical", Services.prefs.getBoolPref(VERTICAL_TABS, false));
+    doc.getElementById(WIDGET)?.toggleAttribute("checked", Services.prefs.getBoolPref(PREF, false));
   };
   const toggle = () => Services.prefs.setBoolPref(PREF, !Services.prefs.getBoolPref(PREF, false));
 
