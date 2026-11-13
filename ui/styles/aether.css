@@ -625,6 +625,7 @@ notification-message {
 }
 
 .dialogBox {
+  background: var(--aether-sheen), var(--aether-menu) !important;
   border-radius: 16px !important;
   outline-color: var(--aether-edge) !important;
   box-shadow: var(--aether-shadow) !important;
@@ -805,7 +806,7 @@ notification-message {
 /* Whatever wallpaper was chosen, a private window's is the purple one. */
 :root[privatebrowsingmode="temporary"] {
   --aether-wallpaper: var(--p-wallpaper) !important;
-  --aether-wallpaper-frosted: var(--p-wallpaper) !important;
+  --aether-wallpaper-frosted: none !important;
   --p-wall-1: #d8b4fe;
   --p-wall-2: #a5b4fc;
   --p-sky-1: #ede4ff;
@@ -1036,10 +1037,23 @@ notification-message {
 
   /* Over the wallpaper, frosted like the sidebar. Firefox can't blur the tabs or the page beneath
    * it, so it shows a frosted copy of the wallpaper (scripts/wallpaper.mjs), lined up with it. */
-  &[aether-wallpaper] #urlbar[breakout-extend] > .urlbar-background {
+  &[aether-wallpaper] :is(#urlbar[breakout-extend] > .urlbar-background, .dialogBox) {
     background: linear-gradient(var(--aether-frost), var(--aether-frost)),
-                var(--aether-wallpaper-frosted, var(--aether-wallpaper)) center / cover no-repeat fixed,
+                var(--aether-wallpaper-frosted, none) center / cover no-repeat fixed,
                 var(--aether-panel) !important;
+  }
+
+  /* Menus and panels too, though as windows of their own they can't line it up with the
+   * wallpaper; whatever's inside lets it show through. */
+  &[aether-wallpaper] :is(menupopup, panel) {
+    --panel-background-color: transparent;
+    --arrowpanel-background: transparent;
+
+    &::part(content) {
+      background: linear-gradient(var(--aether-frost), var(--aether-frost)),
+                  var(--aether-wallpaper-frosted, none) center / cover no-repeat,
+                  var(--aether-menu) !important;
+    }
   }
 
   #urlbar {
@@ -1069,6 +1083,15 @@ notification-message {
     --arrowpanel-border-color: rgba(255, 255, 255, 0.45);
     --panel-border-radius: 18px !important;
     --arrowpanel-border-radius: 18px !important;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    menupopup,
+    panel {
+      --aether-menu: color-mix(in srgb, var(--p-sky-2), transparent 10%);
+      --panel-border-color: rgba(255, 255, 255, 0.16);
+      --arrowpanel-border-color: rgba(255, 255, 255, 0.16);
+    }
   }
 
   #tabbrowser-tabbox {

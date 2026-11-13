@@ -84,7 +84,10 @@ export function init(win) {
   win.addEventListener("DOMContentLoaded", event => {
     const page = event.target;
     const view = page.defaultView;
-    if (!page.documentURI?.startsWith("chrome://") || view?.browsingContext?.embedderElement?.id !== "sidebar") return;
+    // Also the boxes asking a question (a name for a workspace, a site's alert), which sit on the
+    // window's glass (aether.css, .dialogBox).
+    const dialog = page.documentURI === "chrome://global/content/commonDialog.xhtml";
+    if (!page.documentURI?.startsWith("chrome://") || (view?.browsingContext?.embedderElement?.id !== "sidebar" && !dialog)) return;
     for (const sheet of SHEETS) view.windowUtils.loadSheetUsingURIString(sheet, view.windowUtils.AUTHOR_SHEET);
     follow(page, view);
   }, true);
