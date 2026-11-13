@@ -12,9 +12,96 @@
     <section class="step glass" data-step="hello">
       <img class="orb" src="chrome://branding/content/about-logo.svg" alt="">
       <h1>Welcome to Aether</h1>
-      <p class="lead">A calm, fast browser that's light on your data. Two quick choices and you're set.</p>
+      <p class="lead">A calm, fast browser that's light on your data. Let's make it yours: it takes a minute.</p>
       <div class="actions">
         <button class="primary" data-next>Get started</button>
+      </div>
+    </section>
+
+    <section class="step glass wide" data-step="theme" hidden>
+      <h1>Light or dark?</h1>
+      <p class="lead">Aether can follow your computer, or stay one way.</p>
+      <div class="choices" data-pref="theme">
+        <button class="choice" data-value="system">
+          <span class="mock sidebar system"><i class="url"></i><i class="tab on"></i><i class="tab"></i><i class="tab"></i><i class="page"></i></span>
+          <b>System</b><small>Matches your computer</small>
+        </button>
+        <button class="choice" data-value="light">
+          <span class="mock sidebar light"><i class="url"></i><i class="tab on"></i><i class="tab"></i><i class="tab"></i><i class="page"></i></span>
+          <b>Light</b><small>Always light</small>
+        </button>
+        <button class="choice" data-value="dark">
+          <span class="mock sidebar dark"><i class="url"></i><i class="tab on"></i><i class="tab"></i><i class="tab"></i><i class="page"></i></span>
+          <b>Dark</b><small>Always dark</small>
+        </button>
+      </div>
+      <div class="actions">
+        <button class="primary" data-next>Continue</button>
+      </div>
+    </section>
+
+    <section class="step glass wide" data-step="layout" hidden>
+      <h1>Choose your layout</h1>
+      <p class="lead">Where your tabs and the address bar live.</p>
+      <div class="choices" data-pref="layout">
+        <button class="choice" data-value="sidebar">
+          <span class="mock sidebar"><i class="url"></i><i class="tab on"></i><i class="tab"></i><i class="tab"></i><i class="page"></i></span>
+          <b>Sidebar</b><small>Tabs down the side, address bar on top of them</small>
+        </button>
+        <button class="choice" data-value="top">
+          <span class="mock top"><i class="tab on"></i><i class="tab"></i><i class="tab"></i><i class="url"></i><i class="page"></i></span>
+          <b>Top bar</b><small>Classic tabs across the top</small>
+        </button>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="compact">
+        <span class="mock compact"><i class="page"></i><i class="edge"></i></span>
+        <span class="switch-text"><b>Compact mode</b><small>Hide the bars so pages fill the window. They slide back when your mouse reaches the edge. <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd></small></span>
+        <span class="toggle" aria-hidden="true"></span>
+      </label>
+      <div class="actions">
+        <button class="primary" data-next>Continue</button>
+      </div>
+    </section>
+
+    <section class="step glass wide" data-step="glass" hidden>
+      <h1>Pick your glass</h1>
+      <p class="lead">Aether's bars are made of glass. Watch the tabs slide underneath.</p>
+      <div class="glass-demo" id="glass-demo" aria-hidden="true">
+        <div class="demo-scroll">
+          <i style="--c: var(--p-glow-1)">Weather</i><i style="--c: var(--p-glow-2)">Music</i><i style="--c: var(--p-glow-3)">Photos</i>
+          <i style="--c: var(--p-accent)">News</i><i style="--c: var(--p-glow-1)">Maps</i><i style="--c: var(--p-glow-2)">Mail</i>
+          <i style="--c: var(--p-glow-1)">Weather</i><i style="--c: var(--p-glow-2)">Music</i><i style="--c: var(--p-glow-3)">Photos</i>
+          <i style="--c: var(--p-accent)">News</i><i style="--c: var(--p-glow-1)">Maps</i><i style="--c: var(--p-glow-2)">Mail</i>
+        </div>
+        <div class="demo-bar"><svg viewBox="0 0 16 16" width="14" height="14"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m11 11 3.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Search or enter address</span></div>
+      </div>
+      <div class="choices" data-pref="glass">
+        <button class="choice slim" data-value="glass">
+          <b>Glass</b><small>Clean frosted glass. Easy on older computers.</small>
+        </button>
+        <button class="choice slim" data-value="liquid">
+          <b>Liquid Glass</b><small>Thicker glass that bends light at its edges, with tabs sliding under the address bar.</small>
+        </button>
+      </div>
+      <div class="actions">
+        <button class="primary" data-next>Continue</button>
+      </div>
+    </section>
+
+    <section class="step glass wide" data-step="colors" hidden>
+      <h1>Pick your colours</h1>
+      <p class="lead">For the background glow, buttons and highlights.</p>
+      <div class="swatches" data-pref="palette">
+        <button class="swatch" data-value="nebula" aether-palette="nebula"><span></span>Nebula</button>
+        <button class="swatch" data-value="ocean" aether-palette="ocean"><span></span>Ocean</button>
+        <button class="swatch" data-value="aurora" aether-palette="aurora"><span></span>Aurora</button>
+        <button class="swatch" data-value="sunset" aether-palette="sunset"><span></span>Sunset</button>
+        <button class="swatch" data-value="rose" aether-palette="rose"><span></span>Rose</button>
+        <button class="swatch" data-value="graphite" aether-palette="graphite"><span></span>Graphite</button>
+      </div>
+      <div class="actions">
+        <button class="primary" data-next>Continue</button>
       </div>
     </section>
 
@@ -65,7 +152,7 @@
         <li><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd> puts two tabs side by side.</li>
         <li><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd> hides the sidebar until you need it.</li>
         <li>Workspaces sit under the address bar: <b>+</b> makes a new one.</li>
-        <li>Right-click the sidebar for <b>Liquid Glass</b>.</li>
+        <li>Right-click the sidebar and choose <b>Customize Aether…</b> to change any of this later.</li>
       </ul>
       <p class="summary" id="summary"></p>
       <div class="actions">
@@ -73,7 +160,7 @@
       </div>
     </section>
 
-    <nav class="dots" aria-hidden="true"><span></span><span></span><span></span><span></span></nav>
+    <nav class="dots" aria-hidden="true"></nav>
   </main>
 </body>
 </html>

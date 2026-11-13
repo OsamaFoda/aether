@@ -5,6 +5,7 @@
 const { NewTabUtils } = ChromeUtils.importESModule("resource://gre/modules/NewTabUtils.sys.mjs");
 const { ExtensionStorageIDB } = ChromeUtils.importESModule("resource://gre/modules/ExtensionStorageIDB.sys.mjs");
 const { PlacesUtils } = ChromeUtils.importESModule("resource://gre/modules/PlacesUtils.sys.mjs");
+import { follow } from "../scripts/palette.mjs";
 
 const PINNED = "aether.newtab.pinned"; // [{ url, title }]
 const HIDDEN = "aether.newtab.hidden"; // [url]
@@ -190,5 +191,6 @@ async function renderData() {
   $("data").hidden = false;
 }
 
+follow(document, window);
 renderShortcuts();
 renderData();

@@ -1,10 +1,13 @@
-/* Aether's new tab page: the same gradient and glass as the browser window (styles/aether.css). */
+/* Aether's new tab page: the same gradient and glass as the browser window (styles/aether.css),
+ * in the chosen colour theme (styles/palettes.css). */
+
+@import url("../styles/palettes.css");
 
 :root {
-  --sky-1: #dcf3fa;
-  --sky-2: #e3e5fc;
-  --sky-3: #eedff9;
-  --accent: #6366f1;
+  --sky-1: var(--p-sky-1);
+  --sky-2: var(--p-sky-2);
+  --sky-3: var(--p-sky-3);
+  --accent: var(--p-accent);
   --glass: rgba(255, 255, 255, 0.55);
   --glass-strong: rgba(255, 255, 255, 0.8);
   --edge: rgba(255, 255, 255, 0.85);
@@ -21,10 +24,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --sky-1: #0b1424;
-    --sky-2: #141433;
-    --sky-3: #1f1236;
-    --accent: #818cf8;
     --glass: rgba(28, 30, 52, 0.55);
     --glass-strong: rgba(40, 42, 70, 0.85);
     --edge: rgba(255, 255, 255, 0.1);

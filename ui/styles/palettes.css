@@ -1,0 +1,82 @@
+/* Aether's colour themes (the aether.palette pref, picked in the welcome's Colours step).
+ * Each sets the wallpaper (--p-sky-*), the glows behind the sidebar (--p-glow-*) and the accent
+ * (--p-accent), for light and dark. Nebula, the orb's own colours, is the default. Shared by the
+ * browser window (aether.css) and Aether's pages (newtab.css), and usable on any element, so a
+ * colour swatch can show its theme with aether-palette="…". */
+
+:root,
+[aether-palette="nebula"] {
+  --p-sky-1: #dcf3fa; --p-sky-2: #e3e5fc; --p-sky-3: #eedff9;
+  --p-glow-1: #a9e3f5; --p-glow-2: #c3c6fb; --p-glow-3: #e2c3f6;
+  --p-accent: #6366f1;
+}
+
+[aether-palette="ocean"] {
+  --p-sky-1: #d9f2fb; --p-sky-2: #dbe9fb; --p-sky-3: #d6f5f2;
+  --p-glow-1: #9fdcf3; --p-glow-2: #a9c8f7; --p-glow-3: #9fe6dc;
+  --p-accent: #0284c7;
+}
+
+[aether-palette="aurora"] {
+  --p-sky-1: #dcf7ea; --p-sky-2: #e2f5ef; --p-sky-3: #e9f7dc;
+  --p-glow-1: #a6e9c8; --p-glow-2: #b4e6d9; --p-glow-3: #cbeeb0;
+  --p-accent: #059669;
+}
+
+[aether-palette="sunset"] {
+  --p-sky-1: #fde8dc; --p-sky-2: #fbe3ea; --p-sky-3: #fdf0d9;
+  --p-glow-1: #f8c4a6; --p-glow-2: #f5b8cc; --p-glow-3: #f9dca0;
+  --p-accent: #ea580c;
+}
+
+[aether-palette="rose"] {
+  --p-sky-1: #fde2ec; --p-sky-2: #f6e0f3; --p-sky-3: #fde6e3;
+  --p-glow-1: #f7b3cc; --p-glow-2: #e9b5e4; --p-glow-3: #f8c0b8;
+  --p-accent: #db2777;
+}
+
+[aether-palette="graphite"] {
+  --p-sky-1: #eceef2; --p-sky-2: #e7e9ee; --p-sky-3: #f1f1f3;
+  --p-glow-1: #d4d8e0; --p-glow-2: #cfd3dc; --p-glow-3: #dddde3;
+  --p-accent: #475569;
+}
+
+/* Dark versions. These come later, so they win over the light ones above. */
+@media (prefers-color-scheme: dark) {
+  :root,
+  [aether-palette="nebula"] {
+    --p-sky-1: #0b1424; --p-sky-2: #141433; --p-sky-3: #1f1236;
+    --p-glow-1: #0e3550; --p-glow-2: #262a6b; --p-glow-3: #3e1d63;
+    --p-accent: #818cf8;
+  }
+
+  [aether-palette="ocean"] {
+    --p-sky-1: #071a26; --p-sky-2: #0a1830; --p-sky-3: #062126;
+    --p-glow-1: #0b3a52; --p-glow-2: #12305e; --p-glow-3: #0b4440;
+    --p-accent: #38bdf8;
+  }
+
+  [aether-palette="aurora"] {
+    --p-sky-1: #071d16; --p-sky-2: #0b1f1c; --p-sky-3: #121f0b;
+    --p-glow-1: #0d3d2c; --p-glow-2: #10403a; --p-glow-3: #24400f;
+    --p-accent: #34d399;
+  }
+
+  [aether-palette="sunset"] {
+    --p-sky-1: #231109; --p-sky-2: #241019; --p-sky-3: #241a08;
+    --p-glow-1: #4a200e; --p-glow-2: #4a1a30; --p-glow-3: #45300c;
+    --p-accent: #fb923c;
+  }
+
+  [aether-palette="rose"] {
+    --p-sky-1: #230a15; --p-sky-2: #1f0b1f; --p-sky-3: #240e0c;
+    --p-glow-1: #4d1430; --p-glow-2: #42173f; --p-glow-3: #4a1c17;
+    --p-accent: #f472b6;
+  }
+
+  [aether-palette="graphite"] {
+    --p-sky-1: #111215; --p-sky-2: #15161a; --p-sky-3: #18181b;
+    --p-glow-1: #26282e; --p-glow-2: #2a2c33; --p-glow-3: #2e2e33;
+    --p-accent: #94a3b8;
+  }
+}

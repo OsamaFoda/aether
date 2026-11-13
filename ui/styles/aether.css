@@ -1,16 +1,17 @@
-/* Aether's look: liquid glass over a soft gradient, in the colours of the Celestial Nebula Orb.
+/* Aether's look: liquid glass over a soft gradient, in the colours of the chosen theme
+ * (styles/palettes.css; Nebula, the orb's own colours, by default).
  * Applied to browser windows only (see boot.sys.mjs). Light and dark follow the system. */
 
 :root {
-  /* Wallpaper and accent, from the orb: cyan, indigo, violet. */
-  --aether-sky-1: #dcf3fa;
-  --aether-sky-2: #e3e5fc;
-  --aether-sky-3: #eedff9;
-  --aether-glow-1: #a9e3f5; /* cyan */
-  --aether-glow-2: #c3c6fb; /* indigo */
-  --aether-glow-3: #e2c3f6; /* violet */
-  --aether-accent: #6366f1;
-  --aether-accent-soft: rgba(99, 102, 241, 0.16);
+  /* Wallpaper, glows and accent come from the colour theme (styles/palettes.css). */
+  --aether-sky-1: var(--p-sky-1);
+  --aether-sky-2: var(--p-sky-2);
+  --aether-sky-3: var(--p-sky-3);
+  --aether-glow-1: var(--p-glow-1);
+  --aether-glow-2: var(--p-glow-2);
+  --aether-glow-3: var(--p-glow-3);
+  --aether-accent: var(--p-accent);
+  --aether-accent-soft: color-mix(in srgb, var(--p-accent) 18%, transparent);
 
   /* Glass: a translucent fill, a bright top edge, a soft shadow. */
   --aether-glass: rgba(255, 255, 255, 0.55);
@@ -41,14 +42,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --aether-sky-1: #0b1424;
-    --aether-sky-2: #141433;
-    --aether-sky-3: #1f1236;
-    --aether-glow-1: #0e3550;
-    --aether-glow-2: #262a6b;
-    --aether-glow-3: #3e1d63;
-    --aether-accent: #818cf8;
-    --aether-accent-soft: rgba(129, 140, 248, 0.22);
     --aether-glass: rgba(28, 30, 52, 0.5);
     --aether-glass-strong: rgba(34, 36, 62, 0.82);
     --aether-glass-hover: rgba(52, 55, 90, 0.6);

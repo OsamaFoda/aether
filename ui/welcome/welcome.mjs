@@ -1,11 +1,14 @@
-// Aether's first-run welcome (opened once by scripts/welcome.mjs): offers protection, which installs
-// uBlock Origin from Mozilla's add-on site, and Sip, the built-in data saver, which stays switched
-// off unless chosen. This page is part of the browser (chrome://), so it can install add-ons and
-// write Sip's settings directly.
+// Aether's welcome (opened once by scripts/welcome.mjs, and again from "Customize Aether…").
+// First run walks through light or dark, layout, glass, colours, protection (installs uBlock
+// Origin from Mozilla's add-on site) and Sip (the built-in data saver, off unless chosen).
+// Opened as welcome.html#customize it shows only the look-and-feel steps. Every choice applies
+// at once. This page is part of the browser (chrome://), so it can set preferences, install
+// add-ons and write Sip's settings directly.
 
 const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
 const { ExtensionPermissions } = ChromeUtils.importESModule("resource://gre/modules/ExtensionPermissions.sys.mjs");
 const { ExtensionStorageIDB } = ChromeUtils.importESModule("resource://gre/modules/ExtensionStorageIDB.sys.mjs");
+import { follow } from "../scripts/palette.mjs";
 
 const UBLOCK = "uBlock0@raymondhill.net";
 const SIP = "sip@osama.local";
@@ -13,27 +16,78 @@ const SIP = "sip@osama.local";
 const UBLOCK_URL = Services.prefs.getStringPref("aether.welcome.protectionURL",
   "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi");
 const NEW_TAB = "chrome://aether/content/newtab/newtab.html";
+const DARK = "ui.systemUsesDarkTheme";
 
 const $ = id => document.getElementById(id);
-const steps = [...document.querySelectorAll(".step")];
-const dots = [...document.querySelectorAll(".dots span")];
+const customizing = location.hash === "#customize";
+const flow = customizing
+  ? ["theme", "layout", "glass", "colors", "done"]
+  : [...document.querySelectorAll(".step")].map(step => step.dataset.step);
 const chosen = { protection: false, sip: false };
 
+follow(document, window);
+
+// ---- Moving between steps ----
+
+const dots = document.querySelector(".dots");
+dots.replaceChildren(...flow.map(() => document.createElement("span")));
+
 function show(name) {
-  steps.forEach((step, i) => {
-    step.hidden = step.dataset.step !== name;
-    dots[i].toggleAttribute("current", !step.hidden);
-  });
+  for (const step of document.querySelectorAll(".step")) step.hidden = step.dataset.step !== name;
+  [...dots.children].forEach((dot, i) => dot.toggleAttribute("current", flow[i] === name));
   if (name === "done") summarize();
 }
 
 function next(from) {
-  show(steps[steps.indexOf(from) + 1].dataset.step);
+  show(flow[flow.indexOf(from.dataset.step) + 1]);
 }
 
 for (const button of document.querySelectorAll("[data-next]")) {
   button.addEventListener("click", () => next(button.closest(".step")));
 }
+
+// ---- Look and feel: each choice is a preference, applied as soon as it's picked ----
+
+const CHOICES = {
+  theme: {
+    get: () => !Services.prefs.prefHasUserValue(DARK) ? "system" : Services.prefs.getIntPref(DARK) ? "dark" : "light",
+    set: value => value === "system" ? Services.prefs.clearUserPref(DARK) : Services.prefs.setIntPref(DARK, value === "dark" ? 1 : 0),
+  },
+  layout: {
+    get: () => Services.prefs.getBoolPref("sidebar.verticalTabs", true) ? "sidebar" : "top",
+    set: value => Services.prefs.setBoolPref("sidebar.verticalTabs", value === "sidebar"),
+  },
+  glass: {
+    get: () => Services.prefs.getBoolPref("aether.liquidGlass", false) ? "liquid" : "glass",
+    set: value => Services.prefs.setBoolPref("aether.liquidGlass", value === "liquid"),
+  },
+  palette: {
+    get: () => Services.prefs.getStringPref("aether.palette", "nebula"),
+    set: value => Services.prefs.setStringPref("aether.palette", value),
+  },
+};
+
+function refresh() {
+  for (const group of document.querySelectorAll("[data-pref]")) {
+    const current = CHOICES[group.dataset.pref].get();
+    for (const button of group.querySelectorAll("[data-value]")) {
+      button.setAttribute("aria-pressed", button.dataset.value === current);
+    }
+  }
+  $("glass-demo").toggleAttribute("liquid", CHOICES.glass.get() === "liquid");
+  $("compact").checked = Services.prefs.getBoolPref("aether.compactMode", false);
+}
+
+for (const group of document.querySelectorAll("[data-pref]")) {
+  for (const button of group.querySelectorAll("[data-value]")) {
+    button.addEventListener("click", () => {
+      CHOICES[group.dataset.pref].set(button.dataset.value);
+      refresh();
+    });
+  }
+}
+
+$("compact").addEventListener("change", event => Services.prefs.setBoolPref("aether.compactMode", event.target.checked));
 
 // ---- Protection: uBlock Origin ----
 
@@ -119,6 +173,10 @@ for (const [id, on] of [["sip-on", true], ["sip-off", false]]) {
 // ---- Done ----
 
 function summarize() {
+  if (customizing) {
+    $("summary").textContent = "Your changes are saved.";
+    return;
+  }
   const on = [chosen.protection && "Protection", chosen.sip && "Sip"].filter(Boolean);
   $("summary").textContent = on.length
     ? `${on.join(" and ")} ${on.length > 1 ? "are" : "is"} on. You can change this any time in Add-ons (Ctrl+Shift+A).`
@@ -126,7 +184,17 @@ function summarize() {
 }
 
 $("start").addEventListener("click", () => {
-  window.browsingContext.topChromeWindow.openTrustedLinkIn(NEW_TAB, "current");
+  const win = window.browsingContext.topChromeWindow;
+  const tab = win.gBrowser.getTabForBrowser(window.browsingContext.embedderElement);
+  if (customizing && tab && win.gBrowser.tabs.length > 1) win.gBrowser.removeTab(tab);
+  else win.openTrustedLinkIn(NEW_TAB, "current");
 });
 
-show("hello");
+if (customizing) {
+  document.title = "Customize Aether";
+  document.querySelector('[data-step="done"] h1').textContent = "All done";
+  $("start").textContent = "Done";
+}
+
+refresh();
+show(flow[0]);
