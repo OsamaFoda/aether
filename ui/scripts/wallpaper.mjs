@@ -62,6 +62,7 @@ export function init(win) {
   const dark = win.matchMedia("(prefers-color-scheme: dark)");
 
   let latest = 0;
+  let frostedFor = null; // the picture the frosted copy is of
   const update = async () => {
     const asked = ++latest;
     const on = Services.prefs.getBoolPref("aether.liquidGlass", false) &&
@@ -71,14 +72,19 @@ export function init(win) {
     if (!url) root.removeAttribute("aether-wallpaper");
     else root.setAttribute("aether-wallpaper", url === "theme" ? "theme" : "picture");
     const css = url => `url("${url.replaceAll('"', "%22")}")`;
-    root.style.removeProperty("--aether-wallpaper-frosted");
     if (url && url !== "theme") {
       root.style.setProperty("--aether-wallpaper", css(url));
       // A frosted copy, for glass floating where nothing behind it blurs (the address bar's list).
-      const frosted = await thumbnail(url, win, { frosted: true });
-      if (asked === latest && frosted) root.style.setProperty("--aether-wallpaper-frosted", css(frosted));
+      if (url !== frostedFor) {
+        frostedFor = url;
+        root.style.removeProperty("--aether-wallpaper-frosted");
+        const frosted = await thumbnail(url, win, { frosted: true });
+        if (frostedFor === url && frosted) root.style.setProperty("--aether-wallpaper-frosted", css(frosted));
+      }
     } else {
+      frostedFor = null;
       root.style.removeProperty("--aether-wallpaper");
+      root.style.removeProperty("--aether-wallpaper-frosted");
     }
   };
 
