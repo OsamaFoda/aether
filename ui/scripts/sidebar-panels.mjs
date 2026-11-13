@@ -8,6 +8,12 @@ import { follow } from "./palette.mjs";
 const SHEETS = ["chrome://aether/content/styles/palettes.css", "chrome://aether/content/styles/sidebar-pages.css"];
 
 export function init(win) {
+  // The tools at the bottom of the sidebar show in full (styles/sidebar-tools.css).
+  const main = win.document.querySelector("sidebar-main");
+  main?.updateComplete.then(() => main.shadowRoot.append(Object.assign(
+    win.document.createElementNS("http://www.w3.org/1999/xhtml", "link"),
+    { rel: "stylesheet", href: "chrome://aether/content/styles/sidebar-tools.css" })));
+
   // The sidebar's pages load in this process, so their events reach the window.
   win.addEventListener("DOMContentLoaded", event => {
     const page = event.target;

@@ -1,0 +1,12 @@
+/* The tools at the bottom of the sidebar (inside Firefox's sidebar-main; scripts/sidebar-panels.mjs
+ * adds this): all of them, in as many rows as they need, instead of some tucked behind a »
+ * button that jumped around as the sidebar changed size. */
+
+.buttons-wrapper {
+  height: auto !important;
+  max-height: none !important;
+}
+
+.more-tools-button {
+  display: none !important;
+}
