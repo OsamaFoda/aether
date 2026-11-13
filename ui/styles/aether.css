@@ -294,9 +294,10 @@ panel {
     margin: 4px 0 !important;
   }
 
-  /* The sidebar already lists every tab. */
+  /* The sidebar already lists every tab, and the bookmarks bar has no room there. */
   #firefox-view-button,
-  #alltabs-button {
+  #alltabs-button,
+  #PersonalToolbar {
     display: none !important;
   }
 
@@ -321,10 +322,11 @@ panel {
 }
 
 /* ---- Compact mode (scripts/compact-mode.mjs) ----
- * The sidebar, or with top tabs the toolbar, slides out of the way; touching that edge of the
- * window or focusing the address bar brings it back as floating glass. It glides in without
- * bouncing, and waits a moment before hiding again, so a mouse that slips off doesn't make it
- * flicker. */
+ * The sidebar, or with top tabs the toolbar, slides out of the way and the page takes the whole
+ * window. Touching that edge of the window or focusing the address bar brings it back, pushing
+ * the page aside as it comes, so it looks just as it does outside compact mode (the two move
+ * together and never overlap). It glides without bouncing, and waits a moment before hiding
+ * again, so a mouse that slips off doesn't make it flicker. */
 
 #aether-edge {
   display: none;
@@ -332,9 +334,15 @@ panel {
 
 :root {
   --aether-reveal: transform 300ms cubic-bezier(0.22, 1, 0.36, 1), translate 300ms cubic-bezier(0.22, 1, 0.36, 1),
-                   opacity 200ms ease;
+                   margin 300ms cubic-bezier(0.22, 1, 0.36, 1), opacity 200ms ease;
   --aether-conceal: transform 240ms cubic-bezier(0.55, 0, 1, 0.45) 400ms, translate 240ms cubic-bezier(0.55, 0, 1, 0.45) 400ms,
-                    opacity 200ms ease 440ms;
+                    margin 240ms cubic-bezier(0.55, 0, 1, 0.45) 400ms, opacity 200ms ease 440ms;
+  /* How far the bars sit from the window's edges: flush, or floating in Liquid Glass. */
+  --aether-compact-inset: 0px;
+}
+
+:root[aether-liquid] {
+  --aether-compact-inset: 8px;
 }
 
 :root[aether-compact]:not([inFullscreen], [inDOMFullscreen]) {
@@ -348,29 +356,27 @@ panel {
 
   #tabbrowser-tabbox {
     margin: 8px !important;
+    transition: var(--aether-conceal);
   }
 
-  /* Vertical tabs: the sidebar (and the address bar riding on it) floats in from the left. */
+  /* Vertical tabs: the sidebar (and the address bar riding on it) comes in from the left. */
   &[aether-vertical] {
     #sidebar-container {
       position: fixed !important;
-      inset: 8px auto 8px 8px;
+      inset: var(--aether-compact-inset) auto var(--aether-compact-inset) var(--aether-compact-inset);
       z-index: 15;
       width: var(--aether-sidebar-width, 250px);
-      border-radius: var(--aether-radius);
-      background: var(--aether-sheen), var(--aether-panel) !important;
-      box-shadow: var(--aether-shadow), var(--aether-rim);
     }
 
     #sidebar-container,
     &[aether-urlbar-in-sidebar] #navigator-toolbox {
-      transform: translateX(calc(-100% - 16px));
+      transform: translateX(calc(-100% - var(--aether-compact-inset) - 8px));
       opacity: 0;
       transition: var(--aether-conceal);
     }
 
     &[aether-urlbar-in-sidebar] #navigator-toolbox {
-      inset: 8px auto auto 8px;
+      inset: var(--aether-compact-inset) auto auto var(--aether-compact-inset);
       z-index: 16;
     }
 
@@ -390,10 +396,15 @@ panel {
         opacity: 1;
         transition: var(--aether-reveal);
       }
+
+      #tabbrowser-tabbox {
+        margin-inline-start: calc(var(--aether-sidebar-width, 250px) + 2 * var(--aether-compact-inset)) !important;
+        transition: var(--aether-reveal);
+      }
     }
   }
 
-  /* Top tabs: the toolbar drops down from the top edge. */
+  /* Top tabs: the toolbar comes down from the top edge. */
   &:not([aether-vertical]) {
     #aether-edge {
       inset: 0 0 auto 0;
@@ -403,12 +414,9 @@ panel {
 
     #navigator-toolbox {
       position: fixed !important;
-      inset: 8px 8px auto 8px;
+      inset: 0 0 auto 0;
       z-index: 15;
-      border-radius: var(--aether-radius);
-      background: var(--aether-sheen), var(--aether-panel) !important;
-      box-shadow: var(--aether-shadow), var(--aether-rim);
-      transform: translateY(calc(-100% - 16px));
+      transform: translateY(calc(-100% - 8px));
       opacity: 0;
       transition: var(--aether-conceal);
     }
@@ -419,11 +427,18 @@ panel {
       transition: var(--aether-conceal);
     }
 
-    &:has(#aether-edge:hover, #navigator-toolbox:hover, #urlbar[focused]) :is(#navigator-toolbox, #urlbar) {
-      transform: none;
-      translate: none;
-      opacity: 1;
-      transition: var(--aether-reveal);
+    &:has(#aether-edge:hover, #navigator-toolbox:hover, #urlbar[focused]) {
+      :is(#navigator-toolbox, #urlbar) {
+        transform: none;
+        translate: none;
+        opacity: 1;
+        transition: var(--aether-reveal);
+      }
+
+      #tabbrowser-tabbox {
+        margin-top: var(--aether-toolbox-height, 80px) !important;
+        transition: var(--aether-reveal);
+      }
     }
   }
 }
@@ -760,12 +775,9 @@ panel {
   pointer-events: none;
 }
 
-/* In compact mode the panels float over pages: solid, with the glass's light. */
-:root[aether-liquid][aether-compact]:not([inFullscreen], [inDOMFullscreen]) {
-  &[aether-vertical] #sidebar-container,
-  &:not([aether-vertical]) #navigator-toolbox {
-    border-radius: 20px;
-    background: var(--aether-sheen), var(--aether-panel) !important;
-    box-shadow: var(--aether-liquid-light), var(--aether-liquid-drop), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-  }
+/* In compact mode the sidebar comes in as the same slab of glass. */
+:root[aether-liquid][aether-compact][aether-vertical]:not([inFullscreen], [inDOMFullscreen]) #sidebar-container {
+  border-radius: 20px;
+  background: var(--aether-liquid-fill) !important;
+  box-shadow: var(--aether-liquid-light), var(--aether-liquid-drop);
 }

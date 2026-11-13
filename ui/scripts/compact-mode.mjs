@@ -1,5 +1,5 @@
 // Compact mode: the sidebar (or, with top tabs, the toolbar) slides away so the page fills the
-// window, and springs back as floating glass when the mouse reaches that edge or the address
+// window, and comes back, pushing the page aside, when the mouse reaches that edge or the address
 // bar is focused. Toggled with Ctrl+Alt+C, its toolbar button, or "Compact Mode" in the sidebar
 // and toolbar right-click menus; remembered in the aether.compactMode pref. The look is in aether.css.
 //
