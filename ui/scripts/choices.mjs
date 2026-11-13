@@ -37,6 +37,10 @@ export const CHOICES = {
     get: chosenIcon,
     set: value => Services.prefs.setStringPref("aether.appIcon", value),
   },
+  newTabs: {
+    get: () => Services.prefs.getStringPref("aether.newTabsAt", "top") === "bottom" ? "bottom" : "top",
+    set: value => Services.prefs.setStringPref("aether.newTabsAt", value),
+  },
 };
 
 // "on", "off", or "missing" (not installed).

@@ -555,6 +555,24 @@ panel {
   display: none !important;
 }
 
+/* ---- New tabs at the top (scripts/new-tab-position.mjs): the "+ New Tab" button goes there
+ * too, above the tabs and below any pinned ones. Firefox has two: one after the last tab, and
+ * one kept at the bottom of the sidebar while the list is too long to show whole. ---- */
+
+:root[aether-newtabs-top] {
+  #tabbrowser-arrowscrollbox-periphery {
+    order: -1;
+  }
+
+  #vertical-tabs-newtab-button {
+    order: 1;
+  }
+
+  #tabbrowser-arrowscrollbox {
+    order: 2;
+  }
+}
+
 /* ---- Tab groups (Firefox's own): rounded labels to match the tabs ---- */
 
 .tab-group-label {
