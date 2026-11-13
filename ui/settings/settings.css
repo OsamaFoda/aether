@@ -53,7 +53,6 @@ html {
   border-radius: 14px;
   background: var(--sheen), var(--glass-strong);
   box-shadow: var(--rim), var(--shadow);
-  backdrop-filter: blur(16px) saturate(170%);
 }
 
 .jump a {
@@ -73,9 +72,10 @@ html {
   scroll-margin-top: 72px;
   padding: 22px 24px 24px;
   border-radius: 22px;
-  background: var(--sheen), var(--glass);
+  /* No backdrop blur: with the sky drifting behind, every card would be blurred again on every
+   * frame of a scroll. A firmer tint looks much the same. */
+  background: var(--sheen), color-mix(in srgb, var(--glass-strong) 70%, var(--glass));
   box-shadow: var(--rim), var(--shadow);
-  backdrop-filter: blur(20px) saturate(170%);
   display: grid;
   gap: 12px;
   animation: rise 700ms var(--spring) both;
