@@ -363,18 +363,22 @@ panel {
 
   /* Vertical tabs: the sidebar (and the address bar riding on it) comes in from the left. */
   &[aether-vertical] {
+    /* No z-index (it never overlaps the page now), and no fade: either would keep its glass
+     * from blurring the wallpaper behind it. */
     #sidebar-container {
       position: fixed !important;
       inset: var(--aether-compact-inset) auto var(--aether-compact-inset) var(--aether-compact-inset);
-      z-index: 15;
       width: var(--aether-sidebar-width, 250px);
     }
 
     #sidebar-container,
     &[aether-urlbar-in-sidebar] #navigator-toolbox {
       transform: translateX(calc(-100% - var(--aether-compact-inset) - 8px));
-      opacity: 0;
       transition: var(--aether-conceal);
+    }
+
+    &[aether-urlbar-in-sidebar] #navigator-toolbox {
+      opacity: 0;
     }
 
     &[aether-urlbar-in-sidebar] #navigator-toolbox {
