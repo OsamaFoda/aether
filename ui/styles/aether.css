@@ -811,3 +811,37 @@ panel {
   background: var(--aether-liquid-fill) !important;
   box-shadow: var(--aether-liquid-light), var(--aether-liquid-drop);
 }
+
+/* ---- Liquid Glass over a wallpaper (scripts/wallpaper.mjs) ----
+ * The wallpaper is #browser's background, since Firefox blurs only what shares the browser area
+ * with the glass; that makes the sidebar real frosted glass over it. The window gets it too, for
+ * the strip a top toolbar sits on, where nothing blurs, so that toolbar is frosted with a tint. */
+
+:root[aether-liquid][aether-wallpaper] {
+  --aether-frost: rgba(255, 255, 255, 0.34);
+  --aether-frost-solid: rgba(255, 255, 255, 0.62);
+
+  &:root {
+    background: var(--aether-wallpaper) center / cover no-repeat fixed, var(--aether-sky-2) !important;
+  }
+
+  #browser {
+    background: var(--aether-wallpaper) center / cover no-repeat fixed !important;
+  }
+
+  &:not([aether-urlbar-in-sidebar]) #navigator-toolbox {
+    background: var(--aether-frost-solid) !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[aether-liquid][aether-wallpaper] {
+    --aether-frost: rgba(14, 16, 30, 0.4);
+    --aether-frost-solid: rgba(14, 16, 30, 0.68);
+  }
+}
+
+:root[aether-liquid][aether-wallpaper]:not([inFullscreen], [inDOMFullscreen]):is([aether-urlbar-in-sidebar], [aether-compact][aether-vertical]) #sidebar-container {
+  background: var(--aether-frost) !important;
+  backdrop-filter: blur(30px) saturate(170%);
+}

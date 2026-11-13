@@ -117,6 +117,72 @@ html {
   margin-top: 0;
 }
 
+#liquid-background {
+  display: grid;
+  gap: 12px;
+}
+
+/* Wallpapers: the desktop's, your Wallpapers folder, and "Choose a picture…". */
+.wallpapers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: 10px;
+}
+
+.wallpaper {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  appearance: none;
+  background: var(--glass);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 300ms var(--spring);
+}
+
+.wallpaper:hover {
+  transform: scale(1.04);
+}
+
+.wallpaper[aria-pressed="true"] {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.wallpaper img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wallpaper span {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 12px;
+}
+
+.wallpaper.choose {
+  display: grid;
+  place-items: center;
+}
+
+#liquid-background[hidden],
+.wallpapers[hidden] {
+  display: none;
+}
+
 .budget:disabled {
   opacity: 0.5;
 }

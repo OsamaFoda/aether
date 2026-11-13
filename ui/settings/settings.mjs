@@ -3,8 +3,10 @@
 // Add-ons page) by reading the preferences and add-ons again whenever they change.
 
 const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
+const { FileUtils } = ChromeUtils.importESModule("resource://gre/modules/FileUtils.sys.mjs");
 import { follow } from "../scripts/palette.mjs";
 import { iconURL } from "../scripts/app-icon.mjs";
+import { desktopWallpaper } from "../scripts/wallpaper.mjs";
 import { CHOICES, protectionState, setProtection, sipState, setSip, readSipBudget, saveSipBudget } from "../scripts/choices.mjs";
 
 const $ = id => document.getElementById(id);
@@ -31,6 +33,12 @@ function refresh() {
     box.checked = Services.prefs.getBoolPref(box.dataset.boolPref, box.dataset.default === "true");
   }
   $("bookmarks-bar").checked = Services.prefs.getStringPref(BOOKMARKS_BAR, "never") !== "never";
+  $("liquid-background").hidden = CHOICES.glass.get() !== "liquid";
+  $("wallpapers").hidden = CHOICES.background.get() !== "wallpaper";
+  const wallpaper = Services.prefs.getStringPref(WALLPAPER, "");
+  for (const tile of $("wallpapers").querySelectorAll("[data-url]")) {
+    tile.setAttribute("aria-pressed", tile.dataset.url === wallpaper);
+  }
   const icon = iconURL();
   $("logo").src = icon;
   document.querySelector('link[rel="icon"]').href = icon;
@@ -59,6 +67,66 @@ $("bookmarks-bar").addEventListener("change", event => {
 
 const WATCHED = ["aether.", "sidebar.verticalTabs", "ui.systemUsesDarkTheme", BOOKMARKS_BAR];
 for (const pref of WATCHED) Services.prefs.addObserver(pref, refresh);
+
+// ---- Wallpapers ----
+
+const WALLPAPER = "aether.wallpaper"; // a file: URL; empty for the desktop's own
+const FOLDER = PathUtils.join(Services.dirsvc.get("Home", Ci.nsIFile).path, "Pictures", "Wallpapers");
+const PICTURE = /\.(jpe?g|png|webp|avif|gif)$/i;
+
+function wallpaperTile(url, image, label) {
+  const tile = document.createElement("button");
+  tile.className = "wallpaper";
+  tile.dataset.url = url;
+  tile.title = label || decodeURIComponent(url.split("/").pop());
+  if (image) {
+    const img = document.createElement("img");
+    img.src = image;
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.alt = "";
+    tile.append(img);
+  }
+  if (label) tile.append(Object.assign(document.createElement("span"), { textContent: label }));
+  tile.addEventListener("click", () => {
+    Services.prefs.setStringPref(WALLPAPER, url);
+    pop(tile);
+  });
+  return tile;
+}
+
+async function choosePicture() {
+  const picker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+  picker.init(window.browsingContext, "Choose a wallpaper", Ci.nsIFilePicker.modeOpen);
+  picker.appendFilters(Ci.nsIFilePicker.filterImages);
+  if (await IOUtils.exists(FOLDER)) picker.displayDirectory = new FileUtils.File(FOLDER);
+  const result = await new Promise(resolve => picker.open(resolve));
+  if (result === Ci.nsIFilePicker.returnOK) {
+    Services.prefs.setStringPref(WALLPAPER, PathUtils.toFileURI(picker.file.path));
+    buildWallpapers();
+  }
+}
+
+// The desktop's own wallpaper, then the pictures in ~/Pictures/Wallpapers, then one chosen from
+// elsewhere, then "Choose a picture…".
+async function buildWallpapers() {
+  const tiles = [wallpaperTile("", await desktopWallpaper(matchMedia("(prefers-color-scheme: dark)").matches), "Your desktop")];
+  const urls = [];
+  try {
+    for (const path of (await IOUtils.getChildren(FOLDER)).sort()) {
+      if (PICTURE.test(path)) urls.push(PathUtils.toFileURI(path));
+    }
+  } catch {
+    // No Wallpapers folder.
+  }
+  const chosen = Services.prefs.getStringPref(WALLPAPER, "");
+  if (chosen && !urls.includes(chosen)) urls.unshift(chosen);
+  tiles.push(...urls.map(url => wallpaperTile(url, url)));
+  const choose = Object.assign(document.createElement("button"), { className: "wallpaper choose", textContent: "Choose a picture…" });
+  choose.addEventListener("click", choosePicture);
+  $("wallpapers").replaceChildren(...tiles, choose);
+  refresh();
+}
 
 // ---- Add-ons: protection and Sip ----
 
@@ -125,3 +193,4 @@ window.addEventListener("unload", () => {
 
 refresh();
 refreshAddons();
+buildWallpapers();
