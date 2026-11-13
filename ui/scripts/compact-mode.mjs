@@ -125,7 +125,7 @@ export function init(win) {
   // for as long as it keeps focus if they were out, and hidden if they were hidden.
   const urlbar = doc.getElementById("urlbar");
   let justFocused = 0;
-  let returning = false, returned = 0, wasOut = false;
+  let returning = false, returned = 0, wasOut = false, listWasOpen = false;
   win.addEventListener("deactivate", () => {
     returning = true;
     const bars = doc.getElementById(vertical() ? "sidebar-container" : "navigator-toolbox").getBoundingClientRect();
@@ -144,12 +144,15 @@ export function init(win) {
     win.clearTimeout(justFocused);
     if (returning) {
       urlbar.toggleAttribute("aether-just-focused", wasOut); // until it loses focus
+      // Losing focus closed its list of suggestions, so open it again.
+      if (wasOut && listWasOpen) win.setTimeout(() => win.gURLBar.startQuery(), 0);
       return;
     }
     urlbar.setAttribute("aether-just-focused", "");
     justFocused = win.setTimeout(() => urlbar.removeAttribute("aether-just-focused"), 2500);
   }, true);
   urlbar?.addEventListener("blur", () => {
+    listWasOpen = win.gURLBar.view.isOpen; // before Firefox closes it
     win.clearTimeout(justFocused);
     urlbar.removeAttribute("aether-just-focused");
   }, true);
