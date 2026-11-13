@@ -10,3 +10,5 @@ override chrome://branding/content/icon128.png chrome://aether/content/icons/aur
 override chrome://branding/content/about-logo.svg chrome://aether/content/icons/aurora.svg
 override chrome://branding/content/about-logo.png chrome://aether/content/icons/aurora.svg
 override chrome://branding/content/about-logo@2x.png chrome://aether/content/icons/aurora.svg
+override chrome://branding/content/about-logo-private.png chrome://aether/content/icons/aurora.svg
+override chrome://branding/content/about-logo-private@2x.png chrome://aether/content/icons/aurora.svg
