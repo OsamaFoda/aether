@@ -547,6 +547,14 @@ panel {
   }
 }
 
+/* ---- Bookmarks bar: when it has no bookmarks, there's nothing to show (Firefox would fill it
+ * with a "For quick access, place your bookmarks here…" message). Only once Firefox has filled
+ * it in ([initialized]), which it does while the bar is showing, so it still notices new ones. */
+
+#PersonalToolbar[initialized]:has(> #personal-toolbar-empty:not([hidden])) {
+  display: none !important;
+}
+
 /* ---- Tab groups (Firefox's own): rounded labels to match the tabs ---- */
 
 .tab-group-label {
