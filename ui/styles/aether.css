@@ -15,10 +15,11 @@
 
   /* Glass: a translucent fill, a bright top edge, a soft shadow. */
   --aether-glass: rgba(255, 255, 255, 0.55);
-  --aether-glass-strong: rgba(255, 255, 255, 0.78);
+  --aether-glass-strong: color-mix(in srgb, var(--p-sky-2) 30%, rgba(255, 255, 255, 0.8));
   --aether-glass-hover: rgba(255, 255, 255, 0.7);
   --aether-glass-solid: rgba(250, 250, 255, 0.95);
-  --aether-panel: rgb(246, 247, 253); /* floating over web pages, where nothing blurs */
+  --aether-panel: color-mix(in srgb, var(--p-sky-2) 30%, rgb(250, 250, 253)); /* over web pages, where nothing blurs */
+  --aether-menu: color-mix(in srgb, var(--p-sky-2) 35%, rgba(255, 255, 255, 0.88)); /* menus and popups */
   --aether-edge: rgba(255, 255, 255, 0.85);
   --aether-line: rgba(30, 34, 70, 0.08);
   --aether-shadow: 0 8px 28px rgba(40, 44, 90, 0.12), 0 1px 3px rgba(40, 44, 90, 0.08);
@@ -45,10 +46,11 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --aether-glass: rgba(28, 30, 52, 0.5);
-    --aether-glass-strong: rgba(34, 36, 62, 0.82);
+    --aether-glass-strong: color-mix(in srgb, var(--p-sky-2), transparent 18%);
     --aether-glass-hover: rgba(52, 55, 90, 0.6);
     --aether-glass-solid: rgba(30, 32, 56, 0.95);
-    --aether-panel: rgb(27, 29, 50);
+    --aether-panel: color-mix(in srgb, var(--p-sky-2), white 4%);
+    --aether-menu: color-mix(in srgb, var(--p-sky-2), transparent 8%);
     --aether-edge: rgba(255, 255, 255, 0.1);
     --aether-line: rgba(255, 255, 255, 0.07);
     --aether-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -241,9 +243,10 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
 
 menupopup,
 panel {
-  --panel-background: var(--aether-glass-strong);
+  --panel-background: var(--aether-menu);
+  --arrowpanel-background: var(--aether-menu);
   --panel-border-color: var(--aether-edge);
-  --panel-border-radius: var(--aether-radius);
+  --panel-border-radius: var(--aether-radius) !important;
   --panel-shadow: var(--aether-shadow);
 }
 
@@ -838,10 +841,17 @@ panel {
     transform: scale(1.08);
   }
 
+  /* Menus and popups: clearer glass, a bright edge, rounder. (They're separate small windows, so
+   * nothing behind them can blur.) */
   menupopup,
   panel {
-    --panel-background: var(--aether-panel);
-    --panel-border-radius: 18px;
+    --aether-menu: color-mix(in srgb, var(--p-sky-2) 40%, rgba(255, 255, 255, 0.7));
+    --panel-background: var(--aether-menu);
+    --arrowpanel-background: var(--aether-menu);
+    --panel-border-color: rgba(255, 255, 255, 0.45);
+    --arrowpanel-border-color: rgba(255, 255, 255, 0.45);
+    --panel-border-radius: 18px !important;
+    --arrowpanel-border-radius: 18px !important;
   }
 
   #tabbrowser-tabbox {
@@ -951,4 +961,12 @@ panel {
 :root[aether-liquid][aether-wallpaper]:not([inFullscreen], [inDOMFullscreen]) #sidebar-box:not([hidden]) {
   background: var(--aether-frost) !important;
   backdrop-filter: blur(30px) saturate(170%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[aether-liquid] :is(menupopup, panel) {
+    --aether-menu: color-mix(in srgb, var(--p-sky-2), transparent 25%);
+    --panel-border-color: rgba(255, 255, 255, 0.16);
+    --arrowpanel-border-color: rgba(255, 255, 255, 0.16);
+  }
 }
