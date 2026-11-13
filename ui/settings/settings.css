@@ -1,0 +1,148 @@
+/* Aether Settings: the welcome's look (colours, glass, buttons, choice cards, switches), laid
+ * out as one scrolling page of cards. */
+
+@import url("../welcome/welcome.css");
+
+html {
+  scroll-behavior: smooth;
+}
+
+.settings {
+  --enter-x: 0px;
+  position: relative;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 48px 24px 96px;
+  display: grid;
+  gap: 18px;
+}
+
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.masthead .logo {
+  width: 76px;
+  height: 76px;
+  filter: drop-shadow(0 14px 22px rgba(10, 12, 40, 0.35));
+  animation: orb-in 900ms var(--spring) both;
+}
+
+.masthead h1 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.masthead .lead {
+  margin: 4px 0 0;
+  font-size: 16px;
+}
+
+/* Jump to a section; it stays at the top while scrolling. */
+.jump {
+  position: sticky;
+  top: 12px;
+  z-index: 2;
+  justify-self: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 5px;
+  border-radius: 14px;
+  background: var(--sheen), var(--glass-strong);
+  box-shadow: var(--rim), var(--shadow);
+  backdrop-filter: blur(16px) saturate(170%);
+}
+
+.jump a {
+  padding: 6px 12px;
+  border-radius: 9px;
+  color: var(--text);
+  font-size: 14px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.jump a:hover {
+  background-color: var(--glass);
+}
+
+.card {
+  scroll-margin-top: 72px;
+  padding: 22px 24px 24px;
+  border-radius: 22px;
+  background: var(--sheen), var(--glass);
+  box-shadow: var(--rim), var(--shadow);
+  backdrop-filter: blur(20px) saturate(170%);
+  display: grid;
+  gap: 12px;
+  animation: rise 700ms var(--spring) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+.card:nth-of-type(2) { --i: 1; }
+.card:nth-of-type(3) { --i: 2; }
+.card:nth-of-type(4) { --i: 3; }
+.card:nth-of-type(5) { --i: 4; }
+.card:nth-of-type(6) { --i: 5; }
+.card:nth-of-type(7) { --i: 6; }
+
+.card h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.card h3 {
+  margin: 10px 0 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: var(--fade);
+}
+
+.hint {
+  margin: -6px 0 0;
+  color: var(--muted);
+}
+
+.card .switch {
+  margin-top: 0;
+}
+
+.card .actions {
+  margin-top: 0;
+}
+
+.budget:disabled {
+  opacity: 0.5;
+}
+
+.keys {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.keys li {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.keys li > span {
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .keys li {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}

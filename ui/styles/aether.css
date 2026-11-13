@@ -170,6 +170,19 @@ sidebar-main,
   transform: scale(0.97);
 }
 
+/* While the selected tab's glass slides over from the last tab (scripts/tab-lens.mjs), it glides
+ * beneath the names of the tabs in between, so the tab mustn't clip it and sits under the rest
+ * (within the tab list, which keeps that layering to itself). */
+#tabbrowser-tabs {
+  isolation: isolate;
+}
+
+.tabbrowser-tab[aether-lens-moving] {
+  position: relative;
+  z-index: -1;
+  overflow: visible !important;
+}
+
 /* ---- Address bar: a glass pill ---- */
 
 .urlbar-background {

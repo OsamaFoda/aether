@@ -1,0 +1,117 @@
+// Aether Settings (about:aether): every Aether setting on one page. Each applies the moment it's
+// changed, and the page follows changes made elsewhere (the right-click menus, shortcuts, the
+// Add-ons page) by reading the preferences and add-ons again whenever they change.
+
+const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
+import { follow } from "../scripts/palette.mjs";
+import { iconURL } from "../scripts/app-icon.mjs";
+import { CHOICES, protectionState, setProtection, sipState, setSip, readSipBudget, saveSipBudget } from "../scripts/choices.mjs";
+
+const $ = id => document.getElementById(id);
+follow(document, window);
+
+// A quick spring on whatever was just picked.
+function pop(element) {
+  element.classList.remove("pop");
+  void element.offsetWidth;
+  element.classList.add("pop");
+}
+
+// ---- Preferences ----
+
+function refresh() {
+  for (const group of document.querySelectorAll("[data-pref]")) {
+    const value = CHOICES[group.dataset.pref].get();
+    for (const button of group.querySelectorAll("[data-value]")) {
+      button.setAttribute("aria-pressed", button.dataset.value === value);
+    }
+  }
+  for (const box of document.querySelectorAll("[data-bool-pref]")) {
+    box.checked = Services.prefs.getBoolPref(box.dataset.boolPref, box.dataset.default === "true");
+  }
+  const icon = iconURL();
+  $("logo").src = icon;
+  document.querySelector('link[rel="icon"]').href = icon;
+}
+
+for (const group of document.querySelectorAll("[data-pref]")) {
+  for (const button of group.querySelectorAll("[data-value]")) {
+    button.addEventListener("click", () => {
+      CHOICES[group.dataset.pref].set(button.dataset.value);
+      pop(button);
+    });
+  }
+}
+
+for (const box of document.querySelectorAll("[data-bool-pref]")) {
+  box.addEventListener("change", () => Services.prefs.setBoolPref(box.dataset.boolPref, box.checked));
+}
+
+const WATCHED = ["aether.", "sidebar.verticalTabs", "ui.systemUsesDarkTheme"];
+for (const pref of WATCHED) Services.prefs.addObserver(pref, refresh);
+
+// ---- Add-ons: protection and Sip ----
+
+async function refreshAddons() {
+  $("protection-on").checked = (await protectionState()) === "on";
+  const sip = await sipState();
+  $("sip-on").checked = sip === "on";
+  $("sip-on").disabled = sip === "missing";
+  $("sip-budget").disabled = sip !== "on";
+  if (sip === "on") {
+    const { budgetGB, resetDay } = await readSipBudget();
+    if (budgetGB && document.activeElement !== $("budget-gb")) $("budget-gb").value = budgetGB;
+    if (resetDay && document.activeElement !== $("reset-day")) $("reset-day").value = resetDay;
+  }
+}
+
+$("protection-on").addEventListener("change", async event => {
+  const box = event.target;
+  const status = $("protection-status");
+  box.disabled = true;
+  status.hidden = false;
+  status.className = "status";
+  status.textContent = box.checked ? "Turning on…" : "Turning off…";
+  try {
+    await setProtection(box.checked);
+    status.textContent = box.checked ? "Protection is on ✓" : "Protection is off";
+  } catch (e) {
+    console.error("Aether settings: protection", e);
+    status.className = "status error";
+    status.textContent = "Couldn't download it. Check your connection and try again.";
+  }
+  box.disabled = false;
+  refreshAddons();
+});
+
+$("sip-on").addEventListener("change", async event => {
+  event.target.disabled = true;
+  try {
+    await setSip(event.target.checked);
+    if (event.target.checked) await saveSipBudget(Number($("budget-gb").value), $("reset-day").value);
+  } catch (e) {
+    console.error("Aether settings: Sip", e);
+  }
+  refreshAddons();
+});
+
+for (const id of ["budget-gb", "reset-day"]) {
+  $(id).addEventListener("change", () => saveSipBudget(Number($("budget-gb").value), $("reset-day").value));
+}
+
+const addonListener = { onEnabled: refreshAddons, onDisabled: refreshAddons, onInstalled: refreshAddons, onUninstalled: refreshAddons };
+AddonManager.addAddonListener(addonListener);
+
+// ---- More ----
+
+for (const button of document.querySelectorAll("[data-open]")) {
+  button.addEventListener("click", () => window.browsingContext.topChromeWindow.openTrustedLinkIn(button.dataset.open, "tab"));
+}
+
+window.addEventListener("unload", () => {
+  for (const pref of WATCHED) Services.prefs.removeObserver(pref, refresh);
+  AddonManager.removeAddonListener(addonListener);
+}, { once: true });
+
+refresh();
+refreshAddons();

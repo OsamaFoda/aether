@@ -1,30 +1,17 @@
-// Aether's welcome (opened once by scripts/welcome.mjs, and again from "Customize Aether…").
-// First run walks through light or dark, colours, the app icon, layout, glass, protection
-// (installs uBlock Origin from Mozilla's add-on site) and Sip (the built-in data saver, off
-// unless chosen).
-// Opened as welcome.html#customize it shows only the look-and-feel steps. Every choice applies
-// at once, and the illustration on the right follows it. This page is part of the browser
-// (chrome://), so it can set preferences, install add-ons and write Sip's settings directly.
+// Aether's welcome (opened once, on first run, by scripts/welcome.mjs). It walks through light or
+// dark, colours, the app icon, layout, glass, protection (installs uBlock Origin from Mozilla's
+// add-on site) and Sip (the built-in data saver, off unless chosen). Every choice applies at
+// once, and the illustration on the right follows it. All of it can be changed later in Aether
+// Settings (about:aether, settings/), which shares the choices in scripts/choices.mjs.
 
-const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
-const { ExtensionPermissions } = ChromeUtils.importESModule("resource://gre/modules/ExtensionPermissions.sys.mjs");
-const { ExtensionStorageIDB } = ChromeUtils.importESModule("resource://gre/modules/ExtensionStorageIDB.sys.mjs");
 import { follow } from "../scripts/palette.mjs";
-import { chosen as chosenIcon, iconURL } from "../scripts/app-icon.mjs";
+import { iconURL } from "../scripts/app-icon.mjs";
+import { CHOICES, setProtection, setSip, saveSipBudget } from "../scripts/choices.mjs";
 
-const UBLOCK = "uBlock0@raymondhill.net";
-const SIP = "sip@osama.local";
-// Where protection comes from; a pref so tests can point it at a local file.
-const UBLOCK_URL = Services.prefs.getStringPref("aether.welcome.protectionURL",
-  "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi");
 const NEW_TAB = "chrome://aether/content/newtab/newtab.html";
-const DARK = "ui.systemUsesDarkTheme";
 
 const $ = id => document.getElementById(id);
-const customizing = location.hash === "#customize";
-const flow = customizing
-  ? ["theme", "colors", "icon", "layout", "glass", "done"]
-  : [...document.querySelectorAll(".step")].map(step => step.dataset.step);
+const flow = [...document.querySelectorAll(".step")].map(step => step.dataset.step);
 const chosen = { protection: false, sip: false };
 
 follow(document, window);
@@ -87,30 +74,7 @@ function pop(element) {
   element.classList.add("pop");
 }
 
-// ---- Look and feel: each choice is a preference, applied as soon as it's picked ----
-
-const CHOICES = {
-  theme: {
-    get: () => !Services.prefs.prefHasUserValue(DARK) ? "system" : Services.prefs.getIntPref(DARK) ? "dark" : "light",
-    set: value => value === "system" ? Services.prefs.clearUserPref(DARK) : Services.prefs.setIntPref(DARK, value === "dark" ? 1 : 0),
-  },
-  layout: {
-    get: () => Services.prefs.getBoolPref("sidebar.verticalTabs", true) ? "sidebar" : "top",
-    set: value => Services.prefs.setBoolPref("sidebar.verticalTabs", value === "sidebar"),
-  },
-  glass: {
-    get: () => Services.prefs.getBoolPref("aether.liquidGlass", false) ? "liquid" : "glass",
-    set: value => Services.prefs.setBoolPref("aether.liquidGlass", value === "liquid"),
-  },
-  palette: {
-    get: () => Services.prefs.getStringPref("aether.palette", "nebula"),
-    set: value => Services.prefs.setStringPref("aether.palette", value),
-  },
-  icon: {
-    get: chosenIcon,
-    set: value => Services.prefs.setStringPref("aether.appIcon", value),
-  },
-};
+// ---- Look and feel ----
 
 function refresh() {
   for (const group of document.querySelectorAll("[data-pref]")) {
@@ -154,27 +118,6 @@ $("compact").addEventListener("change", event => {
 
 // ---- Protection: uBlock Origin ----
 
-async function installProtection() {
-  const existing = await AddonManager.getAddonByID(UBLOCK);
-  if (existing) {
-    if (!existing.isActive) await existing.enable();
-    return;
-  }
-  const install = await AddonManager.getInstallForURL(UBLOCK_URL, { telemetryInfo: { source: "aether-welcome" } });
-  const addon = await new Promise((resolve, reject) => {
-    install.addListener({
-      onInstallEnded: (_, installed) => resolve(installed),
-      onDownloadFailed: () => reject(new Error("download")),
-      onInstallFailed: () => reject(new Error("install")),
-      onDownloadCancelled: () => reject(new Error("cancelled")),
-      onInstallCancelled: () => reject(new Error("cancelled")),
-    });
-    install.install();
-  });
-  // Protect private windows too.
-  await ExtensionPermissions.add(addon.id, { permissions: ["internal:privateBrowsingAllowed"], origins: [] });
-}
-
 $("protection-on").addEventListener("click", async () => {
   const step = $("protection-on").closest(".step");
   const status = $("protection-status");
@@ -184,7 +127,7 @@ $("protection-on").addEventListener("click", async () => {
   status.className = "status";
   status.textContent = "Downloading and turning on…";
   try {
-    await installProtection();
+    await setProtection(true);
     chosen.protection = true;
     $("protect-scene").setAttribute("on", "");
     status.textContent = "Protection is on ✓";
@@ -199,33 +142,13 @@ $("protection-on").addEventListener("click", async () => {
 
 // ---- Sip ----
 
-async function setSip(on) {
-  const addon = await AddonManager.getAddonByID(SIP);
-  if (!addon) return;
-  if (on && !addon.isActive) await addon.enable();
-  if (!on && addon.isActive) await addon.disable();
-  if (on) await saveBudget();
-}
-
-// Writes the budget into Sip's own settings, as its options page would, and tells Sip.
-async function saveBudget() {
-  const budgetGB = Number($("budget-gb").value);
-  const resetDay = Math.min(Math.max(Math.round(Number($("reset-day").value)) || 1, 1), 31);
-  if (!(budgetGB > 0)) return;
-  const policy = WebExtensionPolicy.getByID(SIP);
-  if (!policy) return;
-  const db = await ExtensionStorageIDB.open(ExtensionStorageIDB.getStoragePrincipal(policy.extension));
-  const { settings = {} } = await db.get(["settings"]);
-  const changes = await db.set({ settings: { ...settings, budgetGB, resetDay } });
-  if (changes) ExtensionStorageIDB.notifyListeners(SIP, changes);
-}
-
 for (const [id, on] of [["sip-on", true], ["sip-off", false]]) {
   $(id).addEventListener("click", async () => {
     const step = $(id).closest(".step");
     step.querySelectorAll("button").forEach(b => (b.disabled = true));
     try {
       await setSip(on);
+      if (on) await saveSipBudget(Number($("budget-gb").value), $("reset-day").value);
       chosen.sip = on;
     } catch (e) {
       console.error("Aether welcome: Sip", e);
@@ -238,21 +161,14 @@ for (const [id, on] of [["sip-on", true], ["sip-off", false]]) {
 // ---- Done ----
 
 function summarize() {
-  if (customizing) {
-    $("summary").textContent = "Your changes are saved.";
-    return;
-  }
   const on = [chosen.protection && "Protection", chosen.sip && "Sip"].filter(Boolean);
   $("summary").textContent = on.length
-    ? `${on.join(" and ")} ${on.length > 1 ? "are" : "is"} on. You can change this any time in Add-ons (Ctrl+Shift+A).`
-    : "You can turn on protection or Sip any time in Add-ons (Ctrl+Shift+A).";
+    ? `${on.join(" and ")} ${on.length > 1 ? "are" : "is"} on. You can change this any time in Aether Settings.`
+    : "You can turn on protection or Sip any time in Aether Settings.";
 }
 
 $("start").addEventListener("click", () => {
-  const win = window.browsingContext.topChromeWindow;
-  const tab = win.gBrowser.getTabForBrowser(window.browsingContext.embedderElement);
-  if (customizing && tab && win.gBrowser.tabs.length > 1) win.gBrowser.removeTab(tab);
-  else win.openTrustedLinkIn(NEW_TAB, "current");
+  window.browsingContext.topChromeWindow.openTrustedLinkIn(NEW_TAB, "current");
 });
 
 // ---- Decoration ----
@@ -293,13 +209,6 @@ function decorate() {
   // Sparkles for the end, a ring of them in the theme's colours.
   document.querySelector(".sparks").replaceChildren(...Array.from({ length: 14 }, (_, i) =>
     make(i % 2 ? "square" : "", `--a: ${i * (360 / 14)}deg; --r: ${150 + (i % 3) * 32}px; --c: ${colours[i % 4]}`)));
-}
-
-if (customizing) {
-  document.title = "Customize Aether";
-  document.querySelector('[data-step="done"] h1').textContent = "All done";
-  document.querySelector('[data-step="done"] .eyebrow').textContent = "Saved";
-  $("start").textContent = "Done";
 }
 
 document.querySelectorAll(".step h1").forEach(splitWords);

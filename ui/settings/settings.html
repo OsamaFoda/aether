@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Aether Settings</title>
+  <link rel="icon" href="chrome://aether/content/icons/aurora.svg">
+  <link rel="stylesheet" href="chrome://aether/content/settings/settings.css">
+  <script type="module" src="chrome://aether/content/settings/settings.mjs"></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><b></b><b></b><b></b></div>
+
+  <div class="settings">
+    <header class="masthead">
+      <img class="logo" id="logo" src="chrome://aether/content/icons/aurora.svg" alt="">
+      <div>
+        <h1>Aether Settings</h1>
+        <p class="lead">Everything that makes Aether yours, in one place. Changes apply right away.</p>
+      </div>
+    </header>
+
+    <nav class="jump">
+      <a href="#layout">Layout</a><a href="#look">Look</a><a href="#icon">Icon</a>
+      <a href="#protection">Protection</a><a href="#sip">Data saver</a><a href="#shortcuts">Shortcuts</a>
+    </nav>
+
+    <section class="card" id="layout">
+      <h2>Layout</h2>
+      <p class="hint">Where your tabs and the address bar live.</p>
+      <div class="choices" data-pref="layout">
+        <button class="choice" data-value="sidebar">
+          <span class="mock sidebar"><i class="url"></i><i class="tab on"></i><i class="tab"></i><i class="tab"></i><i class="page"></i></span>
+          <b>Sidebar</b><small>Tabs down the side</small>
+        </button>
+        <button class="choice" data-value="top">
+          <span class="mock top"><i class="tab on"></i><i class="tab"></i><i class="tab"></i><i class="url"></i><i class="page"></i></span>
+          <b>Top bar</b><small>Classic tabs on top</small>
+        </button>
+      </div>
+      <label class="switch">
+        <input type="checkbox" data-bool-pref="aether.compactMode">
+        <span class="switch-text"><b>Compact mode</b><small>Hide the bars so pages fill the window. They slide back when your mouse reaches the edge. <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>C</kbd></small></span>
+        <span class="toggle" aria-hidden="true"></span>
+      </label>
+      <label class="switch">
+        <input type="checkbox" data-bool-pref="aether.tabLens" data-default="true">
+        <span class="switch-text"><b>Sliding tab highlight</b><small>When you switch tabs, the glass highlight slides over to the new one.</small></span>
+        <span class="toggle" aria-hidden="true"></span>
+      </label>
+    </section>
+
+    <section class="card" id="look">
+      <h2>Look</h2>
+      <h3>Light or dark</h3>
+      <div class="choices" data-pref="theme">
+        <button class="choice" data-value="system">
+          <span class="mock sidebar system"><i class="url"></i><i class="tab on"></i><i class="tab"></i><i class="tab"></i><i class="page"></i></span>
+          <b>System</b><small>Matches your computer</small>
+        </button>
+        <button class="choice" data-value="light">
+          <span class="mock sidebar light"><i class="url"></i><i class="tab on"></i><i class="tab"></i><i class="tab"></i><i class="page"></i></span>
+          <b>Light</b><small>Always light</small>
+        </button>
+        <button class="choice" data-value="dark">
+          <span class="mock sidebar dark"><i class="url"></i><i class="tab on"></i><i class="tab"></i><i class="tab"></i><i class="page"></i></span>
+          <b>Dark</b><small>Always dark</small>
+        </button>
+      </div>
+
+      <h3>Colours</h3>
+      <div class="swatches" data-pref="palette">
+        <button class="swatch" data-value="nebula" aether-palette="nebula"><span></span>Nebula</button>
+        <button class="swatch" data-value="ocean" aether-palette="ocean"><span></span>Ocean</button>
+        <button class="swatch" data-value="aurora" aether-palette="aurora"><span></span>Aurora</button>
+        <button class="swatch" data-value="sunset" aether-palette="sunset"><span></span>Sunset</button>
+        <button class="swatch" data-value="rose" aether-palette="rose"><span></span>Rose</button>
+        <button class="swatch" data-value="graphite" aether-palette="graphite"><span></span>Graphite</button>
+      </div>
+
+      <h3>Glass</h3>
+      <div class="choices" data-pref="glass">
+        <button class="choice slim" data-value="glass">
+          <b>Glass</b><small>Clean frosted glass. Easy on older computers.</small>
+        </button>
+        <button class="choice slim" data-value="liquid">
+          <b>Liquid Glass</b><small>Thicker, shinier glass: edges that catch the light, pill shapes, and a sidebar that floats.</small>
+        </button>
+      </div>
+    </section>
+
+    <section class="card" id="icon">
+      <h2>App icon</h2>
+      <p class="hint">How Aether shows up in your dock and app list.</p>
+      <div class="app-icons" data-pref="icon">
+        <button class="app-icon" data-value="aurora"><img src="chrome://aether/content/icons/aurora.svg" alt="">Aurora</button>
+        <button class="app-icon" data-value="eclipse"><img src="chrome://aether/content/icons/eclipse.svg" alt="">Eclipse</button>
+        <button class="app-icon" data-value="comet"><img src="chrome://aether/content/icons/comet.svg" alt="">Comet</button>
+        <button class="app-icon" data-value="galaxy"><img src="chrome://aether/content/icons/galaxy.svg" alt="">Galaxy</button>
+      </div>
+    </section>
+
+    <section class="card" id="protection">
+      <h2>Protection</h2>
+      <label class="switch">
+        <input type="checkbox" id="protection-on">
+        <span class="switch-text"><b>Block ads and trackers</b><small>With uBlock Origin, the add-on most people trust for this. Turning it on the first time downloads it (about 4 MB).</small></span>
+        <span class="toggle" aria-hidden="true"></span>
+      </label>
+      <p class="status" id="protection-status" hidden></p>
+    </section>
+
+    <section class="card" id="sip">
+      <h2>Data saver</h2>
+      <label class="switch">
+        <input type="checkbox" id="sip-on">
+        <span class="switch-text"><b>Sip</b><small>Shows how much data you use, keeps you inside a monthly budget, and stops videos from playing by themselves.</small></span>
+        <span class="toggle" aria-hidden="true"></span>
+      </label>
+      <fieldset class="budget" id="sip-budget">
+        <legend>Your monthly data</legend>
+        <label>Budget <input id="budget-gb" type="number" min="0" step="0.5" placeholder="e.g. 140"> GB</label>
+        <label>Renews on day <input id="reset-day" type="number" min="1" max="31" value="1"></label>
+      </fieldset>
+    </section>
+
+    <section class="card" id="shortcuts">
+      <h2>Shortcuts</h2>
+      <ul class="keys">
+        <li><span><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>C</kbd></span>Compact mode on or off</li>
+        <li><span><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>S</kbd></span>Split view: two tabs side by side</li>
+        <li><span><kbd>Shift</kbd> + click a link</span>Peek at it without leaving the page</li>
+        <li><span>Right-click a workspace</span>Rename or delete it</li>
+        <li><span>Right-click a tab</span>Move it to another workspace</li>
+      </ul>
+    </section>
+
+    <section class="card" id="more">
+      <h2>More</h2>
+      <div class="actions">
+        <button class="secondary" data-open="chrome://aether/content/welcome/welcome.html">Show the welcome again</button>
+        <button class="secondary" data-open="about:addons">Add-ons</button>
+        <button class="secondary" data-open="about:preferences">Firefox settings</button>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
