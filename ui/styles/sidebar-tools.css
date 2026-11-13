@@ -10,3 +10,11 @@
 .more-tools-button {
   display: none !important;
 }
+
+/* One row when they fit (a little tighter than Firefox's spacing), and any that don't on a row
+ * below, rather than alone on a row above. */
+.tools-and-extensions[orientation="horizontal"] {
+  flex-wrap: wrap !important;
+  gap: 0 !important;
+  padding-inline: 4px !important;
+}
