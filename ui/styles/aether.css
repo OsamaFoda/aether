@@ -539,3 +539,40 @@ panel {
 :is(#aether-split-view, #aether-compact-mode)[checked] > .toolbarbutton-icon {
   background-color: color-mix(in srgb, var(--aether-accent) 28%, transparent);
 }
+
+/* ---- The Liquid Glass setting (scripts/liquid-glass.mjs) ----
+ * A stronger lens that splits colours at the edges, and the address bar becomes a glass panel
+ * that the tab list scrolls under, so the glass has something real to bend. */
+
+:root[aether-liquid] {
+  --aether-lens: blur(4px) saturate(190%) url("chrome://aether/content/styles/lens.svg#liquid");
+}
+
+:root[aether-liquid][aether-urlbar-in-sidebar]:not([aether-compact], [inFullscreen], [inDOMFullscreen]) {
+  /* Frosted enough to read over the tabs passing under it, even without the blur. */
+  #navigator-toolbox {
+    background: var(--aether-sheen), var(--aether-glass-strong) !important;
+    backdrop-filter: var(--aether-lens);
+    box-shadow: var(--aether-rim), 0 6px 18px rgba(40, 44, 90, 0.1);
+    border-radius: 0 0 var(--aether-radius) var(--aether-radius);
+  }
+
+  #sidebar-container {
+    padding-top: 0 !important;
+  }
+
+  .urlbar-background,
+  .aether-ws[active] {
+    background-color: var(--aether-glass-solid) !important;
+  }
+
+  /* The tab list starts under the bar and scrolls beneath it. Pinned tabs don't scroll, so when
+   * there are some, the list starts below the bar as usual. */
+  #tabbrowser-tabs:not(:has(#pinned-tabs-container > .tabbrowser-tab)) #tabbrowser-arrowscrollbox::part(scrollbox) {
+    padding-top: var(--aether-toolbox-height, 80px);
+  }
+
+  #tabbrowser-tabs:has(#pinned-tabs-container > .tabbrowser-tab) {
+    padding-top: var(--aether-toolbox-height, 80px);
+  }
+}
