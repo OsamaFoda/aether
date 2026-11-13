@@ -93,11 +93,33 @@
   }
 }
 
-/* A wallpaper in the theme's colours (Liquid Glass's default background, scripts/wallpaper.mjs):
- * two clearly different colours (--p-wall-1 into --p-wall-2), each holding its ground, mostly top
- * to bottom so the sidebar, which covers the left of it, shows both, with the accent glowing at
- * the top left. */
+/* A wallpaper in the theme's colours (Frosted Glass's default background, scripts/wallpaper.mjs):
+ * streaks of light falling down the window, like light through a curtain, in the theme's two
+ * colours (--p-wall-1, --p-wall-2) and its accent, over a deeper blend of the two. Three sets of
+ * streaks at different spacings make them irregular. Sharp around the page, they melt into a
+ * glow behind the frosted sidebar. */
 :root {
-  --p-wallpaper: radial-gradient(ellipse 45% 40% at 6% 6%, color-mix(in srgb, var(--p-accent) 45%, transparent), transparent 70%),
-                 linear-gradient(165deg, var(--p-wall-1) 0%, var(--p-wall-1) 18%, var(--p-wall-2) 82%, var(--p-wall-2) 100%);
+  --p-wall-shade: #ffffff;
+  --p-wall-shade-amount: 30%;
+  --p-wall-streak: 85%;
+  --p-wallpaper:
+    linear-gradient(180deg, transparent 15%, color-mix(in srgb, var(--p-wall-2), var(--p-wall-shade) var(--p-wall-shade-amount)) 95%),
+    repeating-linear-gradient(90deg, transparent 0 20px,
+      color-mix(in srgb, var(--p-wall-1) 25%, transparent) 20px 22px, color-mix(in srgb, var(--p-wall-1) var(--p-wall-streak), transparent) 22px 24px,
+      color-mix(in srgb, var(--p-wall-1) 25%, transparent) 24px 26px, transparent 26px 61px),
+    repeating-linear-gradient(90deg, transparent 0 40px,
+      color-mix(in srgb, var(--p-accent) 20%, transparent) 40px 41px, color-mix(in srgb, var(--p-accent) var(--p-wall-streak), transparent) 41px 42px,
+      color-mix(in srgb, var(--p-accent) 20%, transparent) 42px 43px, transparent 43px 97px),
+    repeating-linear-gradient(90deg, transparent 0 12px,
+      color-mix(in srgb, var(--p-wall-2) 70%, transparent) 12px 13px, transparent 13px 37px),
+    radial-gradient(ellipse 45% 40% at 6% 6%, color-mix(in srgb, var(--p-accent) 45%, transparent), transparent 70%),
+    linear-gradient(165deg, color-mix(in srgb, var(--p-wall-1), var(--p-wall-shade) var(--p-wall-shade-amount)) 0%,
+                    color-mix(in srgb, var(--p-wall-2), var(--p-wall-shade) var(--p-wall-shade-amount)) 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --p-wall-shade: #000000;
+    --p-wall-shade-amount: 55%;
+  }
 }
