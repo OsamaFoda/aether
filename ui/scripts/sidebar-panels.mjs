@@ -45,14 +45,14 @@ export function init(win) {
   const page = doc.getElementById("tabbrowser-tabbox");
   const reducedMotion = win.matchMedia("(prefers-reduced-motion: reduce)");
   // In compact mode the sidebar leaves with the page when a panel closes (styles/aether.css,
-  // [aether-panel-closed]). That has to be marked before the panel hides: Firefox may lay the
+  // [aether-leaving]). That has to be marked before the panel hides: Firefox may lay the
   // window out on the way, starting the sidebar's usual, delayed exit, which can't be hurried.
   let closing = 0;
   const markClosing = () => {
     if (!doc.documentElement.hasAttribute("aether-compact")) return;
-    doc.documentElement.setAttribute("aether-panel-closed", "");
+    doc.documentElement.setAttribute("aether-leaving", "");
     win.clearTimeout(closing);
-    closing = win.setTimeout(() => doc.documentElement.removeAttribute("aether-panel-closed"), 700);
+    closing = win.setTimeout(() => doc.documentElement.removeAttribute("aether-leaving"), 700);
   };
   // Where the page was when a panel started opening or closing: where it glides from. (Firefox
   // lays the window out again on the way, so by the time the panel shows or hides it's moved.)

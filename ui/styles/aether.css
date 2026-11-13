@@ -473,9 +473,10 @@ panel {
     }
   }
 
-  /* Just after a sidebar panel closes (scripts/sidebar-panels.mjs), the sidebar goes at once,
+  /* Just after a sidebar panel closes (scripts/sidebar-panels.mjs) or compact mode is switched on
+   * (scripts/compact-mode.mjs), the bars go at once, together,
    * gliding off with the page, rather than after the usual pause. */
-  &[aether-panel-closed] :is(#sidebar-container, #navigator-toolbox, #urlbar, #tabbrowser-tabbox) {
+  &[aether-leaving] :is(#sidebar-container, #navigator-toolbox, #urlbar, #tabbrowser-tabbox) {
     transition: transform 360ms var(--aether-glide), translate 360ms var(--aether-glide),
                 margin 360ms var(--aether-glide), opacity 200ms ease !important;
   }

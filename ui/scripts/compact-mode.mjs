@@ -45,8 +45,17 @@ export function init(win) {
   edge.id = "aether-edge";
   doc.getElementById("browser").append(edge);
 
+  let leaving = 0;
   const update = () => {
-    root.toggleAttribute("aether-compact", Services.prefs.getBoolPref(PREF, false));
+    const compact = Services.prefs.getBoolPref(PREF, false);
+    // Switched on: the sidebar and toolbar leave at once, together (styles/aether.css,
+    // [aether-leaving]), marked before they start so the usual pause can't take hold.
+    if (compact && !root.hasAttribute("aether-compact")) {
+      root.setAttribute("aether-leaving", "");
+      win.clearTimeout(leaving);
+      leaving = win.setTimeout(() => root.removeAttribute("aether-leaving"), 700);
+    }
+    root.toggleAttribute("aether-compact", compact);
     root.toggleAttribute("aether-vertical", Services.prefs.getBoolPref(VERTICAL_TABS, false));
     doc.getElementById(WIDGET)?.toggleAttribute("checked", Services.prefs.getBoolPref(PREF, false));
     keepSidebar();
