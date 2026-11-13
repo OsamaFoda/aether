@@ -6,6 +6,9 @@
   --aether-sky-1: #dcf3fa;
   --aether-sky-2: #e3e5fc;
   --aether-sky-3: #eedff9;
+  --aether-glow-1: #a9e3f5; /* cyan */
+  --aether-glow-2: #c3c6fb; /* indigo */
+  --aether-glow-3: #e2c3f6; /* violet */
   --aether-accent: #6366f1;
   --aether-accent-soft: rgba(99, 102, 241, 0.16);
 
@@ -21,6 +24,15 @@
   --aether-blur: blur(24px) saturate(160%);
   --aether-radius: 12px;
 
+  /* Liquid glass: a bright rim that catches the light (strongest on top), a sheen across the
+   * surface, and a lens that bends what's behind near the edges (styles/lens.svg). */
+  --aether-rim: inset 0 1px 0.5px rgba(255, 255, 255, 0.95), inset 0 -1px 0.5px rgba(255, 255, 255, 0.35),
+                inset 1px 0 0.5px rgba(255, 255, 255, 0.5), inset -1px 0 0.5px rgba(255, 255, 255, 0.35),
+                inset 0 0 12px rgba(255, 255, 255, 0.35);
+  --aether-sheen: linear-gradient(165deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 45%,
+                  rgba(255, 255, 255, 0) 75%, rgba(255, 255, 255, 0.22));
+  --aether-lens: blur(6px) saturate(180%) url("chrome://aether/content/styles/lens.svg#lens");
+
   /* A spring that overshoots a little and settles. */
   --aether-spring: linear(0, 0.013 0.6%, 0.05 1.2%, 0.2 2.9%, 0.785 9.2%, 1.006 13.2%, 1.081 16.1%,
     1.095 18%, 1.093 19.9%, 1.034 26.4%, 1.002 32.6%, 0.993 37.7%, 1.001 52.1%, 1);
@@ -32,6 +44,9 @@
     --aether-sky-1: #0b1424;
     --aether-sky-2: #141433;
     --aether-sky-3: #1f1236;
+    --aether-glow-1: #0e3550;
+    --aether-glow-2: #262a6b;
+    --aether-glow-3: #3e1d63;
     --aether-accent: #818cf8;
     --aether-accent-soft: rgba(129, 140, 248, 0.22);
     --aether-glass: rgba(28, 30, 52, 0.5);
@@ -42,6 +57,11 @@
     --aether-line: rgba(255, 255, 255, 0.07);
     --aether-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
     --aether-text: #e9eaf6;
+    --aether-rim: inset 0 1px 0.5px rgba(255, 255, 255, 0.32), inset 0 -1px 0.5px rgba(255, 255, 255, 0.08),
+                  inset 1px 0 0.5px rgba(255, 255, 255, 0.14), inset -1px 0 0.5px rgba(255, 255, 255, 0.08),
+                  inset 0 0 12px rgba(255, 255, 255, 0.06);
+    --aether-sheen: linear-gradient(165deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 45%,
+                    rgba(255, 255, 255, 0) 75%, rgba(255, 255, 255, 0.05));
   }
 }
 
@@ -95,7 +115,10 @@ body,
 }
 
 :root:root {
-  background: radial-gradient(ellipse at 15% 0%, var(--aether-sky-1), transparent 60%),
+  background: radial-gradient(circle 260px at 0% 18%, var(--aether-glow-1), transparent),
+              radial-gradient(circle 300px at 22% 55%, var(--aether-glow-2), transparent),
+              radial-gradient(circle 280px at 2% 92%, var(--aether-glow-3), transparent),
+              radial-gradient(ellipse at 15% 0%, var(--aether-sky-1), transparent 60%),
               radial-gradient(ellipse at 100% 100%, var(--aether-sky-3), transparent 55%),
               var(--aether-sky-2) !important;
 }
@@ -136,11 +159,13 @@ sidebar-main,
 
 .tabbrowser-tab:hover > .tab-stack > .tab-background:not([selected]) {
   background-color: var(--aether-glass-hover) !important;
+  box-shadow: var(--aether-rim) !important;
 }
 
 .tabbrowser-tab .tab-background[selected] {
-  background-color: var(--aether-glass-strong) !important;
-  box-shadow: inset 0 1px 0 var(--aether-edge), var(--aether-shadow) !important;
+  background: var(--aether-sheen), var(--aether-glass) !important;
+  box-shadow: var(--aether-rim), var(--aether-shadow) !important;
+  backdrop-filter: var(--aether-lens);
   outline: none !important;
 }
 
@@ -150,14 +175,24 @@ sidebar-main,
 
 /* ---- Address bar: a glass pill ---- */
 
-#urlbar-background {
-  border-radius: 10px !important;
-  border: 1px solid var(--aether-edge) !important;
-  box-shadow: inset 0 1px 0 var(--aether-edge), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
-  backdrop-filter: var(--aether-blur);
+.urlbar-background {
+  border-radius: 12px !important;
+  border: none !important;
+  background-image: var(--aether-sheen) !important;
+  box-shadow: var(--aether-rim), 0 2px 8px rgba(40, 44, 90, 0.08) !important;
+  backdrop-filter: var(--aether-lens);
 }
 
-#urlbar[focused] > #urlbar-background {
+/* Opening the address bar swells it a little, like a drop of glass. */
+#urlbar:not([breakout-extend]) > .urlbar-background {
+  transition: transform var(--aether-spring-time) var(--aether-spring);
+}
+
+#urlbar[focused]:not([breakout-extend]) > .urlbar-background {
+  transform: scale(1.02);
+}
+
+#urlbar[focused] > .urlbar-background {
   outline: 2px solid var(--aether-accent) !important;
   outline-offset: -1px;
 }
@@ -167,6 +202,11 @@ sidebar-main,
 toolbarbutton .toolbarbutton-icon,
 toolbarbutton .toolbarbutton-badge-stack {
   transition: transform var(--aether-spring-time) var(--aether-spring), background-color 160ms ease;
+}
+
+toolbar toolbarbutton:not([disabled]):hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack) {
+  background-image: var(--aether-sheen) !important;
+  box-shadow: var(--aether-rim);
 }
 
 toolbarbutton:hover:active .toolbarbutton-icon,
@@ -271,9 +311,9 @@ panel {
       z-index: 15;
       width: var(--aether-sidebar-width, 250px);
       border-radius: var(--aether-radius);
-      background: var(--aether-glass-strong) !important;
+      background: var(--aether-sheen), var(--aether-glass-strong) !important;
       backdrop-filter: var(--aether-blur);
-      box-shadow: var(--aether-shadow), inset 0 1px 0 var(--aether-edge);
+      box-shadow: var(--aether-shadow), var(--aether-rim);
     }
 
     #sidebar-container,
@@ -309,9 +349,9 @@ panel {
       inset: 8px 8px auto 8px;
       z-index: 15;
       border-radius: var(--aether-radius);
-      background: var(--aether-glass-strong) !important;
+      background: var(--aether-sheen), var(--aether-glass-strong) !important;
       backdrop-filter: var(--aether-blur);
-      box-shadow: var(--aether-shadow), inset 0 1px 0 var(--aether-edge);
+      box-shadow: var(--aether-shadow), var(--aether-rim);
       transform: translateY(calc(-100% - 16px));
       transition: transform 260ms ease-in 450ms;
     }
@@ -460,6 +500,7 @@ panel {
 
 .aether-ws:hover {
   background: var(--aether-glass-hover);
+  box-shadow: var(--aether-rim);
 }
 
 .aether-ws:active {
@@ -467,8 +508,9 @@ panel {
 }
 
 .aether-ws[active] {
-  background: var(--aether-glass-strong);
-  box-shadow: inset 0 1px 0 var(--aether-edge), var(--aether-shadow);
+  background: var(--aether-sheen), var(--aether-glass);
+  box-shadow: var(--aether-rim), var(--aether-shadow);
+  backdrop-filter: var(--aether-lens);
   color: var(--aether-accent);
   font-weight: 600;
 }

@@ -75,7 +75,7 @@ class Marionette:
         return self.call("WebDriver:ExecuteAsyncScript", {"script": wrapped, "args": [], "scriptTimeout": 30000})["value"]
 
 
-def start(width=1280, height=800, dark=None):
+def start(width=1280, height=800, dark=None, show=False):
     shutil.rmtree(PROFILE, ignore_errors=True)
     os.makedirs(PROFILE)
     with open(os.path.join(PROFILE, "user.js"), "w") as f:
@@ -84,7 +84,7 @@ def start(width=1280, height=800, dark=None):
             f.write(f'user_pref("ui.systemUsesDarkTheme", {1 if dark else 0});\n')
     env = dict(os.environ, MOZ_REMOTE_ALLOW_SYSTEM_ACCESS="1")
     proc = subprocess.Popen(
-        [find_browser(), "--headless", "--marionette", "--no-remote", "-purgecaches",
+        [find_browser(), *([] if show else ["--headless"]), "--marionette", "--no-remote", "-purgecaches",
          "--profile", PROFILE, "--width", str(width), "--height", str(height)],
         env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
@@ -134,9 +134,11 @@ def main():
     ap.add_argument("--wait", type=float, default=2)
     ap.add_argument("--dark", action="store_true", help="dark mode (default: light)")
     ap.add_argument("--before", help="JS file to run in the browser window before a screenshot")
+    ap.add_argument("--show", action="store_true",
+                    help="open a real window instead of a hidden one (hidden windows don't draw glass blur)")
     args = ap.parse_args()
 
-    proc, m = start(dark=args.dark)
+    proc, m = start(dark=args.dark, show=args.show)
     try:
         m.js(f"gBrowser.selectedBrowser.fixupAndLoadURIString({json.dumps(args.url)}, "
              "{ triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal() }); return true;")
