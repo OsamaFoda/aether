@@ -23,7 +23,16 @@ export function init(win) {
   const box = doc.getElementById("sidebar-box");
   const page = doc.getElementById("tabbrowser-tabbox");
   const reducedMotion = win.matchMedia("(prefers-reduced-motion: reduce)");
+  // In compact mode the sidebar leaves with the page when a panel closes (styles/aether.css,
+  // [aether-panel-closed]). That has to be marked before the panel hides: Firefox may lay the
+  // window out on the way, starting the sidebar's usual, delayed exit, which can't be hurried.
   let closing = 0;
+  const markClosing = () => {
+    if (!doc.documentElement.hasAttribute("aether-compact")) return;
+    doc.documentElement.setAttribute("aether-panel-closed", "");
+    win.clearTimeout(closing);
+    closing = win.setTimeout(() => doc.documentElement.removeAttribute("aether-panel-closed"), 700);
+  };
   // Where the page was when a panel started opening or closing: where it glides from. (Firefox
   // lays the window out again on the way, so by the time the panel shows or hides it's moved.)
   let from = null;
@@ -31,16 +40,13 @@ export function init(win) {
     const firefox = win.SidebarController[name];
     win.SidebarController[name] = function (...args) {
       from = page.getBoundingClientRect().left;
+      if (!box.hidden && (name === "hide" || (name === "toggle" && this.currentID === args[0]))) markClosing();
       return firefox.apply(this, args);
     };
   }
   // Runs after the panel shows or hides but before the window is drawn.
   new win.MutationObserver(() => {
-    if (box.hidden && doc.documentElement.hasAttribute("aether-compact")) {
-      doc.documentElement.setAttribute("aether-panel-closed", "");
-      win.clearTimeout(closing);
-      closing = win.setTimeout(() => doc.documentElement.removeAttribute("aether-panel-closed"), 700);
-    }
+    if (box.hidden) markClosing();
     const start = from ?? win.windowUtils.getBoundsWithoutFlushing(page).left;
     from = null;
     if (reducedMotion.matches) return;
