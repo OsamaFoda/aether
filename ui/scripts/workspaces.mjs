@@ -1,4 +1,4 @@
-// Workspaces: separate sets of tabs (Home, Study, …) you switch between, like Zen.
+// Workspaces: separate sets of tabs (Main, Study, …) you switch between, like Zen.
 // Each tab remembers its workspace in the session, so it survives restarts; switching shows that
 // workspace's tabs and hides the others. Pinned tabs are shared by every workspace. The switcher
 // is a toolbar item, so it rides under the address bar in the sidebar, or sits in the top toolbar.
@@ -17,7 +17,7 @@ function workspaces() {
   try {
     list = JSON.parse(Services.prefs.getStringPref(LIST, "[]"));
   } catch {}
-  return list.length ? list : [{ id: "home", name: "Home" }];
+  return list.length ? list : [{ id: "home", name: "Main" }]; // not "Home", which reads as the home button
 }
 
 function saveWorkspaces(list) {
@@ -138,11 +138,13 @@ export function init(win) {
     saveWorkspaces(rest); // every window re-applies through the pref observer
   }
 
-  // The switcher: one button per workspace, then "+".
+  // The switcher: one button per workspace, then "+". With only one workspace there's nothing to
+  // switch to, so it's just "+".
   function render(item = doc.getElementById(WIDGET)) {
     if (!item) return;
     const current = active();
-    const buttons = workspaces().map(ws => {
+    const list = workspaces();
+    const buttons = list.length < 2 ? [] : list.map(ws => {
       const button = doc.createElement("button");
       button.className = "aether-ws";
       button.textContent = ws.name;
@@ -159,7 +161,7 @@ export function init(win) {
     const add = doc.createElement("button");
     add.className = "aether-ws aether-ws-add";
     add.textContent = "+";
-    add.title = "New workspace";
+    add.title = "New workspace: a separate set of tabs to switch to, like Study or Work";
     add.addEventListener("click", create);
     item.replaceChildren(...buttons, add);
   }

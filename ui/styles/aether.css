@@ -223,8 +223,8 @@ panel {
 
 /* ---- Address bar in the sidebar ----
  * While tabs are vertical and the sidebar is expanded (scripts/sidebar-urlbar.mjs sets the
- * attribute), the toolbar floats over the top slot of the sidebar in three rows: back, forward
- * and reload with the window buttons; the address bar; then workspaces with the add-on, Split
+ * attribute), the toolbar floats over the top slot of the sidebar in three rows: back, forward,
+ * reload and home with the window buttons; the address bar; then workspaces with the add-on, Split
  * View, Compact Mode and menu buttons. The page gets the full height of the window. A long
  * address ends in "…". */
 
@@ -240,15 +240,33 @@ panel {
     flex-wrap: wrap;
     padding: 6px 8px 2px !important;
     -moz-window-dragging: drag;
+    /* Slightly tighter buttons, so back, forward, reload and home fit beside the window buttons. */
+    --toolbarbutton-padding-outer: 0px;
+    --toolbarbutton-padding-inner: 6px;
   }
 
   #nav-bar-customization-target {
     display: contents !important;
   }
 
+  /* Firefox moves buttons into its » menu when their widths add up to more than the toolbar's,
+   * which in rows they always do (and it counts the space pushing the window buttons right). It
+   * leaves out buttons that aren't positioned statically, and sticky with no offsets looks just
+   * like static. */
+  #nav-bar-customization-target > *,
+  #nav-bar > .titlebar-buttonbox-container,
+  #PanelUI-button {
+    position: sticky !important;
+  }
+
   #nav-bar > .titlebar-buttonbox-container {
     order: 1;
     margin-inline-start: auto;
+  }
+
+  #nav-bar .titlebar-buttonbox {
+    --titlebar-button-spacing: 3px;
+    --titlebar-button-end-spacing: 2px;
   }
 
   #vertical-spacer {

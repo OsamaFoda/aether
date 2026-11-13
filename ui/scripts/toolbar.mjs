@@ -1,5 +1,5 @@
 // Aether's toolbar layout, set once per profile (and again whenever LAYOUT goes up): back,
-// forward and reload, the address bar, workspaces, then add-ons, Split View and Compact Mode.
+// forward, reload and home, the address bar, workspaces, then add-ons, Split View and Compact Mode.
 // In the sidebar that's a row of buttons over the address bar (styles/aether.css); with top tabs,
 // one row. Firefox's sidebar button goes, as Compact Mode does its job (scripts/compact-mode.mjs),
 // and so do Firefox View and the tab list, which the sidebar already shows.
@@ -8,8 +8,8 @@
 const { CustomizableUI } = ChromeUtils.importESModule("moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs");
 
 const PREF = "aether.toolbarLayout";
-const LAYOUT = 1;
-const ORDER = ["back-button", "forward-button", "stop-reload-button", "vertical-spacer", "urlbar-container",
+const LAYOUT = 2; // 2: the home button
+const ORDER = ["back-button", "forward-button", "stop-reload-button", "home-button", "vertical-spacer", "urlbar-container",
   "aether-workspaces", "unified-extensions-button", "aether-split-view", "aether-compact-mode"];
 const REMOVE = ["sidebar-button", "firefox-view-button", "alltabs-button"];
 
