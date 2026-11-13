@@ -564,6 +564,79 @@ panel {
   margin-inline-start: 0 !important;
 }
 
+/* ---- Firefox's notices and boxes over the page, in the theme's glass: "… is now full screen"
+ * and the mouse-lock notice, the link address at the bottom, tooltips, the find bar, info bars,
+ * and the alert and confirm boxes sites open. ---- */
+
+.pointerlockfswarning {
+  color-scheme: light dark !important;
+  background: var(--aether-sheen), var(--aether-menu) !important;
+  color: var(--aether-text) !important;
+  border: 1px solid var(--aether-edge) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--aether-rim), var(--aether-shadow) !important;
+}
+
+#fullscreen-exit-button {
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 6px 14px !important;
+  background: var(--aether-accent) !important;
+  color: white !important;
+}
+
+#fullscreen-exit-button:hover {
+  background: color-mix(in srgb, var(--aether-accent) 80%, white) !important;
+}
+
+#statuspanel-label {
+  margin: 0 0 6px 6px !important;
+  border: 1px solid var(--aether-edge) !important;
+  border-radius: 10px !important;
+  background: var(--aether-menu) !important;
+  color: var(--aether-text) !important;
+  box-shadow: var(--aether-shadow) !important;
+}
+
+tooltip {
+  appearance: none !important;
+  border: 1px solid var(--aether-edge) !important;
+  border-radius: 8px !important;
+  background: var(--aether-menu) !important;
+  color: var(--aether-text) !important;
+}
+
+findbar {
+  background: var(--aether-sheen), var(--aether-menu) !important;
+  border-top: 1px solid var(--aether-edge) !important;
+  color: var(--aether-text) !important;
+}
+
+notification-message {
+  --message-bar-background-color: var(--aether-menu);
+  --message-bar-border-color: var(--aether-edge);
+  --message-bar-text-color: var(--aether-text);
+  border-radius: 12px !important;
+}
+
+.dialogBox {
+  border-radius: 16px !important;
+  outline-color: var(--aether-edge) !important;
+  box-shadow: var(--aether-shadow) !important;
+}
+
+/* Frosted Glass: rounder, with a brighter edge. */
+:root[aether-liquid] {
+  .pointerlockfswarning {
+    border-radius: 20px !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  #statuspanel-label {
+    border-radius: 12px !important;
+  }
+}
+
 /* ---- Peek (scripts/peek.mjs): a link in a floating glass window over the page ---- */
 
 #aether-peek {
