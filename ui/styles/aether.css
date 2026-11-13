@@ -139,6 +139,18 @@ body,
   outline: 1px solid var(--aether-line);
 }
 
+/* In fullscreen (a video, or a page that asks for it) the page is the whole screen: no margins,
+ * corners or shadow. */
+:root[inDOMFullscreen] {
+  #tabbrowser-tabbox,
+  #tabbrowser-tabpanels[splitview] > .split-view-panel {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+}
+
 /* ---- Sidebar and tabs ---- */
 
 #sidebar-container,
