@@ -11,10 +11,20 @@
   display: none !important;
 }
 
-/* One row when they fit (a little tighter than Firefox's spacing), and any that don't on a row
- * below, rather than alone on a row above. */
+/* Always one row. When they don't fit it scrolls sideways (the mouse wheel works too, through
+ * scripts/sidebar-panels.mjs, which also sets how much of each end fades to say there's more). */
 .tools-and-extensions[orientation="horizontal"] {
-  flex-wrap: wrap !important;
+  flex-wrap: nowrap !important;
   gap: 0 !important;
   padding-inline: 4px !important;
+  max-width: 100% !important;
+  min-width: 0;
+  overflow-x: auto !important;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, transparent, #000 var(--aether-fade-start, 0px),
+                              #000 calc(100% - var(--aether-fade-end, 0px)), transparent);
+
+  > * {
+    flex: none;
+  }
 }

@@ -13,11 +13,32 @@ const GLIDE = "cubic-bezier(0.22, 1, 0.36, 1)"; // styles/aether.css, --aether-g
 const SHEETS = ["chrome://aether/content/styles/palettes.css", "chrome://aether/content/styles/sidebar-pages.css"];
 
 export function init(win) {
-  // The tools at the bottom of the sidebar show in full (styles/sidebar-tools.css).
+  // The tools at the bottom of the sidebar: all of them, in one row that scrolls sideways when
+  // they don't fit (styles/sidebar-tools.css), with the wheel, and fading at an end with more.
   const main = win.document.querySelector("sidebar-main");
-  main?.updateComplete.then(() => main.shadowRoot.append(Object.assign(
-    win.document.createElementNS("http://www.w3.org/1999/xhtml", "link"),
-    { rel: "stylesheet", href: "chrome://aether/content/styles/sidebar-tools.css" })));
+  main?.updateComplete.then(() => {
+    main.shadowRoot.append(Object.assign(win.document.createElementNS("http://www.w3.org/1999/xhtml", "link"),
+      { rel: "stylesheet", href: "chrome://aether/content/styles/sidebar-tools.css" }));
+    const row = () => main.shadowRoot.querySelector(".tools-and-extensions");
+    const fade = () => {
+      const r = row();
+      if (!r) return;
+      r.style.setProperty("--aether-fade-start", r.scrollLeft > 1 ? "24px" : "0px");
+      r.style.setProperty("--aether-fade-end", r.scrollLeft + r.clientWidth < r.scrollWidth - 1 ? "24px" : "0px");
+    };
+    main.shadowRoot.addEventListener("wheel", event => {
+      const r = row();
+      if (!r?.contains(event.target) || r.scrollWidth <= r.clientWidth || event.deltaX) return;
+      r.scrollLeft += event.deltaY;
+      event.preventDefault();
+    }, { passive: false });
+    main.shadowRoot.addEventListener("scroll", fade, true);
+    new win.ResizeObserver(fade).observe(main);
+    // New icons draw themselves a moment after they're added: measure once they have.
+    new win.MutationObserver(() => win.requestAnimationFrame(() => win.requestAnimationFrame(fade)))
+      .observe(main.shadowRoot, { childList: true, subtree: true });
+    fade();
+  });
 
   const doc = win.document;
   const box = doc.getElementById("sidebar-box");
