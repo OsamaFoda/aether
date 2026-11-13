@@ -1,0 +1,46 @@
+// Firefox's "Customize sidebar" panel (the gear at the bottom of the sidebar), made to fit Aether.
+// Its "Expand sidebar on hover" and "Hide tabs and sidebar" are Compact Mode's job here (and
+// scripts/compact-mode.mjs keeps the sidebar shown otherwise, so they did nothing), so they make
+// way for a Compact mode switch; "Move sidebar to the right" goes, as Aether's layout is built
+// with the sidebar on the left; and "Manage Aether settings" opens Aether Settings.
+
+const PAGE = "chrome://browser/content/sidebar/sidebar-customize.html";
+const COMPACT = "aether.compactMode";
+const STYLE = "chrome://aether/content/styles/customize-sidebar.css";
+
+export function init(win) {
+  // The panel loads in this process, so its events reach the window.
+  win.addEventListener("DOMContentLoaded", async event => {
+    const doc = event.target;
+    if (doc.documentURI !== PAGE) return;
+    const view = doc.defaultView;
+    await view.customElements.whenDefined("sidebar-customize");
+    const panel = doc.querySelector("sidebar-customize");
+    await panel.updateComplete;
+    const root = panel.shadowRoot;
+
+    // A stylesheet file: the panel's security policy refuses inline styles.
+    root.append(Object.assign(doc.createElement("link"), { rel: "stylesheet", href: STYLE }));
+
+    const compact = doc.createElement("moz-checkbox");
+    compact.id = "aether-compact-mode";
+    compact.setAttribute("label", "Compact mode");
+    compact.setAttribute("description", "Hide the sidebar until the mouse reaches the edge of the window (Ctrl+Alt+C)");
+    const sync = () => (compact.checked = Services.prefs.getBoolPref(COMPACT, false));
+    compact.addEventListener("change", () => Services.prefs.setBoolPref(COMPACT, compact.checked));
+    Services.prefs.addObserver(COMPACT, sync);
+    view.addEventListener("unload", () => Services.prefs.removeObserver(COMPACT, sync), { once: true });
+    sync();
+    root.getElementById("vertical-tabs")?.after(compact);
+
+    const settings = root.querySelector("#manage-settings a");
+    for (const type of ["click", "keydown"]) {
+      settings?.addEventListener(type, e => {
+        if (type === "keydown" && e.code !== "Enter") return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        win.switchToTabHavingURI("about:aether", true);
+      }, true);
+    }
+  }, true);
+}

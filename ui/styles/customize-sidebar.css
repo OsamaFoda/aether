@@ -1,0 +1,8 @@
+/* Firefox's "Customize sidebar" panel in Aether (scripts/customize-sidebar.mjs): without the
+ * options Compact Mode replaces, and the one that would move the sidebar to the right. */
+
+#expand-on-hover,
+#hide-sidebar,
+moz-fieldset:has(> #position) {
+  display: none !important;
+}

@@ -634,7 +634,7 @@ panel {
 :root[aether-urlbar-in-sidebar] {
   #aether-workspaces {
     order: 3;
-    flex: 1 1 60px;
+    flex: 1 1 24px; /* room for "+", and not a pixel more before wrapping the buttons after it */
     min-width: 0;
   }
 
