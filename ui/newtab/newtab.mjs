@@ -7,6 +7,7 @@ const { ExtensionStorageIDB } = ChromeUtils.importESModule("resource://gre/modul
 const { PlacesUtils } = ChromeUtils.importESModule("resource://gre/modules/PlacesUtils.sys.mjs");
 import { follow } from "../scripts/palette.mjs";
 import { iconURL } from "../scripts/app-icon.mjs";
+import { wallpaperURL } from "../scripts/wallpaper.mjs";
 
 const PINNED = "aether.newtab.pinned"; // [{ url, title }]
 const HIDDEN = "aether.newtab.hidden"; // [url]
@@ -195,5 +196,38 @@ async function renderData() {
 }
 
 follow(document, window);
+
+// ---- The window's wallpaper, drawn here to line up with it (newtab.css, [aether-wallpaper]) ----
+
+const WALLPAPER_PREFS = ["aether.liquidGlass", "aether.background", "aether.wallpaper"];
+async function showWallpaper() {
+  const on = Services.prefs.getBoolPref("aether.liquidGlass", false) &&
+    Services.prefs.getStringPref("aether.background", "wallpaper") === "wallpaper";
+  const url = on && await wallpaperURL(chromeWindow());
+  const root = document.documentElement;
+  if (!url) root.removeAttribute("aether-wallpaper");
+  else root.setAttribute("aether-wallpaper", url === "theme" ? "theme" : "picture");
+  if (url && url !== "theme") root.style.setProperty("--aether-wallpaper", `url("${url.replaceAll('"', "%22")}")`);
+  else root.style.removeProperty("--aether-wallpaper");
+}
+// Where the window is, relative to this page, checked each frame while the page shows (the page
+// slides in compact mode, which nothing reports).
+let placed = "";
+function placeWallpaper() {
+  if (document.documentElement.hasAttribute("aether-wallpaper") && !document.hidden) {
+    const top = chromeWindow();
+    const at = [top.mozInnerScreenX - window.mozInnerScreenX, top.mozInnerScreenY - window.mozInnerScreenY,
+      top.innerWidth, top.innerHeight].map(n => `${Math.round(n)}px`);
+    if (at.join() !== placed) {
+      placed = at.join();
+      ["--wall-x", "--wall-y", "--wall-w", "--wall-h"].forEach((name, i) => document.documentElement.style.setProperty(name, at[i]));
+    }
+  }
+  requestAnimationFrame(placeWallpaper);
+}
+WALLPAPER_PREFS.forEach(pref => Services.prefs.addObserver(pref, showWallpaper));
+window.addEventListener("unload", () => WALLPAPER_PREFS.forEach(pref => Services.prefs.removeObserver(pref, showWallpaper)), { once: true });
+showWallpaper();
+requestAnimationFrame(placeWallpaper);
 renderShortcuts();
 renderData();

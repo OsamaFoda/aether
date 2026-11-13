@@ -180,3 +180,33 @@ main {
 #bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 600ms var(--spring); }
 #bar-fill.warn { background: var(--warn); }
 #bar-fill.danger { background: var(--danger); }
+
+/* Frosted Glass with a wallpaper (scripts/wallpaper.mjs): the page draws the window's wallpaper
+ * itself, sized and placed to line up with it exactly (newtab.mjs sets --wall-*, following the
+ * page as it moves), so page and window read as one background; on it, the glass really is
+ * frosted. (Making the page see-through instead would make plain websites see-through too.) */
+:root[aether-wallpaper] body {
+  background: none;
+}
+
+:root[aether-wallpaper="theme"] {
+  --aether-wallpaper: var(--p-wallpaper);
+}
+
+:root[aether-wallpaper] body::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  left: var(--wall-x, 0px);
+  top: var(--wall-y, 0px);
+  width: var(--wall-w, 100vw);
+  height: var(--wall-h, 100vh);
+  background-image: var(--aether-wallpaper);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+:root[aether-wallpaper] .glass {
+  backdrop-filter: blur(18px) saturate(160%);
+}

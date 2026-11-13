@@ -94,24 +94,29 @@
 }
 
 /* A wallpaper in the theme's colours (Frosted Glass's default background, scripts/wallpaper.mjs):
- * streaks of light falling down the window, like light through a curtain, in the theme's two
- * colours (--p-wall-1, --p-wall-2) and its accent, over a deeper blend of the two. Three sets of
- * streaks at different spacings make them irregular. Sharp around the page, they melt into a
- * glow behind the frosted sidebar. */
+ * slanted streaks of light in the theme's two colours (--p-wall-1, --p-wall-2) and accent, at
+ * three spacings so they look irregular, with a few rings of light spreading from the top left,
+ * over a deeper blend of the two. Sharp around the page and on the New Tab page, they melt into
+ * a glow behind the frosted sidebar. */
 :root {
   --p-wall-shade: #ffffff;
   --p-wall-shade-amount: 30%;
   --p-wall-streak: 85%;
   --p-wallpaper:
-    linear-gradient(180deg, transparent 15%, color-mix(in srgb, var(--p-wall-2), var(--p-wall-shade) var(--p-wall-shade-amount)) 95%),
-    repeating-linear-gradient(90deg, transparent 0 20px,
+    linear-gradient(180deg, transparent 25%, color-mix(in srgb, var(--p-wall-2), var(--p-wall-shade) var(--p-wall-shade-amount)) 100%),
+    radial-gradient(circle at 9% 12%, transparent 0 150px,
+      color-mix(in srgb, var(--p-wall-1) 55%, transparent) 150px 152px, transparent 152px 260px,
+      color-mix(in srgb, var(--p-accent) 40%, transparent) 260px 261px, transparent 261px 400px,
+      color-mix(in srgb, var(--p-wall-1) 28%, transparent) 400px 401px, transparent 401px 590px,
+      color-mix(in srgb, var(--p-accent) 16%, transparent) 590px 591px, transparent 591px),
+    repeating-linear-gradient(115deg, transparent 0 20px,
       color-mix(in srgb, var(--p-wall-1) 25%, transparent) 20px 22px, color-mix(in srgb, var(--p-wall-1) var(--p-wall-streak), transparent) 22px 24px,
-      color-mix(in srgb, var(--p-wall-1) 25%, transparent) 24px 26px, transparent 26px 61px),
-    repeating-linear-gradient(90deg, transparent 0 40px,
-      color-mix(in srgb, var(--p-accent) 20%, transparent) 40px 41px, color-mix(in srgb, var(--p-accent) var(--p-wall-streak), transparent) 41px 42px,
-      color-mix(in srgb, var(--p-accent) 20%, transparent) 42px 43px, transparent 43px 97px),
-    repeating-linear-gradient(90deg, transparent 0 12px,
-      color-mix(in srgb, var(--p-wall-2) 70%, transparent) 12px 13px, transparent 13px 37px),
+      color-mix(in srgb, var(--p-wall-1) 25%, transparent) 24px 26px, transparent 26px 71px),
+    repeating-linear-gradient(115deg, transparent 0 44px,
+      color-mix(in srgb, var(--p-accent) 20%, transparent) 44px 45px, color-mix(in srgb, var(--p-accent) var(--p-wall-streak), transparent) 45px 46px,
+      color-mix(in srgb, var(--p-accent) 20%, transparent) 46px 47px, transparent 47px 113px),
+    repeating-linear-gradient(115deg, transparent 0 14px,
+      color-mix(in srgb, var(--p-wall-2) 70%, transparent) 14px 15px, transparent 15px 43px),
     radial-gradient(ellipse 45% 40% at 6% 6%, color-mix(in srgb, var(--p-accent) 45%, transparent), transparent 70%),
     linear-gradient(165deg, color-mix(in srgb, var(--p-wall-1), var(--p-wall-shade) var(--p-wall-shade-amount)) 0%,
                     color-mix(in srgb, var(--p-wall-2), var(--p-wall-shade) var(--p-wall-shade-amount)) 100%);
