@@ -120,21 +120,33 @@ export function init(win) {
   }
 
   // Focusing the address bar shows it for a moment (styles/aether.css, [aether-just-focused]);
-  // after that only typing or its suggestions keep the bars out. Not when coming back to the
-  // window, which hands the address bar its focus back by itself.
+  // after that only typing or its suggestions keep the bars out. Coming back to the window hands
+  // the address bar its focus back by itself: then the bars stay as they were when you left, out
+  // for as long as it keeps focus if they were out, and hidden if they were hidden.
   const urlbar = doc.getElementById("urlbar");
   let justFocused = 0;
-  let returning = false, returned = 0;
-  win.addEventListener("deactivate", () => (returning = true));
+  let returning = false, returned = 0, wasOut = false;
+  win.addEventListener("deactivate", () => {
+    returning = true;
+    const bars = doc.getElementById(vertical() ? "sidebar-container" : "navigator-toolbox").getBoundingClientRect();
+    wasOut = vertical() ? bars.right > 0 : bars.bottom > 0;
+  });
   win.addEventListener("activate", () => {
     win.clearTimeout(returned);
     returned = win.setTimeout(() => (returning = false), 300);
   });
   urlbar?.addEventListener("focus", () => {
-    if (returning) return;
-    urlbar.setAttribute("aether-just-focused", "");
     win.clearTimeout(justFocused);
+    if (returning) {
+      urlbar.toggleAttribute("aether-just-focused", wasOut); // until it loses focus
+      return;
+    }
+    urlbar.setAttribute("aether-just-focused", "");
     justFocused = win.setTimeout(() => urlbar.removeAttribute("aether-just-focused"), 2500);
+  }, true);
+  urlbar?.addEventListener("blur", () => {
+    win.clearTimeout(justFocused);
+    urlbar.removeAttribute("aether-just-focused");
   }, true);
 
   // A menu opened from the sidebar or toolbar (a right-click, or the containers menu of "+") is a
