@@ -125,7 +125,7 @@ export function init(win) {
   // for as long as it keeps focus if they were out, and hidden if they were hidden.
   const urlbar = doc.getElementById("urlbar");
   let justFocused = 0;
-  let returning = false, returned = 0, wasOut = false, listWasOpen = false;
+  let returning = false, returned = 0, wasOut = false;
   win.addEventListener("deactivate", () => {
     returning = true;
     const bars = doc.getElementById(vertical() ? "sidebar-container" : "navigator-toolbox").getBoundingClientRect();
@@ -138,21 +138,29 @@ export function init(win) {
     returned = win.setTimeout(() => {
       returning = false;
       root.removeAttribute("aether-kept");
+      // Back by clicking the page, not the address bar: now its list can go.
+      if (!urlbar.hasAttribute("focused")) view.close();
     }, 300);
   });
+
+  // The address bar's list of suggestions stays open while you're away from the window, rather
+  // than closing because the window lost focus.
+  const view = win.gURLBar.view;
+  const close = view.close;
+  view.close = function (...args) {
+    if (!doc.hasFocus()) return;
+    return close.apply(this, args);
+  };
   urlbar?.addEventListener("focus", () => {
     win.clearTimeout(justFocused);
     if (returning) {
       urlbar.toggleAttribute("aether-just-focused", wasOut); // until it loses focus
-      // Losing focus closed its list of suggestions, so open it again.
-      if (wasOut && listWasOpen) win.setTimeout(() => win.gURLBar.startQuery(), 0);
       return;
     }
     urlbar.setAttribute("aether-just-focused", "");
     justFocused = win.setTimeout(() => urlbar.removeAttribute("aether-just-focused"), 2500);
   }, true);
   urlbar?.addEventListener("blur", () => {
-    listWasOpen = win.gURLBar.view.isOpen; // before Firefox closes it
     win.clearTimeout(justFocused);
     urlbar.removeAttribute("aether-just-focused");
   }, true);
