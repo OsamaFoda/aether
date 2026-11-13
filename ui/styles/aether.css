@@ -803,8 +803,8 @@ notification-message {
 /* Whatever wallpaper was chosen, a private window's is the purple one. */
 :root[privatebrowsingmode="temporary"] {
   --aether-wallpaper: var(--p-wallpaper) !important;
-  --p-wall-1: #e9d5ff;
-  --p-wall-2: #c7d2fe;
+  --p-wall-1: #d8b4fe;
+  --p-wall-2: #a5b4fc;
   --p-sky-1: #ede4ff;
   --p-sky-2: #f5efff;
   --p-sky-3: #e6d9ff;
@@ -823,8 +823,8 @@ notification-message {
     --p-glow-2: #7e22ce;
     --p-glow-3: #a21caf;
     --p-accent: #c084fc;
-    --p-wall-1: #6b21a8;
-    --p-wall-2: #3730a3;
+    --p-wall-1: #7e22ce;
+    --p-wall-2: #312e81;
   }
 }
 
@@ -1099,7 +1099,7 @@ notification-message {
  * the strip a top toolbar sits on, where nothing blurs, so that toolbar is frosted with a tint. */
 
 :root[aether-liquid][aether-wallpaper] {
-  --aether-frost: rgba(255, 255, 255, 0.34);
+  --aether-frost: rgba(255, 255, 255, 0.28);
   --aether-frost-solid: rgba(255, 255, 255, 0.62);
 
   &:root {
@@ -1121,7 +1121,7 @@ notification-message {
 
 @media (prefers-color-scheme: dark) {
   :root[aether-liquid][aether-wallpaper] {
-    --aether-frost: rgba(14, 16, 30, 0.4);
+    --aether-frost: rgba(14, 16, 30, 0.3);
     --aether-frost-solid: rgba(14, 16, 30, 0.68);
   }
 }
