@@ -173,6 +173,11 @@ html {
   font-size: 12px;
 }
 
+/* The theme's wallpaper, which follows the colour theme. */
+.wallpaper.theme {
+  background: var(--p-wallpaper);
+}
+
 .wallpaper.choose {
   display: grid;
   place-items: center;

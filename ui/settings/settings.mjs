@@ -70,13 +70,13 @@ for (const pref of WATCHED) Services.prefs.addObserver(pref, refresh);
 
 // ---- Wallpapers ----
 
-const WALLPAPER = "aether.wallpaper"; // a file: URL; empty for the desktop's own
+const WALLPAPER = "aether.wallpaper"; // "" for the theme's, "desktop", or a file: URL
 const FOLDER = PathUtils.join(Services.dirsvc.get("Home", Ci.nsIFile).path, "Pictures", "Wallpapers");
 const PICTURE = /\.(jpe?g|png|webp|avif|gif)$/i;
 
 function wallpaperTile(url, image, label) {
   const tile = document.createElement("button");
-  tile.className = "wallpaper";
+  tile.className = url ? "wallpaper" : "wallpaper theme";
   tile.dataset.url = url;
   tile.title = label || decodeURIComponent(url.split("/").pop());
   if (image) {
@@ -107,10 +107,13 @@ async function choosePicture() {
   }
 }
 
-// The desktop's own wallpaper, then the pictures in ~/Pictures/Wallpapers, then one chosen from
+// The theme's own wallpaper, the desktop's, the pictures in ~/Pictures/Wallpapers, one chosen from
 // elsewhere, then "Choose a picture…".
 async function buildWallpapers() {
-  const tiles = [wallpaperTile("", await desktopWallpaper(matchMedia("(prefers-color-scheme: dark)").matches), "Your desktop")];
+  const tiles = [
+    wallpaperTile("", null, "Your theme"),
+    wallpaperTile("desktop", await desktopWallpaper(matchMedia("(prefers-color-scheme: dark)").matches), "Your desktop"),
+  ];
   const urls = [];
   try {
     for (const path of (await IOUtils.getChildren(FOLDER)).sort()) {
@@ -120,7 +123,7 @@ async function buildWallpapers() {
     // No Wallpapers folder.
   }
   const chosen = Services.prefs.getStringPref(WALLPAPER, "");
-  if (chosen && !urls.includes(chosen)) urls.unshift(chosen);
+  if (chosen && chosen !== "desktop" && !urls.includes(chosen)) urls.unshift(chosen);
   tiles.push(...urls.map(url => wallpaperTile(url, url)));
   const choose = Object.assign(document.createElement("button"), { className: "wallpaper choose", textContent: "Choose a picture…" });
   choose.addEventListener("click", choosePicture);

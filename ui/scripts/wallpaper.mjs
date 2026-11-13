@@ -1,10 +1,11 @@
 // Liquid Glass's background: either the desktop, through a see-through window (the "desktop"
 // setting), or a wallpaper drawn inside Aether ("wallpaper", the default). Firefox can blur only
 // what shares the browser area with the glass, never what's behind the window, so over the
-// wallpaper the sidebar is real frosted glass, on any computer. The wallpaper is the desktop's own
-// (asked of GNOME, and again when the window comes forward), unless a picture is chosen in Aether
-// Settings. Prefs: aether.background, and aether.wallpaper (a file: URL, empty for the
-// desktop's). The look is in aether.css (:root[aether-wallpaper]).
+// wallpaper the sidebar is real frosted glass, on any computer. The wallpaper is one made from
+// the colour theme (styles/palettes.css, --p-wallpaper), the desktop's own (asked of GNOME, and
+// again when the window comes forward), or a picture chosen in Aether Settings. Prefs:
+// aether.background, and aether.wallpaper ("" for the theme's, "desktop", or a file: URL). The
+// look is in aether.css (:root[aether-wallpaper]).
 
 const { Subprocess } = ChromeUtils.importESModule("resource://gre/modules/Subprocess.sys.mjs");
 
@@ -31,9 +32,11 @@ export async function desktopWallpaper(dark) {
   }
 }
 
+// "theme", or a picture's file: URL.
 export async function wallpaperURL(win) {
-  return Services.prefs.getStringPref(WALLPAPER, "") ||
-    desktopWallpaper(win.matchMedia("(prefers-color-scheme: dark)").matches);
+  const chosen = Services.prefs.getStringPref(WALLPAPER, "");
+  if (chosen === "desktop") return desktopWallpaper(win.matchMedia("(prefers-color-scheme: dark)").matches);
+  return chosen || "theme";
 }
 
 export function init(win) {
@@ -47,8 +50,10 @@ export function init(win) {
       Services.prefs.getStringPref(BACKGROUND, "wallpaper") === "wallpaper";
     const url = on && await wallpaperURL(win);
     if (asked !== latest) return; // a newer look is on its way
-    root.toggleAttribute("aether-wallpaper", !!url);
-    if (url) root.style.setProperty("--aether-wallpaper", `url("${url.replaceAll('"', "%22")}")`);
+    if (!url) root.removeAttribute("aether-wallpaper");
+    else root.setAttribute("aether-wallpaper", url === "theme" ? "theme" : "picture");
+    if (url && url !== "theme") root.style.setProperty("--aether-wallpaper", `url("${url.replaceAll('"', "%22")}")`);
+    else root.style.removeProperty("--aether-wallpaper");
   };
 
   PREFS.forEach(pref => Services.prefs.addObserver(pref, update));

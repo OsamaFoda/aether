@@ -911,6 +911,10 @@ panel {
   }
 }
 
+:root[aether-wallpaper="theme"] {
+  --aether-wallpaper: var(--p-wallpaper);
+}
+
 @media (prefers-color-scheme: dark) {
   :root[aether-liquid][aether-wallpaper] {
     --aether-frost: rgba(14, 16, 30, 0.4);
