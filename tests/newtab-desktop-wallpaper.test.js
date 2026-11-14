@@ -1,8 +1,9 @@
 // timeout: 60
 // With the desktop's wallpaper chosen, an open New Tab page shows the same picture as its window:
 // after the desktop switches between light and dark, after the desktop's wallpaper changes while
-// the window was in the background, and when the choice changes quickly while the desktop is slow
-// to answer. A stand-in gsettings answers from files here; no desktop setting is read or changed.
+// the window was in the background, when the choice changes quickly while the desktop is slow
+// to answer, and in a tab behind once it's shown again (not before: each ask runs gsettings). A
+// stand-in gsettings answers from files here; no desktop setting is read or changed.
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const dir = PathUtils.join(PathUtils.profileDir, "desktop-stand-in");
 const file = (...names) => PathUtils.join(dir, ...names);
@@ -50,9 +51,25 @@ Services.prefs.setStringPref("aether.wallpaper", url("picture.svg"));
 await wait(2500);
 out.quickChange = pictures();
 await answer("delay", "0");
+
+// A page in a tab behind, which asks only once it's shown again, then catches up.
+Services.prefs.setStringPref("aether.wallpaper", "desktop");
+await wait(1500);
+const newTab = gBrowser.selectedTab;
+gBrowser.selectedTab = gBrowser.addTab("about:blank", { triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal() });
+await wait(500);
+await answer("picture-uri", url("light.svg"));
+window.dispatchEvent(new Event("deactivate"));
+window.dispatchEvent(new Event("activate"));
+await wait(1500);
+out.behind = pictures();
+gBrowser.selectedTab = newTab;
+await wait(1500);
+out.shownAgain = pictures();
 const same = ([inWindow, inPage], want) => inWindow === want && inPage === want;
 return {
   ok: same(out.start, "light.svg") && same(out.dark, "dark.svg") && same(out.changedWhileAway, "light2.svg") &&
-    same(out.quickChange, "picture.svg"),
+    same(out.quickChange, "picture.svg") && out.behind.join() === "light.svg,light2.svg" &&
+    same(out.shownAgain, "light.svg"),
   ...out,
 };

@@ -224,8 +224,10 @@ if (isPrivate) document.documentElement.setAttribute("privatebrowsingmode", "tem
 // dark and when it comes forward.
 const WALLPAPER_PREFS = ["aether.liquidGlass", "aether.background", "aether.wallpaper"];
 let wallpaperAsked = 0;
+let wallpaperStale = false;
 async function showWallpaper() {
   const asked = ++wallpaperAsked;
+  wallpaperStale = false;
   const on = Services.prefs.getBoolPref("aether.liquidGlass", false) &&
     Services.prefs.getStringPref("aether.background", "wallpaper") === "wallpaper";
   // A private window ignores the chosen wallpaper for its theme's (styles/aether.css).
@@ -258,21 +260,28 @@ function placeWallpaper() {
   requestAnimationFrame(placeWallpaper);
 }
 const startPlacing = () => { if (!placing) placeWallpaper(); };
+// A page in a tab behind asks when it's next shown, not on every return to the window (with the
+// desktop's wallpaper, each ask runs gsettings).
+const refreshWallpaper = () => {
+  if (document.hidden) wallpaperStale = true;
+  else showWallpaper();
+};
 const windowAround = chromeWindow();
 const windowDark = windowAround.matchMedia("(prefers-color-scheme: dark)");
 WALLPAPER_PREFS.forEach(pref => Services.prefs.addObserver(pref, showWallpaper));
-windowAround.addEventListener("activate", showWallpaper);
-windowDark.addEventListener("change", showWallpaper);
+windowAround.addEventListener("activate", refreshWallpaper);
+windowDark.addEventListener("change", refreshWallpaper);
 [PINNED, HIDDEN].forEach(pref => Services.prefs.addObserver(pref, renderShortcuts));
 window.addEventListener("unload", () => {
   WALLPAPER_PREFS.forEach(pref => Services.prefs.removeObserver(pref, showWallpaper));
-  windowAround.removeEventListener("activate", showWallpaper);
-  windowDark.removeEventListener("change", showWallpaper);
+  windowAround.removeEventListener("activate", refreshWallpaper);
+  windowDark.removeEventListener("change", refreshWallpaper);
   [PINNED, HIDDEN].forEach(pref => Services.prefs.removeObserver(pref, renderShortcuts));
 }, { once: true });
 document.addEventListener("visibilitychange", startPlacing);
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) return;
+  if (wallpaperStale) showWallpaper();
   renderShortcuts();
   renderData();
 });
