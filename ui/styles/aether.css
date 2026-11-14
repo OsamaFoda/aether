@@ -486,8 +486,9 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
         transition: var(--aether-reveal);
       }
 
+      /* The sidebar's right edge and the 8px gap (the launcher splitter is hidden here, above). */
       #sidebar-box {
-        margin-inline-start: calc(var(--aether-sidebar-width, 250px) + max(2 * var(--aether-compact-inset), 4px)) !important;
+        margin-inline-start: calc(var(--aether-sidebar-width, 250px) + var(--aether-compact-inset) + 8px) !important;
       }
 
       &:not([aether-liquid]) #aether-edge {
