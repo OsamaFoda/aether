@@ -69,7 +69,7 @@ $("bookmarks-bar").addEventListener("change", event => {
   }
 });
 
-const WATCHED = ["aether.", "sidebar.verticalTabs", "ui.systemUsesDarkTheme", BOOKMARKS_BAR];
+const WATCHED = ["aether.", "sidebar.verticalTabs", "ui.systemUsesDarkTheme", "browser.tabs.closeWindowWithLastTab", BOOKMARKS_BAR];
 for (const pref of WATCHED) Services.prefs.addObserver(pref, refresh);
 
 // ---- Wallpapers ----
