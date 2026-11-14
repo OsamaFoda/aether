@@ -166,7 +166,11 @@ export function init(win) {
   const passing = popup => popup.localName === "tooltip" || popup.getAttribute("role") === "tooltip" ||
     ["tabgroup-preview-panel", "confirmation-hint"].includes(popup.id) || popup.closest?.("#urlbar");
   const anchors = new WeakMap(); // Firefox forgets a popup's anchor before it says it's closed
-  win.addEventListener("popupshowing", e => e.target.anchorNode && anchors.set(e.target, e.target.anchorNode), true);
+  win.addEventListener("popupshowing", e => {
+    if (e.target.anchorNode) anchors.set(e.target, e.target.anchorNode);
+    // Back by opening something else: that's what you came back for.
+    if (!passing(e.target)) closedByLeaving.length = 0;
+  }, true);
   // Not one closed by choosing something in it, like New window, which then takes you away.
   // (Panels close on the click, before its command; Enter in them clicks too.)
   let chose = 0;
