@@ -218,8 +218,9 @@ export function init(win) {
     urlbar.removeAttribute("aether-just-focused");
   }, true);
 
-  // A menu opened from the sidebar or toolbar (a right-click, or the containers menu of "+") is a
-  // window of its own, so using it takes the mouse off them: hold them out until it closes.
+  // A menu or panel opened from the sidebar or toolbar (a right-click, the containers menu of "+",
+  // a tab group's name and colour) is a window of its own, so using it takes the mouse off them:
+  // hold them out until it closes.
   const toolbox = doc.getElementById("navigator-toolbox");
   const inBars = node => {
     for (let n = node; n; n = n.parentNode ?? n.host) {
@@ -231,7 +232,7 @@ export function init(win) {
   const hold = () => root.toggleAttribute("aether-hold", held.size > 0);
   win.addEventListener("popupshown", event => {
     const popup = event.target;
-    if (popup.localName === "menupopup" && inBars(popup.triggerNode ?? popup.anchorNode)) {
+    if (!passing(popup) && inBars(popup.triggerNode ?? popup.anchorNode)) {
       held.add(popup);
       hold();
     }
