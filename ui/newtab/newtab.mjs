@@ -11,7 +11,7 @@ import { iconURL } from "../scripts/app-icon.mjs";
 import { wallpaperURL } from "../scripts/wallpaper.mjs";
 
 const PINNED = "aether.newtab.pinned"; // [{ url, title }]
-const HIDDEN = "aether.newtab.hidden"; // [url]
+const HIDDEN = "aether.newtab.hidden"; // [site] (siteOf; older entries are whole URLs)
 const SHORTCUTS = 8;
 const SIP = "sip@osama.local";
 
@@ -39,6 +39,10 @@ function hostOf(url) {
     return url;
   }
 }
+
+// What a removal hides: the whole site, as the shortcuts show one page per site and another page
+// of a removed one would take its place. Addresses without a host (file:) stand for themselves.
+const siteOf = url => hostOf(url) || url;
 
 function open(url, event) {
   const where = event && (event.button === 1 || event.ctrlKey || event.metaKey) ? "tab" : "current";
@@ -73,7 +77,7 @@ async function shortcuts() {
     console.error("Astrelle new tab: top sites", e);
   }
   const visited = top
-    .filter(s => s.url && !hidden.has(s.url) && !taken.has(s.url))
+    .filter(s => s.url && !hidden.has(s.url) && !hidden.has(siteOf(s.url)) && !taken.has(s.url))
     .map(s => ({ url: s.url, title: s.title || hostOf(s.url) }));
   return [...pinned.map(s => ({ ...s, pinned: true })), ...visited].slice(0, SHORTCUTS);
 }
@@ -95,7 +99,7 @@ function togglePin(site) {
 
 function remove(site) {
   writeList(PINNED, readList(PINNED).filter(s => s.url !== site.url));
-  writeList(HIDDEN, [...new Set([...readList(HIDDEN), site.url])]);
+  writeList(HIDDEN, [...new Set([...readList(HIDDEN), siteOf(site.url)])]);
   renderShortcuts();
 }
 
