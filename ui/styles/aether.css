@@ -1176,6 +1176,21 @@ notification-message::before {
   }
 }
 
+/* A picture that fights the look, dark in light mode or light in dark mode (scripts/wallpaper.mjs),
+ * is frosted more, so the text on the glass stays readable. (Not in a private window, whose
+ * wallpaper is always the purple one.) */
+@media (prefers-color-scheme: light) {
+  :root[aether-liquid][aether-wallpaper][aether-wallpaper-tone="dark"]:not([privatebrowsingmode="temporary"]) {
+    --aether-frost: rgba(255, 255, 255, 0.65);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[aether-liquid][aether-wallpaper][aether-wallpaper-tone="light"]:not([privatebrowsingmode="temporary"]) {
+    --aether-frost: rgba(14, 16, 30, 0.65);
+  }
+}
+
 :root[aether-liquid][aether-wallpaper]:not([inFullscreen], [inDOMFullscreen]):is([aether-urlbar-in-sidebar], [aether-compact][aether-vertical]) #sidebar-container {
   background: var(--aether-frost) !important;
   backdrop-filter: blur(30px) saturate(170%);

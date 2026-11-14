@@ -56,6 +56,29 @@ function makeThumbnails(win) {
   }, 20000);
 }
 
+// "dark" or "light" for a picture that's dark or light overall, or null for one in between, read
+// from its frosted copy (small and already blurred). Glass over a dark picture in light mode, or a
+// light one in dark mode, is frosted more (aether.css, [aether-wallpaper-tone]), or the text on it
+// would be unreadable.
+async function pictureTone(win, url) {
+  try {
+    const picture = new win.Image();
+    picture.src = url;
+    await picture.decode();
+    const canvas = win.document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+    canvas.width = canvas.height = 8;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    context.drawImage(picture, 0, 0, 8, 8);
+    const pixels = context.getImageData(0, 0, 8, 8).data;
+    let sum = 0;
+    for (let i = 0; i < pixels.length; i += 4) sum += 0.2126 * pixels[i] + 0.7152 * pixels[i + 1] + 0.0722 * pixels[i + 2];
+    const brightness = sum / (pixels.length / 4); // 0 to 255
+    return brightness < 100 ? "dark" : brightness > 140 ? "light" : null;
+  } catch {
+    return null;
+  }
+}
+
 export function init(win) {
   makeThumbnails(win);
   const root = win.document.documentElement;
@@ -78,13 +101,19 @@ export function init(win) {
       if (url !== frostedFor) {
         frostedFor = url;
         root.style.removeProperty("--aether-wallpaper-frosted");
+        root.removeAttribute("aether-wallpaper-tone");
         const frosted = await thumbnail(url, win, { frosted: true });
-        if (frostedFor === url && frosted) root.style.setProperty("--aether-wallpaper-frosted", css(frosted));
+        if (frostedFor === url && frosted) {
+          root.style.setProperty("--aether-wallpaper-frosted", css(frosted));
+          const tone = await pictureTone(win, frosted);
+          if (frostedFor === url && tone) root.setAttribute("aether-wallpaper-tone", tone);
+        }
       }
     } else {
       frostedFor = null;
       root.style.removeProperty("--aether-wallpaper");
       root.style.removeProperty("--aether-wallpaper-frosted");
+      root.removeAttribute("aether-wallpaper-tone");
     }
   };
 
