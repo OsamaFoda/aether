@@ -106,9 +106,13 @@ async function renderShortcuts() {
     tile.toggleAttribute("pinned", Boolean(site.pinned));
 
     const link = tile.querySelector(".link");
+    // A real link, so the Tab key reaches it and right-clicking gives the link menu. Its own
+    // navigation is cancelled, so a click opens the site once, through open().
+    link.href = site.url;
     link.title = site.url;
-    link.addEventListener("click", event => open(site.url, event));
-    link.addEventListener("auxclick", event => { if (event.button === 1) open(site.url, event); });
+    const openSite = event => { event.preventDefault(); open(site.url, event); };
+    link.addEventListener("click", openSite);
+    link.addEventListener("auxclick", event => { if (event.button === 1) openSite(event); });
 
     const icon = tile.querySelector(".icon");
     const letter = tile.querySelector(".letter");
