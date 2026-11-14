@@ -161,6 +161,10 @@ export function init(win) {
   // can't: they belong to the click that opened them.)
   const closedByLeaving = [];
   let recentlyClosed = [];
+  // Not the ones that come and go by themselves: tooltips, tab and tab group previews, the
+  // "Saved" hint, the address bar's.
+  const passing = popup => popup.localName === "tooltip" || popup.getAttribute("role") === "tooltip" ||
+    ["tabgroup-preview-panel", "confirmation-hint"].includes(popup.id) || popup.closest?.("#urlbar");
   const anchors = new WeakMap(); // Firefox forgets a popup's anchor before it says it's closed
   win.addEventListener("popupshowing", e => e.target.anchorNode && anchors.set(e.target, e.target.anchorNode), true);
   // Not one closed by choosing something in it, like New window, which then takes you away.
@@ -171,7 +175,7 @@ export function init(win) {
   }
   win.addEventListener("popuphidden", e => {
     const popup = e.target, anchor = anchors.get(popup);
-    if (!anchor || popup.localName === "tooltip" || popup.closest?.("#urlbar") || Date.now() - chose < 500) return;
+    if (!anchor || passing(popup) || Date.now() - chose < 500) return;
     recentlyClosed.push({ popup, anchor, when: Date.now() });
     recentlyClosed = recentlyClosed.filter(c => Date.now() - c.when < 500);
   }, true);
