@@ -250,7 +250,8 @@ toolbarbutton .toolbarbutton-badge-stack {
   transition: transform var(--aether-spring-time) var(--aether-spring), background-color 160ms ease;
 }
 
-toolbar toolbarbutton:not([disabled]):hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack) {
+/* (Not the window's minimise, maximise and close buttons: their symbol is their background image.) */
+toolbar toolbarbutton:not([disabled], .titlebar-button):hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack) {
   background-image: var(--aether-sheen) !important;
   box-shadow: var(--aether-rim);
 }
