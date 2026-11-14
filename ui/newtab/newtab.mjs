@@ -94,17 +94,23 @@ function togglePin(site) {
   const pinned = readList(PINNED).filter(s => s.url !== site.url);
   if (!site.pinned) pinned.push({ url: site.url, title: site.title });
   writeList(PINNED, pinned);
-  renderShortcuts();
 }
 
 function remove(site) {
   writeList(PINNED, readList(PINNED).filter(s => s.url !== site.url));
   writeList(HIDDEN, [...new Set([...readList(HIDDEN), siteOf(site.url)])]);
-  renderShortcuts();
 }
 
+// Drawn again whenever the pins or removals change (here or on another New Tab page) and when the
+// page comes back into view, for the sites visited since; unchanged shortcuts are left as they are.
+let shortcutsAsked = 0;
+let shown = "";
 async function renderShortcuts() {
+  const asked = ++shortcutsAsked;
   const sites = await shortcuts();
+  if (asked !== shortcutsAsked) return; // a newer list is on its way
+  if (JSON.stringify(sites) === shown) return;
+  shown = JSON.stringify(sites);
   const template = $("tile").content;
   $("shortcuts").replaceChildren(...sites.map(site => {
     const tile = template.firstElementChild.cloneNode(true);
@@ -245,8 +251,17 @@ function placeWallpaper() {
 }
 const startPlacing = () => { if (!placing) placeWallpaper(); };
 WALLPAPER_PREFS.forEach(pref => Services.prefs.addObserver(pref, showWallpaper));
-window.addEventListener("unload", () => WALLPAPER_PREFS.forEach(pref => Services.prefs.removeObserver(pref, showWallpaper)), { once: true });
+[PINNED, HIDDEN].forEach(pref => Services.prefs.addObserver(pref, renderShortcuts));
+window.addEventListener("unload", () => {
+  WALLPAPER_PREFS.forEach(pref => Services.prefs.removeObserver(pref, showWallpaper));
+  [PINNED, HIDDEN].forEach(pref => Services.prefs.removeObserver(pref, renderShortcuts));
+}, { once: true });
 document.addEventListener("visibilitychange", startPlacing);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) return;
+  renderShortcuts();
+  renderData();
+});
 showWallpaper();
 renderShortcuts();
 renderData();
