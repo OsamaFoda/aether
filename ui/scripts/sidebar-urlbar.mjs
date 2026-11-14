@@ -23,10 +23,11 @@ export function init(win) {
   };
 
   const sizes = new win.ResizeObserver(() => {
-    // Only the sidebar as it sits in the window: in compact mode it's sized from this width (so
-    // measuring it there could only ever keep a wrong one), and in full screen it collapses.
+    // Not in full screen, where it collapses. In compact mode too: a window that opens in it (any
+    // new one, every one after a restart) has Firefox's width for it, carried over from the
+    // others, and the page has to slide aside by that.
     const width = container.getBoundingClientRect().width;
-    const inPlace = !root.hasAttribute("aether-compact") && !root.hasAttribute("inFullscreen") && !root.hasAttribute("inDOMFullscreen");
+    const inPlace = !root.hasAttribute("inFullscreen") && !root.hasAttribute("inDOMFullscreen");
     if (inPlace && width >= 120) root.style.setProperty("--aether-sidebar-width", `${width}px`);
     root.style.setProperty("--aether-toolbox-height", `${toolbox.getBoundingClientRect().height}px`);
   });
