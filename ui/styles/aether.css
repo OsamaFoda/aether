@@ -530,6 +530,15 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
       transition: var(--aether-conceal);
     }
 
+    /* A sidebar panel, and the strip of tools beside it, come down with the page too. */
+    #sidebar-box:not([hidden]) {
+      margin-top: 8px !important;
+    }
+
+    :is(#sidebar-container, #sidebar-box) {
+      transition: var(--aether-conceal);
+    }
+
     &:is([aether-hold], [aether-kept], :has(#aether-edge:hover, #navigator-toolbox:hover, #urlbar[focused]:is([usertyping], [open], [aether-just-focused]),
           #navigator-toolbox [open="true"], :is(#notification-popup, #identity-popup, #permission-popup, #protections-popup, #appMenu-popup, #downloadsPanel,
           #unified-extensions-panel, #widget-overflow, #customizationui-widget-panel, #editBookmarkPanel)[panelopen])) {
@@ -540,8 +549,13 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
         transition: var(--aether-reveal);
       }
 
-      #tabbrowser-tabbox {
+      :is(#tabbrowser-tabbox, #sidebar-box) {
         transform: translateY(calc(var(--aether-toolbox-height, 80px) - 8px));
+        transition: var(--aether-reveal);
+      }
+
+      #sidebar-container {
+        transform: translateY(var(--aether-toolbox-height, 80px));
         transition: var(--aether-reveal);
       }
 
