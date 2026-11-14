@@ -196,7 +196,7 @@ async function renderData() {
     const ratio = Math.min(1, used / budget);
     $("bar-fill").style.width = `${ratio * 100}%`;
     $("bar-fill").className = ratio >= 0.9 ? "danger" : ratio >= 0.75 ? "warn" : "";
-    $("period").textContent = `${formatBytes(left)} left of ${settings.budgetGB} GB · ${period.daysLeft} days`;
+    $("period").textContent = `${formatBytes(left)} left of ${settings.budgetGB} GB · ${period.daysLeft} day${period.daysLeft === 1 ? "" : "s"}`;
     $("safe").textContent = `Safe today: ${formatBytes(Math.round(Math.max(0, (left + today) / period.daysLeft - today)))}`;
   } else {
     $("period-only").textContent = `This period: ${formatBytes(used)}`;
