@@ -261,15 +261,14 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
   transform: scale(0.9);
 }
 
-/* ---- Menus and popups: glass ---- */
+/* ---- Menus and popups: glass ----
+ * Not a page's <select> dropdown: Firefox gives it the page's light or dark, and its colours. */
 
-menupopup,
-panel {
-  --panel-background: var(--aether-menu);
-  --arrowpanel-background: var(--aether-menu);
+:is(menupopup, panel):where(:not(#ContentSelectDropdown > menupopup)) {
+  --panel-background-color: var(--aether-menu);
+  --panel-text-color: var(--aether-text);
   --panel-border-color: var(--aether-edge);
   --panel-border-radius: var(--aether-radius) !important;
-  --panel-shadow: var(--aether-shadow);
 }
 
 /* ---- Address bar in the sidebar ----
@@ -1078,8 +1077,6 @@ notification-message {
   menupopup,
   panel {
     --aether-menu: color-mix(in srgb, var(--p-sky-2) 40%, rgba(255, 255, 255, 0.7));
-    --panel-background: var(--aether-menu);
-    --arrowpanel-background: var(--aether-menu);
     --panel-border-color: rgba(255, 255, 255, 0.45);
     --arrowpanel-border-color: rgba(255, 255, 255, 0.45);
     --panel-border-radius: 18px !important;
