@@ -56,7 +56,12 @@ export function init(win) {
     sync();
     root.getElementById("vertical-tabs")?.after(compact);
 
+    // Firefox's words name the build's brand, which can still be the old one: say Astrelle.
     const settings = root.querySelector("#manage-settings a");
+    if (settings) {
+      settings.removeAttribute("data-l10n-id");
+      settings.textContent = "Manage Astrelle settings";
+    }
     for (const type of ["click", "keydown"]) {
       settings?.addEventListener(type, e => {
         if (type === "keydown" && e.code !== "Enter") return;
