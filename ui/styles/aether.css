@@ -1044,8 +1044,8 @@ notification-message {
   }
 
   /* Menus and panels too, though as windows of their own they can't line it up with the
-   * wallpaper; whatever's inside lets it show through. */
-  &[aether-wallpaper] :is(menupopup, panel) {
+   * wallpaper; whatever's inside lets it show through. Not a page's <select> dropdown. */
+  &[aether-wallpaper] :is(menupopup, panel):not(#ContentSelectDropdown > menupopup) {
     --panel-background-color: transparent;
     --arrowpanel-background: transparent;
 
