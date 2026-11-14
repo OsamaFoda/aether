@@ -134,7 +134,12 @@ async function buildWallpapers() {
 // ---- Add-ons: protection and Sip ----
 
 async function refreshAddons() {
-  $("protection-on").checked = (await protectionState()) === "on";
+  const protection = (await protectionState()) === "on";
+  $("protection-on").checked = protection;
+  // The line under the switch tells how this page's last change went; once protection is turned
+  // on or off elsewhere it no longer holds.
+  const status = $("protection-status");
+  if (!$("protection-on").disabled && status.dataset.on !== String(protection)) status.hidden = true;
   const sip = await sipState();
   $("sip-on").checked = sip === "on";
   $("sip-on").disabled = sip === "missing";
@@ -156,8 +161,10 @@ $("protection-on").addEventListener("change", async event => {
   try {
     await setProtection(box.checked);
     status.textContent = box.checked ? "Protection is on ✓" : "Protection is off";
+    status.dataset.on = box.checked;
   } catch (e) {
     console.error("Astrelle settings: protection", e);
+    status.dataset.on = false;
     status.className = "status error";
     status.textContent = "Couldn't download it. Check your connection and try again.";
   }
