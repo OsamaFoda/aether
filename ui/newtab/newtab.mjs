@@ -233,8 +233,10 @@ function placeWallpaper() {
   placing = document.documentElement.hasAttribute("aether-wallpaper") && !document.hidden;
   if (!placing) return;
   const top = chromeWindow();
-  const at = [top.mozInnerScreenX - window.mozInnerScreenX, top.mozInnerScreenY - window.mozInnerScreenY,
-    top.innerWidth, top.innerHeight].map(n => `${Math.round(n)}px`);
+  // The window's pixels in this page's, which are bigger when the page is zoomed.
+  const k = top.devicePixelRatio / window.devicePixelRatio;
+  const at = [top.mozInnerScreenX * k - window.mozInnerScreenX, top.mozInnerScreenY * k - window.mozInnerScreenY,
+    top.innerWidth * k, top.innerHeight * k].map(n => `${Math.round(n)}px`);
   if (at.join() !== placed) {
     placed = at.join();
     ["--wall-x", "--wall-y", "--wall-w", "--wall-h"].forEach((name, i) => document.documentElement.style.setProperty(name, at[i]));
