@@ -47,7 +47,8 @@ export function init(win) {
 
   let leaving = 0;
   const update = () => {
-    const compact = Services.prefs.getBoolPref(PREF, false);
+    // Not in a site's popup window, which has no sidebar or toolbar to hide.
+    const compact = Services.prefs.getBoolPref(PREF, false) && !win.SidebarController.inSingleTabWindow;
     // Switched on or off, bars kept out from before go too.
     if (compact !== root.hasAttribute("aether-compact")) root.removeAttribute("aether-kept");
     // Switched on: the sidebar and toolbar leave at once, together (styles/aether.css,
@@ -79,7 +80,7 @@ export function init(win) {
 
   const container = doc.getElementById("sidebar-container");
   const keepSidebar = () => {
-    if (!vertical() || !sidebar._state) return;
+    if (!vertical() || !sidebar._state || sidebar.inSingleTabWindow) return; // Firefox hides it in a popup
     const visibility = Services.prefs.getStringPref(VISIBILITY, "always-show");
     if (visibility !== "always-show") {
       if (visibility === "expand-on-hover") Services.prefs.setBoolPref(PREF, true);
