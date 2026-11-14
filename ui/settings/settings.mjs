@@ -51,8 +51,7 @@ for (const group of document.querySelectorAll("[data-pref]")) {
   for (const button of group.querySelectorAll("[data-value]")) {
     button.addEventListener("click", () => {
       CHOICES[group.dataset.pref].set(button.dataset.value);
-      pop(button);
-      refresh(); // not every choice is an aether. pref the page watches
+      pop(button); // the page shows the choice through the preference it watches
     });
   }
 }
