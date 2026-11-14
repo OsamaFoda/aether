@@ -48,6 +48,8 @@ export function init(win) {
   let leaving = 0;
   const update = () => {
     const compact = Services.prefs.getBoolPref(PREF, false);
+    // Switched on or off, bars kept out from before go too.
+    if (compact !== root.hasAttribute("aether-compact")) root.removeAttribute("aether-kept");
     // Switched on: the sidebar and toolbar leave at once, together (styles/aether.css,
     // [aether-leaving]), marked before they start so the usual pause can't take hold.
     if (compact && !root.hasAttribute("aether-compact")) {
@@ -129,7 +131,9 @@ export function init(win) {
   win.addEventListener("deactivate", () => {
     returning = true;
     const bars = doc.getElementById(vertical() ? "sidebar-container" : "navigator-toolbox").getBoundingClientRect();
-    wasOut = vertical() ? bars.right > 0 : bars.bottom > 0;
+    // (Bars that are there because compact mode is off aren't out: kept, they'd stay when it's
+    // switched on.)
+    wasOut = root.hasAttribute("aether-compact") && (vertical() ? bars.right > 0 : bars.bottom > 0);
     // Leaving takes the address bar's focus, which would hide the bars while you're away.
     root.toggleAttribute("aether-kept", wasOut);
   });
