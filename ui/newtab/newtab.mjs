@@ -217,12 +217,18 @@ if (isPrivate) document.documentElement.setAttribute("privatebrowsingmode", "tem
 
 // ---- The window's wallpaper, drawn here to line up with it (newtab.css, [aether-wallpaper]) ----
 
+// Asked again when the window's is (scripts/wallpaper.mjs): on these prefs, and, as the desktop's
+// wallpaper can differ for light and dark or change while away, when the window turns light or
+// dark and when it comes forward.
 const WALLPAPER_PREFS = ["aether.liquidGlass", "aether.background", "aether.wallpaper"];
+let wallpaperAsked = 0;
 async function showWallpaper() {
+  const asked = ++wallpaperAsked;
   const on = Services.prefs.getBoolPref("aether.liquidGlass", false) &&
     Services.prefs.getStringPref("aether.background", "wallpaper") === "wallpaper";
   // A private window ignores the chosen wallpaper for its theme's (styles/aether.css).
   const url = on && (isPrivate ? "theme" : await wallpaperURL(chromeWindow()));
+  if (asked !== wallpaperAsked) return; // a newer look is on its way
   const root = document.documentElement;
   if (!url) root.removeAttribute("aether-wallpaper");
   else root.setAttribute("aether-wallpaper", url === "theme" ? "theme" : "picture");
@@ -250,10 +256,16 @@ function placeWallpaper() {
   requestAnimationFrame(placeWallpaper);
 }
 const startPlacing = () => { if (!placing) placeWallpaper(); };
+const windowAround = chromeWindow();
+const windowDark = windowAround.matchMedia("(prefers-color-scheme: dark)");
 WALLPAPER_PREFS.forEach(pref => Services.prefs.addObserver(pref, showWallpaper));
+windowAround.addEventListener("activate", showWallpaper);
+windowDark.addEventListener("change", showWallpaper);
 [PINNED, HIDDEN].forEach(pref => Services.prefs.addObserver(pref, renderShortcuts));
 window.addEventListener("unload", () => {
   WALLPAPER_PREFS.forEach(pref => Services.prefs.removeObserver(pref, showWallpaper));
+  windowAround.removeEventListener("activate", showWallpaper);
+  windowDark.removeEventListener("change", showWallpaper);
   [PINNED, HIDDEN].forEach(pref => Services.prefs.removeObserver(pref, renderShortcuts));
 }, { once: true });
 document.addEventListener("visibilitychange", startPlacing);
