@@ -597,6 +597,13 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
   background: color-mix(in srgb, var(--aether-accent) 80%, white) !important;
 }
 
+/* The dark themes' accents are pale, so the label is dark on them. */
+@media (prefers-color-scheme: dark) {
+  #fullscreen-exit-button {
+    color: var(--p-sky-1) !important;
+  }
+}
+
 #statuspanel-label {
   margin: 0 0 6px 6px !important;
   border: 1px solid var(--aether-edge) !important;
