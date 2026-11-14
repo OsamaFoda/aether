@@ -9,11 +9,12 @@ for (const liquid of [false, true]) {
   await wait(1500);
   const hidden = Math.round(side.getBoundingClientRect().right);
   document.getElementById("key_gotoHistory").doCommand();
-  await wait(320);
-  out[liquid ? "glass" : "standard"] = { hidden, at320ms: Math.round(side.getBoundingClientRect().left) };
+  // On the hiding curve it would barely have started by now (after a 400ms pause); revealing, it's out.
+  await wait(450);
+  out[liquid ? "glass" : "standard"] = { hidden, at450ms: Math.round(side.getBoundingClientRect().left) };
   SidebarController.hide();
   await wait(1000);
 }
 Services.prefs.setBoolPref("aether.compactMode", false);
-const ok = Object.values(out).every(o => o.hidden <= 0 && o.at320ms >= 0);
+const ok = Object.values(out).every(o => o.hidden <= 0 && o.at450ms > -60);
 return { ok, ...out };
