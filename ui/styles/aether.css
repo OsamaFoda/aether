@@ -624,7 +624,15 @@ notification-message {
   --message-bar-background-color: var(--aether-menu);
   --message-bar-border-color: var(--aether-edge);
   --message-bar-text-color: var(--aether-text);
+  --info-bar-background-color: var(--aether-menu);
+  --info-bar-text-color: var(--aether-text);
   border-radius: 12px !important;
+}
+
+/* The info bars' stripe, in the accent rather than Firefox's rainbow. */
+notification-message::before {
+  background-image: none !important;
+  background-color: var(--aether-accent);
 }
 
 .dialogBox {
