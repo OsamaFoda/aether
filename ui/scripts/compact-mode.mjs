@@ -131,9 +131,10 @@ export function init(win) {
   win.addEventListener("deactivate", () => {
     returning = true;
     const bars = doc.getElementById(vertical() ? "sidebar-container" : "navigator-toolbox").getBoundingClientRect();
-    // (Bars that are there because compact mode is off aren't out: kept, they'd stay when it's
-    // switched on.)
-    wasOut = root.hasAttribute("aether-compact") && (vertical() ? bars.right > 0 : bars.bottom > 0);
+    // (Bars that are there because compact mode is off, or a sidebar panel is open, aren't out:
+    // kept, they'd stay when it's switched on or the panel closes.)
+    const forPanel = vertical() && !doc.getElementById("sidebar-box").hidden;
+    wasOut = root.hasAttribute("aether-compact") && !forPanel && (vertical() ? bars.right > 0 : bars.bottom > 0);
     // Leaving takes the address bar's focus, which would hide the bars while you're away.
     root.toggleAttribute("aether-kept", wasOut);
   });
