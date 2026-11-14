@@ -9,7 +9,8 @@ Starts the browser headless with a throwaway profile over Marionette, then:
 The browser defaults to ~/Applications/astrelle, falling back to ~/Applications/firefox-esr153.
 Set AETHER_BIN to use another one. The page shown defaults to the new tab page; pass --url.
 Each run gets its own throwaway profile and Marionette port, so several can run at once.
-Set ASTRELLE_UI to a ui/ folder (say, in a git worktree) to test that copy of the interface.
+It tests the interface layer of the checkout it's in (ui/ next to tools/), so a git worktree's
+tools test that worktree; set ASTRELLE_UI to a ui/ folder to test another copy.
 """
 import argparse
 import base64
@@ -24,6 +25,7 @@ import tempfile
 import time
 
 PROFILES = os.path.expanduser("~/.cache")
+UI = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ui")
 # At most this many test browsers at once, however many runs are started (each takes ~0.5 GB).
 SLOTS = int(os.environ.get("ASTRELLE_DEV_SLOTS", "6"))
 
@@ -112,6 +114,7 @@ def start(width=1280, height=800, dark=None, show=False):
             f.write(f'user_pref("ui.systemUsesDarkTheme", {1 if dark else 0});\n')
     # Its own XDG data folder, so a test run never repoints the real desktop launcher's icon.
     env = dict(os.environ, MOZ_REMOTE_ALLOW_SYSTEM_ACCESS="1", XDG_DATA_HOME=os.path.join(profile, "xdg-data"))
+    env.setdefault("ASTRELLE_UI", UI)
     proc = subprocess.Popen(
         [find_browser(), *([] if show else ["--headless"]), "--marionette", "--no-remote", "-purgecaches",
          "--profile", profile, "--width", str(width), "--height", str(height)],

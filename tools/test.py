@@ -7,7 +7,7 @@
 A check is a script like the ones `dev.py js` runs (privileged, async, in a browser window): it
 returns true when it passes, or an object {ok, ...} whose other fields say what it saw. Its first
 line can ask for more time (// timeout: 60) or the dark look (// dark). Set ASTRELLE_UI to check
-another copy of ui/.
+another copy of ui/ (by default, the one in the checkout it runs from).
 """
 import argparse
 import concurrent.futures
