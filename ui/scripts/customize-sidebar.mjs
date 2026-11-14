@@ -7,6 +7,8 @@
 // The gear at the bottom of the sidebar opens Astrelle Settings rather than this panel, which is
 // reached from there ("Sidebar tools", through window.aetherCustomizeSidebar).
 
+import { openSettings } from "./about-aether.mjs";
+
 const PAGE = "chrome://browser/content/sidebar/sidebar-customize.html";
 const COMPACT = "aether.compactMode";
 const STYLE = "chrome://aether/content/styles/customize-sidebar.css";
@@ -17,7 +19,7 @@ export function init(win) {
     const firefox = sidebar[name];
     sidebar[name] = function (commandID, ...rest) {
       if (commandID === "viewCustomizeSidebar" && !win.aetherCustomizingSidebar) {
-        win.switchToTabHavingURI("about:astrelle", true);
+        openSettings(win);
         return Promise.resolve();
       }
       return firefox.call(this, commandID, ...rest);
@@ -67,7 +69,7 @@ export function init(win) {
         if (type === "keydown" && e.code !== "Enter") return;
         e.preventDefault();
         e.stopImmediatePropagation();
-        win.switchToTabHavingURI("about:astrelle", true);
+        openSettings(win);
       }, true);
     }
   }, true);

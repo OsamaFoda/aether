@@ -35,9 +35,12 @@ for (const [what, id] of [["astrelle", "{0c5d8e3a-71f4-4b9e-8a26-5d3c9b7e1f42}"]
   }
 }
 
+// To the Settings tab already open, even once a jump link has added a #section to its address.
+export const openSettings = win => win.switchToTabHavingURI(ABOUT, true, { ignoreFragment: "whenComparing" });
+
 export function init(win) {
   const doc = win.document;
-  const open = () => win.switchToTabHavingURI(ABOUT, true);
+  const open = () => openSettings(win);
 
   for (const id of MENUS) {
     const menu = doc.getElementById(id);
