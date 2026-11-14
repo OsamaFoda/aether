@@ -10,7 +10,7 @@ const colour = value => {
   return getComputedStyle(probe).color;
 };
 const seen = {};
-for (const [name, liquid] of [["frosted", true]]) {
+for (const [name, liquid] of [["standard", false], ["frosted", true]]) {
   Services.prefs.setBoolPref("aether.liquidGlass", liquid);
   await wait(800);
   gURLBar.focus();
@@ -19,6 +19,8 @@ for (const [name, liquid] of [["frosted", true]]) {
   const title = document.querySelector(".urlbarView-row[selected] .urlbarView-title");
   seen[name] = {
     open: gURLBar.view.isOpen,
+    background: getComputedStyle(document.querySelector("#urlbar > .urlbar-background")).backgroundColor,
+    themePanel: colour("var(--aether-panel)"),
     selectedText: title && getComputedStyle(title).color,
     themeText: colour("var(--aether-text)"),
   };
@@ -27,5 +29,5 @@ for (const [name, liquid] of [["frosted", true]]) {
   await wait(300);
 }
 probe.remove();
-const ok = Object.values(seen).every(s => s.open && s.selectedText == s.themeText);
+const ok = Object.values(seen).every(s => s.open && s.background == s.themePanel && s.selectedText == s.themeText);
 return { ok, ...seen };

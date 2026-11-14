@@ -69,9 +69,9 @@
   --toolbar-bgcolor: transparent;
   --toolbar-color: var(--aether-text);
   --toolbar-field-background-color: var(--aether-glass);
-  --toolbar-field-focus-background-color: var(--aether-glass-strong);
-  --toolbar-field-color: var(--aether-text);
-  --toolbar-field-focus-color: var(--aether-text);
+  --toolbar-field-background-color-focus: var(--aether-panel); /* and its list, over the page */
+  --toolbar-field-text-color: var(--aether-text);
+  --toolbar-field-text-color-focus: var(--aether-text);
   --toolbar-field-border-color: var(--aether-edge);
   --tab-selected-bgcolor: var(--aether-glass-strong);
   --tab-selected-textcolor: var(--aether-text);
@@ -98,8 +98,8 @@ sidebar-main,
   --sidebar-text-color: var(--aether-text) !important;
   --toolbox-textcolor: var(--aether-text) !important;
   --toolbar-color: var(--aether-text) !important;
-  --toolbar-field-color: var(--aether-text) !important;
-  --toolbar-field-focus-color: var(--aether-text) !important;
+  --toolbar-field-text-color: var(--aether-text) !important;
+  --toolbar-field-text-color-focus: var(--aether-text) !important;
   --toolbarbutton-icon-fill: var(--aether-text) !important;
   color: var(--aether-text) !important;
 }
@@ -159,12 +159,15 @@ body,
 }
 
 /* The boxes at the start of the address bar (the site's identity, like "Astrelle" on Astrelle's own
- * pages, and the search engine button) are part of it, not pills of their own. */
+ * pages, and the search engine button) are part of it, not pills of their own. The selected
+ * suggestion is washed with the accent. */
 #urlbar {
   --urlbar-box-background-color: transparent !important;
   --urlbar-box-background-color-focus: transparent !important;
   --urlbar-box-background-color-hover: var(--aether-glass-hover) !important;
   --urlbar-box-background-color-active: var(--aether-glass-hover) !important;
+  --urlbarview-background-color-selected: color-mix(in srgb, var(--aether-accent) 35%, transparent);
+  --urlbarview-text-color-selected: var(--aether-text);
 }
 
 .searchmode-switcher {
@@ -1054,11 +1057,6 @@ notification-message {
                   var(--aether-wallpaper-frosted, none) center / cover no-repeat,
                   var(--aether-menu) !important;
     }
-  }
-
-  #urlbar {
-    --urlbarview-background-color-selected: color-mix(in srgb, var(--aether-accent) 35%, transparent);
-    --urlbarview-text-color-selected: var(--aether-text);
   }
 
   /* Touching a tab or a button lifts it, like a drop of glass. */
