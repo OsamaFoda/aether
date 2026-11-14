@@ -6,6 +6,7 @@ const { NewTabUtils } = ChromeUtils.importESModule("resource://gre/modules/NewTa
 const { ExtensionStorageIDB } = ChromeUtils.importESModule("resource://gre/modules/ExtensionStorageIDB.sys.mjs");
 const { PlacesUtils } = ChromeUtils.importESModule("resource://gre/modules/PlacesUtils.sys.mjs");
 const { PrivateBrowsingUtils } = ChromeUtils.importESModule("resource://gre/modules/PrivateBrowsingUtils.sys.mjs");
+const { BrowserUtils } = ChromeUtils.importESModule("resource://gre/modules/BrowserUtils.sys.mjs");
 import { follow } from "../scripts/palette.mjs";
 import { iconURL } from "../scripts/app-icon.mjs";
 import { wallpaperURL } from "../scripts/wallpaper.mjs";
@@ -44,9 +45,10 @@ function hostOf(url) {
 // of a removed one would take its place. Addresses without a host (file:) stand for themselves.
 const siteOf = url => hostOf(url) || url;
 
+// Where any link would open for this click: a middle-click or Ctrl in a new tab, Shift in a new
+// window.
 function open(url, event) {
-  const where = event && (event.button === 1 || event.ctrlKey || event.metaKey) ? "tab" : "current";
-  chromeWindow().openTrustedLinkIn(url, where);
+  chromeWindow().openTrustedLinkIn(url, BrowserUtils.whereToOpenLink(event));
 }
 
 // ---- Search ----
