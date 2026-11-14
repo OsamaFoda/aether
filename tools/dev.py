@@ -13,6 +13,7 @@ Set ASTRELLE_UI to a ui/ folder (say, in a git worktree) to test that copy of th
 """
 import argparse
 import base64
+import fcntl
 import json
 import os
 import shutil
@@ -23,6 +24,24 @@ import tempfile
 import time
 
 PROFILES = os.path.expanduser("~/.cache")
+# At most this many test browsers at once, however many runs are started (each takes ~0.5 GB).
+SLOTS = int(os.environ.get("ASTRELLE_DEV_SLOTS", "6"))
+
+
+def take_slot():
+    """Waits for one of the SLOTS browser slots; it's free again when the lock file is closed
+    (or this process ends)."""
+    folder = os.path.join(PROFILES, "astrelle-dev-slots")
+    os.makedirs(folder, exist_ok=True)
+    while True:
+        for i in range(SLOTS):
+            lock = open(os.path.join(folder, f"{i}.lock"), "w")
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                return lock
+            except BlockingIOError:
+                lock.close()
+        time.sleep(0.5)
 
 
 def find_browser():
@@ -84,6 +103,7 @@ def free_port():
 
 
 def start(width=1280, height=800, dark=None, show=False):
+    slot = take_slot()
     profile = tempfile.mkdtemp(prefix="astrelle-dev-", dir=PROFILES)
     port = free_port()
     with open(os.path.join(profile, "user.js"), "w") as f:
@@ -98,6 +118,7 @@ def start(width=1280, height=800, dark=None, show=False):
         env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
     proc.profile = profile
+    proc.slot = slot
     try:
         m = Marionette(port)
     except Exception:
@@ -118,6 +139,7 @@ def stop(proc):
         proc.kill()
         proc.wait(10)
     shutil.rmtree(proc.profile, ignore_errors=True)
+    proc.slot.close()
 
 
 CHECK = """
