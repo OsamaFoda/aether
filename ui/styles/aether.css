@@ -462,6 +462,14 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
         transform: translateX(calc(var(--aether-sidebar-width, 250px) + max(2 * var(--aether-compact-inset), 4px) - 8px));
         transition: var(--aether-reveal);
       }
+
+      /* Once they're out, over the strip, a click at the very edge (a tab, the window's close
+       * button) reaches them; the mouse on them keeps them out. In Frosted Glass the sidebar
+       * floats clear of the edge, so its strip stays. */
+      &:not([aether-liquid]) #aether-edge {
+        visibility: hidden;
+        transition: visibility 0s 300ms;
+      }
     }
 
     /* A sidebar panel (bookmarks, history, an add-on's) keeps the sidebar out, and sits beside it
@@ -476,6 +484,10 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
 
       #sidebar-box {
         margin-inline-start: calc(var(--aether-sidebar-width, 250px) + max(2 * var(--aether-compact-inset), 4px)) !important;
+      }
+
+      &:not([aether-liquid]) #aether-edge {
+        visibility: hidden;
       }
 
       /* At once: laid out after the panel, it's where it had slid to. */
@@ -531,6 +543,12 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
       #tabbrowser-tabbox {
         transform: translateY(calc(var(--aether-toolbox-height, 80px) - 8px));
         transition: var(--aether-reveal);
+      }
+
+      /* As with the sidebar. */
+      #aether-edge {
+        visibility: hidden;
+        transition: visibility 0s 300ms;
       }
     }
   }
