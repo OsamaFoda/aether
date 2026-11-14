@@ -38,10 +38,12 @@ export function init(win) {
       else button.removeAttribute("tooltiptext");
     });
     button.addEventListener("mouseleave", () => button.removeAttribute("aether-private-hover"));
-    button.addEventListener("click", event => {
-      if (event.button !== 0 || !onPrivate(event)) return;
+    // Caught on the way down, at the window: with containers on, Firefox's own click listener on
+    // the button (its press-and-hold menu) was added first and would open a tab as well.
+    win.addEventListener("click", event => {
+      if (event.button !== 0 || !button.contains(event.target) || !onPrivate(event)) return;
       event.preventDefault();
-      event.stopImmediatePropagation();
+      event.stopPropagation();
       win.OpenBrowserWindow({ private: true });
     }, true);
   }
