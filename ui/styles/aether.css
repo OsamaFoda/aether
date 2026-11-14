@@ -416,6 +416,11 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
       width: var(--aether-sidebar-width, 250px);
     }
 
+    /* Out of reach here, and it would widen the page's left gap. */
+    #sidebar-launcher-splitter {
+      display: none;
+    }
+
     #sidebar-container,
     &[aether-urlbar-in-sidebar] #navigator-toolbox {
       transform: translateX(calc(-100% - var(--aether-compact-inset) - 8px));
@@ -452,8 +457,9 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
         transition: var(--aether-reveal);
       }
 
+      /* 8px beside it in Frosted Glass; in Standard the 4px of the sidebar's splitter, as docked. */
       #tabbrowser-tabbox {
-        transform: translateX(calc(var(--aether-sidebar-width, 250px) + 2 * var(--aether-compact-inset) - 8px));
+        transform: translateX(calc(var(--aether-sidebar-width, 250px) + max(2 * var(--aether-compact-inset), 4px) - 8px));
         transition: var(--aether-reveal);
       }
     }
@@ -469,7 +475,7 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
       }
 
       #sidebar-box {
-        margin-inline-start: calc(var(--aether-sidebar-width, 250px) + 2 * var(--aether-compact-inset)) !important;
+        margin-inline-start: calc(var(--aether-sidebar-width, 250px) + max(2 * var(--aether-compact-inset), 4px)) !important;
       }
 
       /* At once: laid out after the panel, it's where it had slid to. */
@@ -1125,8 +1131,9 @@ notification-message::before {
     inset: 8px auto auto 8px;
   }
 
+  /* With the sidebar's 4px splitter, an 8px gap. */
   #tabbrowser-tabbox {
-    margin-inline-start: 8px !important;
+    margin-inline-start: 4px !important;
   }
 }
 
