@@ -207,19 +207,21 @@ sidebar-main,
 }
 
 /* While the selected tab's glass slides over from the last tab (scripts/tab-lens.mjs), it glides
- * beneath the names of the tabs in between, so the tab mustn't clip it and sits under the rest
- * (within the tab list, which keeps that layering to itself). */
+ * beneath the names of the tabs in between, so the tab mustn't clip it and the glass sits under
+ * the rest (within the tab list, which keeps that layering to itself). Only the glass: the tab
+ * itself stays on top, so it can be clicked (or closed) while the glass is still on its way. */
 #tabbrowser-tabs {
   isolation: isolate;
 }
 
 .tabbrowser-tab[aether-lens-moving] {
-  position: relative;
-  z-index: -1;
   overflow: visible !important;
 }
 
 .tabbrowser-tab[aether-lens-moving] > .tab-stack > .tab-background {
+  position: relative;
+  z-index: -1;
+  pointer-events: none;
   will-change: translate, scale;
 }
 
