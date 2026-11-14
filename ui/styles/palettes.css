@@ -93,8 +93,9 @@
   }
 }
 
-/* Private windows, and the New Tab page in them (newtab.mjs sets the same attribute there), are
- * purple whatever the colour theme (styles/aether.css). */
+/* Private windows, and the New Tab page and sidebar panels in them (newtab.mjs and
+ * scripts/sidebar-panels.mjs set the same attribute there), are purple whatever the colour theme
+ * (styles/aether.css). */
 :root[privatebrowsingmode="temporary"] {
   --p-wall-1: #d8b4fe;
   --p-wall-2: #a5b4fc;

@@ -9,6 +9,8 @@
 
 import { follow } from "./palette.mjs";
 
+const { PrivateBrowsingUtils } = ChromeUtils.importESModule("resource://gre/modules/PrivateBrowsingUtils.sys.mjs");
+
 const GLIDE = "cubic-bezier(0.22, 1, 0.36, 1)"; // styles/aether.css, --aether-glide
 const SHEETS = ["chrome://aether/content/styles/palettes.css", "chrome://aether/content/styles/sidebar-pages.css"];
 
@@ -89,6 +91,8 @@ export function init(win) {
     const dialog = page.documentURI === "chrome://global/content/commonDialog.xhtml";
     if (!page.documentURI?.startsWith("chrome://") || (view?.browsingContext?.embedderElement?.id !== "sidebar" && !dialog)) return;
     for (const sheet of SHEETS) view.windowUtils.loadSheetUsingURIString(sheet, view.windowUtils.AUTHOR_SHEET);
+    // A private window's purple, like the window's own (styles/palettes.css).
+    if (PrivateBrowsingUtils.isWindowPrivate(win)) page.documentElement.setAttribute("privatebrowsingmode", "temporary");
     follow(page, view);
   }, true);
 }

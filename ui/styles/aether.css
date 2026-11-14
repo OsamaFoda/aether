@@ -923,7 +923,7 @@ notification-message::before {
  * of their own, and in the sidebar its own label isn't shown). ---- */
 
 /* Whatever wallpaper was chosen, a private window's is the purple one (its colours are in
- * styles/palettes.css, shared with the New Tab page). */
+ * styles/palettes.css, shared with the New Tab page and the sidebar panels). */
 :root[privatebrowsingmode="temporary"] {
   --aether-wallpaper: var(--p-wallpaper) !important;
   --aether-wallpaper-frosted: none !important;
