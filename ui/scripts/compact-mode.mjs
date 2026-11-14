@@ -106,7 +106,7 @@ export function init(win) {
   win.addEventListener("keydown", event => {
     if (event.ctrlKey && event.altKey && !event.shiftKey && !event.metaKey && event.code === "KeyC") {
       event.preventDefault();
-      toggle();
+      if (!event.repeat) toggle(); // held down, once
     }
   }, true);
 
