@@ -5,6 +5,7 @@
 const { NewTabUtils } = ChromeUtils.importESModule("resource://gre/modules/NewTabUtils.sys.mjs");
 const { ExtensionStorageIDB } = ChromeUtils.importESModule("resource://gre/modules/ExtensionStorageIDB.sys.mjs");
 const { PlacesUtils } = ChromeUtils.importESModule("resource://gre/modules/PlacesUtils.sys.mjs");
+const { PrivateBrowsingUtils } = ChromeUtils.importESModule("resource://gre/modules/PrivateBrowsingUtils.sys.mjs");
 import { follow } from "../scripts/palette.mjs";
 import { iconURL } from "../scripts/app-icon.mjs";
 import { wallpaperURL } from "../scripts/wallpaper.mjs";
@@ -200,6 +201,9 @@ async function renderData() {
 }
 
 follow(document, window);
+// In a private window, purple like the window (styles/palettes.css).
+const isPrivate = PrivateBrowsingUtils.isContentWindowPrivate(window);
+if (isPrivate) document.documentElement.setAttribute("privatebrowsingmode", "temporary");
 
 // ---- The window's wallpaper, drawn here to line up with it (newtab.css, [aether-wallpaper]) ----
 
@@ -207,7 +211,8 @@ const WALLPAPER_PREFS = ["aether.liquidGlass", "aether.background", "aether.wall
 async function showWallpaper() {
   const on = Services.prefs.getBoolPref("aether.liquidGlass", false) &&
     Services.prefs.getStringPref("aether.background", "wallpaper") === "wallpaper";
-  const url = on && await wallpaperURL(chromeWindow());
+  // A private window ignores the chosen wallpaper for its theme's (styles/aether.css).
+  const url = on && (isPrivate ? "theme" : await wallpaperURL(chromeWindow()));
   const root = document.documentElement;
   if (!url) root.removeAttribute("aether-wallpaper");
   else root.setAttribute("aether-wallpaper", url === "theme" ? "theme" : "picture");

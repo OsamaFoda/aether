@@ -93,6 +93,34 @@
   }
 }
 
+/* Private windows, and the New Tab page in them (newtab.mjs sets the same attribute there), are
+ * purple whatever the colour theme (styles/aether.css). */
+:root[privatebrowsingmode="temporary"] {
+  --p-wall-1: #d8b4fe;
+  --p-wall-2: #a5b4fc;
+  --p-sky-1: #ede4ff;
+  --p-sky-2: #f5efff;
+  --p-sky-3: #e6d9ff;
+  --p-glow-1: #c4b5fd;
+  --p-glow-2: #e9d5ff;
+  --p-glow-3: #f0abfc;
+  --p-accent: #7c3aed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[privatebrowsingmode="temporary"] {
+    --p-sky-1: #1c0f33;
+    --p-sky-2: #150b26;
+    --p-sky-3: #2a1247;
+    --p-glow-1: #5b21b6;
+    --p-glow-2: #7e22ce;
+    --p-glow-3: #a21caf;
+    --p-accent: #c084fc;
+    --p-wall-1: #7e22ce;
+    --p-wall-2: #312e81;
+  }
+}
+
 /* A wallpaper in the theme's colours (Frosted Glass's default background, scripts/wallpaper.mjs):
  * slanted streaks of light in the theme's two colours (--p-wall-1, --p-wall-2) and accent, at
  * three spacings so they look irregular, with a few rings of light spreading from the top left,
