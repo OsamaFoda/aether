@@ -31,7 +31,8 @@ export function init(win) {
     main.shadowRoot.addEventListener("wheel", event => {
       const r = row();
       if (!r?.contains(event.target) || r.scrollWidth <= r.clientWidth || event.deltaX) return;
-      r.scrollLeft += event.deltaY;
+      // A mouse wheel counts in lines (or pages), not pixels, here in the browser's own UI.
+      r.scrollLeft += event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? r.clientWidth : 1);
       event.preventDefault();
     }, { passive: false });
     main.shadowRoot.addEventListener("scroll", fade, true);
