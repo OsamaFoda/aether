@@ -209,25 +209,29 @@ async function showWallpaper() {
   else root.setAttribute("aether-wallpaper", url === "theme" ? "theme" : "picture");
   if (url && url !== "theme") root.style.setProperty("--aether-wallpaper", `url("${url.replaceAll('"', "%22")}")`);
   else root.style.removeProperty("--aether-wallpaper");
+  startPlacing();
 }
-// Where the window is, relative to this page, checked each frame while the page shows (the page
-// slides in compact mode, which nothing reports).
+// Where the window is, relative to this page, checked each frame while the page shows the
+// wallpaper (the page slides in compact mode, which nothing reports). Otherwise no frames are
+// asked for, as each one keeps the whole browser window busy.
 let placed = "";
+let placing = false;
 function placeWallpaper() {
-  if (document.documentElement.hasAttribute("aether-wallpaper") && !document.hidden) {
-    const top = chromeWindow();
-    const at = [top.mozInnerScreenX - window.mozInnerScreenX, top.mozInnerScreenY - window.mozInnerScreenY,
-      top.innerWidth, top.innerHeight].map(n => `${Math.round(n)}px`);
-    if (at.join() !== placed) {
-      placed = at.join();
-      ["--wall-x", "--wall-y", "--wall-w", "--wall-h"].forEach((name, i) => document.documentElement.style.setProperty(name, at[i]));
-    }
+  placing = document.documentElement.hasAttribute("aether-wallpaper") && !document.hidden;
+  if (!placing) return;
+  const top = chromeWindow();
+  const at = [top.mozInnerScreenX - window.mozInnerScreenX, top.mozInnerScreenY - window.mozInnerScreenY,
+    top.innerWidth, top.innerHeight].map(n => `${Math.round(n)}px`);
+  if (at.join() !== placed) {
+    placed = at.join();
+    ["--wall-x", "--wall-y", "--wall-w", "--wall-h"].forEach((name, i) => document.documentElement.style.setProperty(name, at[i]));
   }
   requestAnimationFrame(placeWallpaper);
 }
+const startPlacing = () => { if (!placing) placeWallpaper(); };
 WALLPAPER_PREFS.forEach(pref => Services.prefs.addObserver(pref, showWallpaper));
 window.addEventListener("unload", () => WALLPAPER_PREFS.forEach(pref => Services.prefs.removeObserver(pref, showWallpaper)), { once: true });
+document.addEventListener("visibilitychange", startPlacing);
 showWallpaper();
-requestAnimationFrame(placeWallpaper);
 renderShortcuts();
 renderData();
