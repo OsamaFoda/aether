@@ -45,8 +45,11 @@ export function init(win) {
     }
     to.setAttribute("aether-lens-moving", "");
     const slide = glass.animate([{ translate: `${dx}px ${dy}px`, offset: 0 }], { id: "aether-lens", duration, easing: SPRING });
+    // A tab that's still opening (top tabs) keeps growing, and the scale would grow with it, so
+    // its glass starts at its own size.
+    const opening = !to.hasAttribute("fadein");
     glass.animate([
-      { scale: `${start.width / end.width} ${start.height / end.height}`, easing: SWELL },
+      { scale: opening ? "1 1" : `${start.width / end.width} ${start.height / end.height}`, easing: SWELL },
       { scale: `${midX} ${midY}`, offset: 0.4, easing: SWELL },
     ], { id: "aether-lens", duration: duration * 0.9 });
     slide.finished.catch(() => {}).finally(() => {
