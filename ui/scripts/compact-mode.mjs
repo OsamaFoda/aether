@@ -163,9 +163,15 @@ export function init(win) {
   let recentlyClosed = [];
   const anchors = new WeakMap(); // Firefox forgets a popup's anchor before it says it's closed
   win.addEventListener("popupshowing", e => e.target.anchorNode && anchors.set(e.target, e.target.anchorNode), true);
+  // Not one closed by choosing something in it, like New window, which then takes you away.
+  // (Panels close on the click, before its command; Enter in them clicks too.)
+  let chose = 0;
+  for (const type of ["mouseup", "click", "command"]) {
+    win.addEventListener(type, e => e.target.closest?.("panel, menupopup") && (chose = Date.now()), true);
+  }
   win.addEventListener("popuphidden", e => {
     const popup = e.target, anchor = anchors.get(popup);
-    if (!anchor || popup.localName === "tooltip" || popup.closest?.("#urlbar")) return;
+    if (!anchor || popup.localName === "tooltip" || popup.closest?.("#urlbar") || Date.now() - chose < 500) return;
     recentlyClosed.push({ popup, anchor, when: Date.now() });
     recentlyClosed = recentlyClosed.filter(c => Date.now() - c.when < 500);
   }, true);
