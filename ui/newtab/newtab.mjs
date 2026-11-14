@@ -1,4 +1,4 @@
-// Aether's new tab page: a search box, shortcuts (most visited, with pins and removals that
+// Astrelle's new tab page: a search box, shortcuts (most visited, with pins and removals that
 // stick) and today's data use from Sip. This page is part of the browser (chrome://), so it can
 // read history and Sip's storage directly; everything it shows from sites is set as text.
 
@@ -69,7 +69,7 @@ async function shortcuts() {
   try {
     top = await NewTabUtils.activityStreamLinks.getTopSites({ numItems: 24 });
   } catch (e) {
-    console.error("Aether new tab: top sites", e);
+    console.error("Astrelle new tab: top sites", e);
   }
   const visited = top
     .filter(s => s.url && !hidden.has(s.url) && !taken.has(s.url))
@@ -167,7 +167,7 @@ async function renderData() {
     const db = await ExtensionStorageIDB.open(ExtensionStorageIDB.getStoragePrincipal(policy.extension));
     stored = await db.get(["days", "settings"]);
   } catch (e) {
-    console.error("Aether new tab: Sip data", e);
+    console.error("Astrelle new tab: Sip data", e);
     return;
   }
   const days = stored.days || {};

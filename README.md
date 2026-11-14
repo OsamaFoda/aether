@@ -1,4 +1,4 @@
-# Aether
+# Astrelle
 
 A browser built on Firefox ESR, with our own interface on top.
 

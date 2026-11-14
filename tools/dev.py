@@ -1,4 +1,4 @@
-"""Drives a local Aether (or Firefox ESR with ui/ linked in) for development checks.
+"""Drives a local Astrelle (or Firefox ESR with ui/ linked in) for development checks.
 
 Starts the browser headless with a throwaway profile over Marionette, then:
 

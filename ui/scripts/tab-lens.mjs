@@ -1,6 +1,6 @@
 // The sliding tab highlight: when you switch tabs, the selected tab's glass slides over from the
 // tab you left, stretching a little along the way like a drop of liquid, and settles. It glides
-// beneath the names of the tabs in between. Switched off with the aether.tabLens pref (in Aether
+// beneath the names of the tabs in between. Switched off with the aether.tabLens pref (in Astrelle
 // Settings), and still when the computer asks for reduced motion.
 //
 // The slide and the stretch are two animations (of translate and scale), so the slide follows

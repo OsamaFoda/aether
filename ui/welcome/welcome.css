@@ -1,4 +1,4 @@
-/* Aether's welcome: words on the left, a living illustration on the right, over slowly drifting
+/* Astrelle's welcome: words on the left, a living illustration on the right, over slowly drifting
  * glows in the chosen colour theme (styles/palettes.css). Steps slide and blur in and out; each
  * illustration animates only while its step is showing. */
 
@@ -820,7 +820,7 @@ kbd {
   to { opacity: 1; transform: scale(1.6); }
 }
 
-/* ---- Light or dark, colours, layout: a little Aether window ---- */
+/* ---- Light or dark, colours, layout: a little Astrelle window ---- */
 
 .pv {
   --t: 700ms;

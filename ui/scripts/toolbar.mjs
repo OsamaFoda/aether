@@ -1,4 +1,4 @@
-// Aether's toolbar layout, set once per profile (and again whenever LAYOUT goes up): back,
+// Astrelle's toolbar layout, set once per profile (and again whenever LAYOUT goes up): back,
 // forward, reload and home, the address bar, workspaces, then add-ons, Split View and Compact Mode.
 // In the sidebar that's a row of buttons over the address bar (styles/aether.css); with top tabs,
 // one row. Firefox's sidebar button goes, as Compact Mode does its job (scripts/compact-mode.mjs),

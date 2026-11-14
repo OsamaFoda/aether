@@ -1,6 +1,6 @@
-// Small copies (320px wide) of the wallpapers, for Aether Settings' tiles: the pictures
+// Small copies (320px wide) of the wallpapers, for Astrelle Settings' tiles: the pictures
 // themselves are several megabytes each, far too much to decode and draw while scrolling. Made
-// once each, by a worker (settings/thumbnail-worker.js), and kept in the profile. Aether makes
+// once each, by a worker (settings/thumbnail-worker.js), and kept in the profile. Astrelle makes
 // them in the background a little after it starts (scripts/wallpaper.mjs), so the settings page
 // finds them ready; it makes any that are missing itself.
 
@@ -52,7 +52,7 @@ export function thumbnail(url, win, { frosted = false } = {}) {
       }
       return PathUtils.toFileURI(copy);
     } catch (e) {
-      console.error("Aether: wallpaper thumbnail", e);
+      console.error("Astrelle: wallpaper thumbnail", e);
       return null;
     }
   });

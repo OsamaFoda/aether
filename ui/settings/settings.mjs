@@ -1,4 +1,4 @@
-// Aether Settings (about:aether): every Aether setting on one page. Each applies the moment it's
+// Astrelle Settings (about:astrelle): every Astrelle setting on one page. Each applies the moment it's
 // changed, and the page follows changes made elsewhere (the right-click menus, shortcuts, the
 // Add-ons page) by reading the preferences and add-ons again whenever they change.
 
@@ -149,7 +149,7 @@ $("protection-on").addEventListener("change", async event => {
     await setProtection(box.checked);
     status.textContent = box.checked ? "Protection is on ✓" : "Protection is off";
   } catch (e) {
-    console.error("Aether settings: protection", e);
+    console.error("Astrelle settings: protection", e);
     status.className = "status error";
     status.textContent = "Couldn't download it. Check your connection and try again.";
   }
@@ -163,7 +163,7 @@ $("sip-on").addEventListener("change", async event => {
     await setSip(event.target.checked);
     if (event.target.checked) await saveSipBudget(Number($("budget-gb").value), $("reset-day").value);
   } catch (e) {
-    console.error("Aether settings: Sip", e);
+    console.error("Astrelle settings: Sip", e);
   }
   refreshAddons();
 });

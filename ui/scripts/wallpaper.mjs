@@ -1,9 +1,9 @@
 // Liquid Glass's background: either the desktop, through a see-through window (the "desktop"
-// setting), or a wallpaper drawn inside Aether ("wallpaper", the default). Firefox can blur only
+// setting), or a wallpaper drawn inside Astrelle ("wallpaper", the default). Firefox can blur only
 // what shares the browser area with the glass, never what's behind the window, so over the
 // wallpaper the sidebar is real frosted glass, on any computer. The wallpaper is one made from
 // the colour theme (styles/palettes.css, --p-wallpaper), the desktop's own (asked of GNOME, and
-// again when the window comes forward), or a picture chosen in Aether Settings. Prefs:
+// again when the window comes forward), or a picture chosen in Astrelle Settings. Prefs:
 // aether.background, and aether.wallpaper ("" for the theme's, "desktop", or a file: URL). The
 // look is in aether.css (:root[aether-wallpaper]).
 
@@ -40,8 +40,8 @@ export async function wallpaperURL(win) {
   return chosen || "theme";
 }
 
-// A little after Aether starts, while nothing else is going on, make the wallpaper thumbnails
-// Aether Settings shows (scripts/thumbnails.mjs), so they're ready when it's opened.
+// A little after Astrelle starts, while nothing else is going on, make the wallpaper thumbnails
+// Astrelle Settings shows (scripts/thumbnails.mjs), so they're ready when it's opened.
 let thumbnailsMade = false;
 function makeThumbnails(win) {
   if (thumbnailsMade) return;

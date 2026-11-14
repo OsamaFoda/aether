@@ -1,4 +1,4 @@
-// Applies Aether's interface to every browser window: stylesheets as soon as a window's
+// Applies Astrelle's interface to every browser window: stylesheets as soon as a window's
 // document exists (so there's no flash of plain Firefox), scripts once the window is ready.
 
 const BASE = "chrome://aether/content/";
@@ -19,7 +19,7 @@ async function runScripts(win) {
       const module = ChromeUtils.importESModule(BASE + script);
       await module.init(win);
     } catch (e) {
-      console.error(`Aether: ${script} failed`, e);
+      console.error(`Astrelle: ${script} failed`, e);
     }
   }
 }

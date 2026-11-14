@@ -1,4 +1,4 @@
-"""Renders Aether's branding from its default app icon (ui/icons/aurora.svg) into ../branding/,
+"""Renders Astrelle's branding from its default app icon (ui/icons/aurora.svg) into ../branding/,
 using the same file names and sizes as Firefox's own branding folder, which they replace.
 The other icons (ui/icons/) are picked in the browser; see ui/scripts/app-icon.mjs.
 
@@ -28,7 +28,7 @@ SQUARE.update({
 # The name as drawn in the About window. Same 372x99 canvas as Firefox's wordmarks.
 WORDMARK = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 372 99"{fill}>
   <text x="186" y="74" text-anchor="middle" font-family="system-ui, sans-serif"
-        font-size="80" font-weight="600" letter-spacing="2">Aether</text>
+        font-size="80" font-weight="600" letter-spacing="2">Astrelle</text>
 </svg>
 """
 

@@ -1,14 +1,14 @@
-// Aether Settings (settings/, every Aether setting on one page) at about:aether, and the ways to
-// it: "Aether Settings" in the ≡ menu, "Aether" at the top of Firefox's own Settings, and
-// "Aether Settings…" in the sidebar and toolbar right-click menus.
+// Astrelle Settings (settings/, every Astrelle setting on one page) at about:astrelle, and the ways to
+// it: "Astrelle Settings" in the ≡ menu, "Astrelle" at the top of Firefox's own Settings, and
+// "Astrelle Settings…" in the sidebar and toolbar right-click menus.
 
 import { iconURL } from "./app-icon.mjs";
 
 const PAGE = "chrome://aether/content/settings/settings.html";
-const ABOUT = "about:aether";
+const ABOUT = "about:astrelle";
 const MENUS = ["toolbar-context-menu", "sidebar-context-menu"];
 
-// about:aether serves the page itself, so it keeps the page's privileges and loads in this
+// about:astrelle serves the page itself, so it keeps the page's privileges and loads in this
 // (the main) process, like about:preferences.
 const aboutAether = {
   QueryInterface: ChromeUtils.generateQI(["nsIAboutModule"]),
@@ -21,15 +21,18 @@ const aboutAether = {
   getChromeURI: () => Services.io.newURI(PAGE),
 };
 
-try {
-  Components.manager.QueryInterface(Ci.nsIComponentRegistrar).registerFactory(
-    Components.ID("{6f1c7a52-3b0e-4f0a-9d5e-ae7e1e5c2a11}"),
-    "about:aether",
-    "@mozilla.org/network/protocol/about;1?what=aether",
-    { createInstance: iid => aboutAether.QueryInterface(iid) },
-  );
-} catch {
-  // Already registered this run.
+// about:aether, from before the browser was called Astrelle, still works.
+for (const [what, id] of [["astrelle", "{0c5d8e3a-71f4-4b9e-8a26-5d3c9b7e1f42}"], ["aether", "{6f1c7a52-3b0e-4f0a-9d5e-ae7e1e5c2a11}"]]) {
+  try {
+    Components.manager.QueryInterface(Ci.nsIComponentRegistrar).registerFactory(
+      Components.ID(id),
+      `about:${what}`,
+      `@mozilla.org/network/protocol/about;1?what=${what}`,
+      { createInstance: iid => aboutAether.QueryInterface(iid) },
+    );
+  } catch {
+    // Already registered this run.
+  }
 }
 
 export function init(win) {
@@ -40,7 +43,7 @@ export function init(win) {
     const menu = doc.getElementById(id);
     if (!menu) continue;
     const item = doc.createXULElement("menuitem");
-    item.setAttribute("label", "Aether Settings…");
+    item.setAttribute("label", "Astrelle Settings…");
     item.addEventListener("command", open);
     menu.prepend(item);
   }
@@ -51,7 +54,7 @@ export function init(win) {
     const item = doc.createXULElement("toolbarbutton");
     item.id = "appMenu-aether-settings";
     item.className = "subviewbutton";
-    item.setAttribute("label", "Aether Settings");
+    item.setAttribute("label", "Astrelle Settings");
     item.addEventListener("command", () => {
       win.PanelUI.hide();
       open();
@@ -68,7 +71,7 @@ export function init(win) {
     const button = page.createElement("moz-page-nav-button");
     button.id = "category-aether";
     button.setAttribute("iconsrc", iconURL());
-    button.textContent = "Aether";
+    button.textContent = "Astrelle";
     button.addEventListener("click", clicked => {
       clicked.stopImmediatePropagation();
       page.location.href = ABOUT;

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Puts Aether's interface layer (ui/) into an installed or unpacked Aether.
+# Puts Astrelle's interface layer (ui/) into an installed or unpacked Astrelle.
 #
 #   scripts/install_ui.sh <install-dir>          copy (what release builds ship)
 #   scripts/install_ui.sh <install-dir> --link   link to this checkout, for live editing
@@ -8,7 +8,7 @@ set -euo pipefail
 INSTALL="$1"
 MODE="${2:-copy}"
 UI="$(cd "$(dirname "$0")/../ui" && pwd)"
-test -f "$INSTALL/application.ini" || { echo "Not an Aether install: $INSTALL" >&2; exit 1; }
+test -f "$INSTALL/application.ini" || { echo "Not an Astrelle install: $INSTALL" >&2; exit 1; }
 
 if [ "$MODE" = --link ]; then put() { rm -rf "$2"; ln -s "$1" "$2"; } else put() { rm -rf "$2"; cp -a "$1" "$2"; } fi
 

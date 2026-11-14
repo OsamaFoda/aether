@@ -150,7 +150,7 @@ export function init(win) {
   win.addEventListener("mousedown", e => inBars(e.target) || release(), true);
   win.gBrowser.tabContainer.addEventListener("TabSelect", release);
 
-  // Switching to another app closes menus and panels (the desktop does it, and Aether can't stop
+  // Switching to another app closes menus and panels (the desktop does it, and Astrelle can't stop
   // it), so the ones opened from a button there open again when you come back. (Right-click menus
   // can't: they belong to the click that opened them.)
   const closedByLeaving = [];

@@ -1,4 +1,4 @@
-// Makes the small wallpaper copies for Aether Settings' tiles (settings.mjs), away from the page
+// Makes the small wallpaper copies for Astrelle Settings' tiles (settings.mjs), away from the page
 // so it stays smooth while they're made: reads a picture, scales it to 320px wide, saves a JPEG.
 
 onmessage = async ({ data: { id, path, copy, frosted } }) => {

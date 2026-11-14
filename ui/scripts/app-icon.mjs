@@ -1,6 +1,6 @@
-// Aether's app icon: Aurora, Eclipse, Comet or Galaxy (the drawings are in ui/icons/), chosen in
-// the welcome or in Customize Aether and kept in the aether.appIcon pref. The desktop takes the
-// icon from Aether's launcher (aether.desktop in ~/.local/share/applications), so this keeps a copy
+// Astrelle's app icon: Aurora, Eclipse, Comet or Galaxy (the drawings are in ui/icons/), chosen in
+// the welcome or in Customize Astrelle and kept in the aether.appIcon pref. The desktop takes the
+// icon from Astrelle's launcher (aether.desktop in ~/.local/share/applications), so this keeps a copy
 // of the chosen icon beside it and points the launcher at the copy; the dock follows in a moment.
 // Builds carry Aurora as the window and About icon.
 
@@ -43,7 +43,7 @@ let started = false;
 export function init() {
   if (started || AppConstants.platform !== "linux") return;
   started = true;
-  const update = () => updateLauncher().catch(e => console.error("Aether: app icon", e));
+  const update = () => updateLauncher().catch(e => console.error("Astrelle: app icon", e));
   Services.prefs.addObserver(PREF, update);
   update();
 }

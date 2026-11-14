@@ -1,7 +1,7 @@
-/* Aether's colour themes (the aether.palette pref, picked in the welcome's Colours step).
+/* Astrelle's colour themes (the aether.palette pref, picked in the welcome's Colours step).
  * Each sets the wallpaper (--p-sky-*), the glows behind the sidebar (--p-glow-*) and the accent
  * (--p-accent), for light and dark. Nebula, the orb's own colours, is the default. Shared by the
- * browser window (aether.css) and Aether's pages (newtab.css), and usable on any element, so a
+ * browser window (aether.css) and Astrelle's pages (newtab.css), and usable on any element, so a
  * colour swatch can show its theme with aether-palette="…". */
 
 :root,

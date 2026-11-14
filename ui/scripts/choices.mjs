@@ -1,4 +1,4 @@
-// Aether's settings as the welcome and the Settings page (about:aether) change them. Each choice
+// Astrelle's settings as the welcome and the Settings page (about:astrelle) change them. Each choice
 // is a preference, applied the moment it's picked. Also the two add-ons they can turn on:
 // protection (uBlock Origin, downloaded from Mozilla's add-on site) and Sip (built in), whose
 // budget is written into Sip's own storage, as its options page would.

@@ -1,7 +1,7 @@
 // A "Split View" toolbar button for Firefox's own split view: click it to put a second tab beside
 // the current one, and click it again to separate them. Also Ctrl+Alt+S. Firefox only offers this
-// from the tab right-click menu. The new tab is Aether's New Tab page, rather than Firefox's own
-// page for it, which doesn't look like Aether (the address bar still finds your open tabs).
+// from the tab right-click menu. The new tab is Astrelle's New Tab page, rather than Firefox's own
+// page for it, which doesn't look like Astrelle (the address bar still finds your open tabs).
 
 const { CustomizableUI } = ChromeUtils.importESModule("moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs");
 
@@ -47,7 +47,7 @@ export function init(win) {
   const update = () => {
     doc.getElementById(WIDGET)?.toggleAttribute("checked", Boolean(gBrowser.selectedTab?.splitview));
   };
-  // The strip split view puts under a pane, showing its address, is left off Aether's own pages,
+  // The strip split view puts under a pane, showing its address, is left off Astrelle's own pages,
   // as Firefox leaves it off its own page for picking the second tab (styles/aether.css),
   // rather than reading "chrome resource".
   const ownPage = /^(about:(newtab|home|aether)|chrome:\/\/aether\/)/;

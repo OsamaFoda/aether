@@ -1,6 +1,6 @@
 // The Liquid Glass setting: see-through glass, closer to Apple's. The window lets the desktop
 // show through the sidebar and toolbar, with clear pills and edges that catch the light; the
-// other choice is Standard. Off by default; switch it in the welcome, Aether Settings, or "Liquid
+// other choice is Standard. Off by default; switch it in the welcome, Astrelle Settings, or "Liquid
 // Glass" in the sidebar and toolbar right-click menus. Remembered in the aether.liquidGlass pref.
 // The look is in aether.css.
 

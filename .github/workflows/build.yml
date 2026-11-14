@@ -90,7 +90,7 @@ jobs:
         run: |
           source release.env
           FILE=$(ls src/obj/dist/"$APP_NAME"-*.tar.* | head -n1)
-          # Add Aether's interface layer (ui/) to the packaged browser.
+          # Add Astrelle's interface layer (ui/) to the packaged browser.
           mkdir pkg
           tar -xf "$FILE" -C pkg
           scripts/install_ui.sh "pkg/$APP_NAME"

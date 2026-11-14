@@ -1,4 +1,4 @@
-// Sidebar panels in Aether's look. The panel is a card of glass beside the sidebar, lined up with
+// Sidebar panels in Astrelle's look. The panel is a card of glass beside the sidebar, lined up with
 // it and the page (styles/aether.css, #sidebar-box). Firefox's own pages inside it (bookmarks,
 // history, passwords, the customize page) get transparent backgrounds and the theme's colours
 // (styles/sidebar-pages.css); web pages in it, like an add-on's or a chatbot's, keep their own.

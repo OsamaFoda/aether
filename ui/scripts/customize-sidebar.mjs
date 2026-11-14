@@ -1,10 +1,10 @@
-// Firefox's "Customize sidebar" panel (the gear at the bottom of the sidebar), made to fit Aether.
+// Firefox's "Customize sidebar" panel (the gear at the bottom of the sidebar), made to fit Astrelle.
 // Its "Expand sidebar on hover" and "Hide tabs and sidebar" are Compact Mode's job here (and
 // scripts/compact-mode.mjs keeps the sidebar shown otherwise, so they did nothing), so they make
-// way for a Compact mode switch; "Move sidebar to the right" goes, as Aether's layout is built
-// with the sidebar on the left; and "Manage Aether settings" opens Aether Settings.
+// way for a Compact mode switch; "Move sidebar to the right" goes, as Astrelle's layout is built
+// with the sidebar on the left; and "Manage Astrelle settings" opens Astrelle Settings.
 //
-// The gear at the bottom of the sidebar opens Aether Settings rather than this panel, which is
+// The gear at the bottom of the sidebar opens Astrelle Settings rather than this panel, which is
 // reached from there ("Sidebar tools", through window.aetherCustomizeSidebar).
 
 const PAGE = "chrome://browser/content/sidebar/sidebar-customize.html";
@@ -17,7 +17,7 @@ export function init(win) {
     const firefox = sidebar[name];
     sidebar[name] = function (commandID, ...rest) {
       if (commandID === "viewCustomizeSidebar" && !win.aetherCustomizingSidebar) {
-        win.switchToTabHavingURI("about:aether", true);
+        win.switchToTabHavingURI("about:astrelle", true);
         return Promise.resolve();
       }
       return firefox.call(this, commandID, ...rest);
@@ -62,7 +62,7 @@ export function init(win) {
         if (type === "keydown" && e.code !== "Enter") return;
         e.preventDefault();
         e.stopImmediatePropagation();
-        win.switchToTabHavingURI("about:aether", true);
+        win.switchToTabHavingURI("about:astrelle", true);
       }, true);
     }
   }, true);

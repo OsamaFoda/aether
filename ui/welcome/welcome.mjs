@@ -1,8 +1,8 @@
-// Aether's welcome (opened once, on first run, by scripts/welcome.mjs). It walks through light or
+// Astrelle's welcome (opened once, on first run, by scripts/welcome.mjs). It walks through light or
 // dark, colours, the app icon, layout, glass, what closing the last tab does, protection
 // (installs uBlock Origin from Mozilla's add-on site) and Sip (the built-in data saver, off
 // unless chosen). Every choice applies at once, and the illustration on the right follows it.
-// All of it can be changed later in Aether Settings (about:aether, settings/), which shares the
+// All of it can be changed later in Astrelle Settings (about:astrelle, settings/), which shares the
 // choices in scripts/choices.mjs.
 
 import { follow } from "../scripts/palette.mjs";
@@ -134,7 +134,7 @@ $("protection-on").addEventListener("click", async () => {
     status.textContent = "Protection is on ✓";
     setTimeout(() => next(step), 900);
   } catch (e) {
-    console.error("Aether welcome: protection", e);
+    console.error("Astrelle welcome: protection", e);
     status.className = "status error";
     status.textContent = "Couldn't download it. Check your connection and try again, or skip for now.";
     buttons.forEach(b => (b.disabled = false));
@@ -152,7 +152,7 @@ for (const [id, on] of [["sip-on", true], ["sip-off", false]]) {
       if (on) await saveSipBudget(Number($("budget-gb").value), $("reset-day").value);
       chosen.sip = on;
     } catch (e) {
-      console.error("Aether welcome: Sip", e);
+      console.error("Astrelle welcome: Sip", e);
     }
     step.querySelectorAll("button").forEach(b => (b.disabled = false));
     next(step);
@@ -164,8 +164,8 @@ for (const [id, on] of [["sip-on", true], ["sip-off", false]]) {
 function summarize() {
   const on = [chosen.protection && "Protection", chosen.sip && "Sip"].filter(Boolean);
   $("summary").textContent = on.length
-    ? `${on.join(" and ")} ${on.length > 1 ? "are" : "is"} on. You can change this any time in Aether Settings.`
-    : "You can turn on protection or Sip any time in Aether Settings.";
+    ? `${on.join(" and ")} ${on.length > 1 ? "are" : "is"} on. You can change this any time in Astrelle Settings.`
+    : "You can turn on protection or Sip any time in Astrelle Settings.";
 }
 
 $("start").addEventListener("click", () => {

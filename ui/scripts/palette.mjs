@@ -1,5 +1,5 @@
 // Applies the chosen colour theme (the aether.palette pref; the colours are in styles/palettes.css)
-// to browser windows, and, through follow(), to Aether's own pages like the new tab page.
+// to browser windows, and, through follow(), to Astrelle's own pages like the new tab page.
 
 export const PALETTES = ["nebula", "ocean", "aurora", "sunset", "rose", "graphite"];
 const PREF = "aether.palette";

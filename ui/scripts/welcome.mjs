@@ -1,7 +1,7 @@
-// On Aether's first launch, opens the welcome page (ui/welcome/), which sets up the look and offers
-// protection (uBlock Origin) and Sip. Sip ships inside Aether but stays off until it's chosen
+// On Astrelle's first launch, opens the welcome page (ui/welcome/), which sets up the look and offers
+// protection (uBlock Origin) and Sip. Sip ships inside Astrelle but stays off until it's chosen
 // there. Shown once per profile (the aether.welcome.shown pref); after that, everything it sets
-// is in Aether Settings (scripts/about-aether.mjs).
+// is in Astrelle Settings (scripts/about-aether.mjs).
 
 const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
 

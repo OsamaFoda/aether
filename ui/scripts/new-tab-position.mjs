@@ -1,6 +1,6 @@
 // With vertical tabs, where a new tab (Ctrl+T, the + button) goes: to the top of the list, just
 // below pinned tabs, like Zen, or to the end. The aether.newTabsAt pref ("top" or "bottom", in
-// Aether Settings) decides, and the "+ New Tab" button moves to the same end (styles/aether.css,
+// Astrelle Settings) decides, and the "+ New Tab" button moves to the same end (styles/aether.css,
 // :root[aether-newtabs-top]). With top tabs new tabs always go at the end
 // (browser.tabs.insertAfterCurrent is off in aether.cfg). Tabs opened from links are left where
 // Firefox puts them.
