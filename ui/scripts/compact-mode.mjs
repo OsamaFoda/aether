@@ -224,9 +224,11 @@ export function init(win) {
   // a tab group's name and colour) is a window of its own, so using it takes the mouse off them:
   // hold them out until it closes.
   const toolbox = doc.getElementById("navigator-toolbox");
+  // (In full screen the toolbar is Firefox's own, along the top, apart from the sidebar.)
   const inBars = node => {
+    const toolbar = root.hasAttribute("inFullscreen") ? null : toolbox;
     for (let n = node; n; n = n.parentNode ?? n.host) {
-      if (n === container || n === toolbox) return true;
+      if (n === container || n === toolbar) return true;
     }
     return false;
   };
