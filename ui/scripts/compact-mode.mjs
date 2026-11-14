@@ -220,6 +220,12 @@ export function init(win) {
     if (held.delete(event.target)) hold();
   }, true);
 
+  // A notification bar (like "pop-up blocked") sits in the bars, so one for the tab you're on
+  // brings them out, kept like bars you've come back to.
+  toolbox.addEventListener("AlertActive", event => {
+    if (root.hasAttribute("aether-compact") && event.target.checkVisibility()) root.setAttribute("aether-kept", "");
+  });
+
   Services.prefs.addObserver(PREF, update);
   Services.prefs.addObserver(VERTICAL_TABS, update);
   win.addEventListener("unload", () => {
