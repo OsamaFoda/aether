@@ -6,7 +6,7 @@ Starts the browser headless with a throwaway profile over Marionette, then:
     python3 tools/dev.py shot out.png     # screenshot of a browser window
     python3 tools/dev.py js file.js       # run privileged JS in the browser window, print result
 
-The browser defaults to ~/Applications/aether, falling back to ~/Applications/firefox-esr153.
+The browser defaults to ~/Applications/astrelle, falling back to ~/Applications/firefox-esr153.
 Set AETHER_BIN to use another one. The page shown defaults to the new tab page; pass --url.
 """
 import argparse
@@ -26,7 +26,7 @@ PORT = 2830
 def find_browser():
     if os.environ.get("AETHER_BIN"):
         return os.environ["AETHER_BIN"]
-    for path in ("~/Applications/aether/aether", "~/Applications/firefox-esr153/firefox"):
+    for path in ("~/Applications/astrelle/aether", "~/Applications/firefox-esr153/firefox"):
         path = os.path.expanduser(path)
         if os.path.exists(path):
             return path
