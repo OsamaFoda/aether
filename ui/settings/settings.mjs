@@ -104,9 +104,15 @@ async function choosePicture() {
   const result = await new Promise(resolve => picker.open(resolve));
   if (result === Ci.nsIFilePicker.returnOK) {
     Services.prefs.setStringPref(WALLPAPER, PathUtils.toFileURI(picker.file.path));
-    buildWallpapers();
   }
 }
+
+// A picture outside the folder, chosen here or in another Settings tab, gets a tile.
+function wallpaperChanged() {
+  const url = Services.prefs.getStringPref(WALLPAPER, "");
+  if (![...$("wallpapers").querySelectorAll("[data-url]")].some(tile => tile.dataset.url === url)) buildWallpapers();
+}
+Services.prefs.addObserver(WALLPAPER, wallpaperChanged);
 
 // The theme's own wallpaper, the desktop's (if it's a picture a page can show: not GNOME's .jxl
 // ones or a slideshow), the pictures in ~/Pictures/Wallpapers, one chosen from elsewhere, then
@@ -194,6 +200,7 @@ $("sidebar-tools").addEventListener("click", () => window.browsingContext.topChr
 
 window.addEventListener("unload", () => {
   for (const pref of WATCHED) Services.prefs.removeObserver(pref, refresh);
+  Services.prefs.removeObserver(WALLPAPER, wallpaperChanged);
   AddonManager.removeAddonListener(addonListener);
   stopFollowingSip();
 }, { once: true });
