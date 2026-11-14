@@ -47,8 +47,10 @@ export function init(win) {
 
   let leaving = 0;
   const update = () => {
-    // Not in a site's popup window, which has no sidebar or toolbar to hide.
-    const compact = Services.prefs.getBoolPref(PREF, false) && !win.SidebarController.inSingleTabWindow;
+    // Not in a site's popup window, which has no sidebar or toolbar to hide, nor while customizing
+    // the toolbar, which needs it there to drag buttons onto.
+    const compact = Services.prefs.getBoolPref(PREF, false) && !win.SidebarController.inSingleTabWindow &&
+      !root.hasAttribute("customizing");
     // Switched on or off, bars kept out from before go too.
     if (compact !== root.hasAttribute("aether-compact")) root.removeAttribute("aether-kept");
     // Switched on: the sidebar and toolbar leave at once, together (styles/aether.css,
@@ -247,6 +249,7 @@ export function init(win) {
     if (root.hasAttribute("aether-compact") && event.target.checkVisibility()) root.setAttribute("aether-kept", "");
   });
 
+  new win.MutationObserver(update).observe(root, { attributes: true, attributeFilter: ["customizing"] });
   Services.prefs.addObserver(PREF, update);
   Services.prefs.addObserver(VERTICAL_TABS, update);
   win.addEventListener("unload", () => {
