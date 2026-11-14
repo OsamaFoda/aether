@@ -37,8 +37,13 @@ export function init(win) {
     win.requestAnimationFrame(() => {
       if (!to.selected || !to.isConnected) return;
       const glass = to.querySelector(".tab-background");
-      const end = glass?.getBoundingClientRect();
-      if (!end?.width) return;
+      if (!glass) return;
+      // Back to a tab whose glass is still on its way: measured where it rests, not mid-slide.
+      for (const running of glass.getAnimations()) {
+        if (running.id === "aether-lens") running.cancel();
+      }
+      const end = glass.getBoundingClientRect();
+      if (!end.width) return;
 
       const dx = start.left - end.left;
       const dy = start.top - end.top;
@@ -50,9 +55,6 @@ export function init(win) {
       const [midX, midY] = Math.abs(dy) > Math.abs(dx) ? [1 / Math.sqrt(stretch), stretch] : [stretch, 1 / Math.sqrt(stretch)];
       const duration = Math.min(380 + distance * 0.35, 620);
 
-      for (const running of glass.getAnimations()) {
-        if (running.id === "aether-lens") running.cancel();
-      }
       to.setAttribute("aether-lens-moving", "");
       const slide = glass.animate([{ translate: `${dx}px ${dy}px`, offset: 0 }], { id: "aether-lens", duration, easing: SPRING });
       glass.animate([
