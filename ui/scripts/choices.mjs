@@ -125,4 +125,13 @@ export async function saveSipBudget(budgetGB, resetDay) {
   const settings = await sipSettings(db);
   const changes = await db.set({ settings: { ...settings, budgetGB, resetDay } });
   if (changes) ExtensionStorageIDB.notifyListeners(SIP, changes);
+  return { budgetGB, resetDay };
+}
+
+// Calls back whenever Sip's settings change, from here or from Sip's own options; returns what
+// stops it.
+export function followSipSettings(callback) {
+  const listener = changes => "settings" in changes && callback();
+  ExtensionStorageIDB.addOnChangedListener(SIP, listener);
+  return () => ExtensionStorageIDB.removeOnChangedListener(SIP, listener);
 }

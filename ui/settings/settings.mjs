@@ -8,7 +8,7 @@ import { follow } from "../scripts/palette.mjs";
 import { iconURL } from "../scripts/app-icon.mjs";
 import { desktopWallpaper } from "../scripts/wallpaper.mjs";
 import { thumbnail, wallpaperFiles, wallpaperFolder } from "../scripts/thumbnails.mjs";
-import { CHOICES, protectionState, setProtection, sipState, setSip, readSipBudget, saveSipBudget } from "../scripts/choices.mjs";
+import { CHOICES, protectionState, setProtection, sipState, setSip, readSipBudget, saveSipBudget, followSipSettings } from "../scripts/choices.mjs";
 
 const $ = id => document.getElementById(id);
 const BOOKMARKS_BAR = "browser.toolbars.bookmarks.visibility"; // "always", "never", or "newtab" (on new tabs only)
@@ -172,11 +172,16 @@ $("sip-on").addEventListener("change", async event => {
 });
 
 for (const id of ["budget-gb", "reset-day"]) {
-  $(id).addEventListener("change", () => saveSipBudget(Number($("budget-gb").value), $("reset-day").value));
+  $(id).addEventListener("change", async () => {
+    const saved = await saveSipBudget(Number($("budget-gb").value), $("reset-day").value);
+    // What was saved (a day past the 31st is the 31st), even while still in the field.
+    if (saved) $(id).value = id === "budget-gb" ? saved.budgetGB || "" : saved.resetDay;
+  });
 }
 
 const addonListener = { onEnabled: refreshAddons, onDisabled: refreshAddons, onInstalled: refreshAddons, onUninstalled: refreshAddons };
 AddonManager.addAddonListener(addonListener);
+const stopFollowingSip = followSipSettings(refreshAddons);
 
 // ---- More ----
 
@@ -190,6 +195,7 @@ $("sidebar-tools").addEventListener("click", () => window.browsingContext.topChr
 window.addEventListener("unload", () => {
   for (const pref of WATCHED) Services.prefs.removeObserver(pref, refresh);
   AddonManager.removeAddonListener(addonListener);
+  stopFollowingSip();
 }, { once: true });
 
 refresh();
