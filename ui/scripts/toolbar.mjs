@@ -1,4 +1,4 @@
-// Astrelle's toolbar layout, set once per profile (and again whenever LAYOUT goes up): back,
+// Astrelle's toolbar layout, set once per profile (and updated whenever LAYOUT goes up): back,
 // forward, reload and home, the address bar, workspaces, then add-ons, Split View and Compact Mode.
 // In the sidebar that's a row of buttons over the address bar (styles/aether.css); with top tabs,
 // one row. Firefox's sidebar button goes, as Compact Mode does its job (scripts/compact-mode.mjs),
@@ -12,6 +12,15 @@ const LAYOUT = 2; // 2: the home button
 const ORDER = ["back-button", "forward-button", "stop-reload-button", "home-button", "vertical-spacer", "urlbar-container",
   "aether-workspaces", "unified-extensions-button", "aether-split-view", "aether-compact-mode"];
 const REMOVE = ["sidebar-button", "firefox-view-button", "alltabs-button"];
+// What each layout changes on a toolbar that has the one before, so that a new layout leaves the
+// rest the way you arranged it.
+const CHANGES = {
+  2: () => {
+    if (CustomizableUI.getPlacementOfWidget("home-button")) return;
+    const spacer = CustomizableUI.getPlacementOfWidget("vertical-spacer");
+    CustomizableUI.addWidgetToArea("home-button", CustomizableUI.AREA_NAVBAR, spacer?.area === CustomizableUI.AREA_NAVBAR ? spacer.position : undefined);
+  },
+};
 // What Firefox's own toolbar has that a new Astrelle profile's doesn't (its vertical-tabs toolbar
 // starts without them), for Restore Defaults to take out again.
 const FIREFOX_ONLY = ["downloads-button", "fxa-toolbar-menu-button"];
@@ -30,9 +39,14 @@ export function init(win) {
     win.setTimeout(() => Services.prefs.clearUserPref("sidebar.verticalTabs"));
   });
 
-  if (Services.prefs.getIntPref(PREF, 0) >= LAYOUT) return;
+  const layout = Services.prefs.getIntPref(PREF, 0);
+  if (layout >= LAYOUT) return;
   Services.prefs.setIntPref(PREF, LAYOUT);
-  applyLayout();
+  if (!layout) {
+    applyLayout();
+    return;
+  }
+  for (let next = layout + 1; next <= LAYOUT; next++) CHANGES[next]?.();
 }
 
 function applyLayout() {
