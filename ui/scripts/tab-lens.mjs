@@ -26,36 +26,44 @@ export function init(win) {
     // Nothing to slide from if that tab is gone or in another workspace.
     if (!from?.isConnected || from.hidden || from === to) return;
     const start = from.querySelector(".tab-background")?.getBoundingClientRect();
-    const glass = to.querySelector(".tab-background");
-    const end = glass?.getBoundingClientRect();
-    if (!start?.width || !end?.width) return;
-
-    const dx = start.left - end.left;
-    const dy = start.top - end.top;
-    const distance = Math.hypot(dx, dy);
-    if (distance < 1 || distance > 2000) return;
-
-    // Longer trips stretch more, along the way it travels, and thin out across it.
-    const stretch = Math.min(1 + distance / 1200, 1.15);
-    const [midX, midY] = Math.abs(dy) > Math.abs(dx) ? [1 / Math.sqrt(stretch), stretch] : [stretch, 1 / Math.sqrt(stretch)];
-    const duration = Math.min(380 + distance * 0.35, 620);
-
-    for (const running of glass.getAnimations()) {
-      if (running.id === "aether-lens") running.cancel();
-    }
-    to.setAttribute("aether-lens-moving", "");
-    const slide = glass.animate([{ translate: `${dx}px ${dy}px`, offset: 0 }], { id: "aether-lens", duration, easing: SPRING });
     // A tab that's still opening (top tabs) keeps growing, and the scale would grow with it, so
     // its glass starts at its own size.
     const opening = !to.hasAttribute("fadein");
-    glass.animate([
-      { scale: opening ? "1 1" : `${start.width / end.width} ${start.height / end.height}`, easing: SWELL },
-      { scale: `${midX} ${midY}`, offset: 0.4, easing: SWELL },
-    ], { id: "aether-lens", duration: duration * 0.9 });
-    slide.finished.catch(() => {}).finally(() => {
-      if (!glass.getAnimations().some(a => a.id === "aether-lens" && a.playState === "running")) {
-        to.removeAttribute("aether-lens-moving");
+    if (!start?.width) return;
+
+    // Where the tab lands is measured just before the next frame is drawn: right after the switch
+    // a new tab can still move to the top of the list (scripts/new-tab-position.mjs), and the tab
+    // you closed still takes up its row.
+    win.requestAnimationFrame(() => {
+      if (!to.selected || !to.isConnected) return;
+      const glass = to.querySelector(".tab-background");
+      const end = glass?.getBoundingClientRect();
+      if (!end?.width) return;
+
+      const dx = start.left - end.left;
+      const dy = start.top - end.top;
+      const distance = Math.hypot(dx, dy);
+      if (distance < 1 || distance > 2000) return;
+
+      // Longer trips stretch more, along the way it travels, and thin out across it.
+      const stretch = Math.min(1 + distance / 1200, 1.15);
+      const [midX, midY] = Math.abs(dy) > Math.abs(dx) ? [1 / Math.sqrt(stretch), stretch] : [stretch, 1 / Math.sqrt(stretch)];
+      const duration = Math.min(380 + distance * 0.35, 620);
+
+      for (const running of glass.getAnimations()) {
+        if (running.id === "aether-lens") running.cancel();
       }
+      to.setAttribute("aether-lens-moving", "");
+      const slide = glass.animate([{ translate: `${dx}px ${dy}px`, offset: 0 }], { id: "aether-lens", duration, easing: SPRING });
+      glass.animate([
+        { scale: opening ? "1 1" : `${start.width / end.width} ${start.height / end.height}`, easing: SWELL },
+        { scale: `${midX} ${midY}`, offset: 0.4, easing: SWELL },
+      ], { id: "aether-lens", duration: duration * 0.9 });
+      slide.finished.catch(() => {}).finally(() => {
+        if (!glass.getAnimations().some(a => a.id === "aether-lens" && a.playState === "running")) {
+          to.removeAttribute("aether-lens-moving");
+        }
+      });
     });
   });
 }
