@@ -8,6 +8,8 @@ Starts the browser headless with a throwaway profile over Marionette, then:
 
 The browser defaults to ~/Applications/astrelle, falling back to ~/Applications/firefox-esr153.
 Set AETHER_BIN to use another one. The page shown defaults to the new tab page; pass --url.
+Each run gets its own throwaway profile and Marionette port, so several can run at once.
+Set ASTRELLE_UI to a ui/ folder (say, in a git worktree) to test that copy of the interface.
 """
 import argparse
 import base64
@@ -17,10 +19,10 @@ import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 
-PROFILE = os.path.expanduser("~/.cache/aether-dev-profile")
-PORT = 2830
+PROFILES = os.path.expanduser("~/.cache")
 
 
 def find_browser():
@@ -68,28 +70,39 @@ class Marionette:
                     raise RuntimeError(f"{name}: {msg[2].get('message', msg[2])}")
                 return msg[3]
 
-    def js(self, script):
+    def js(self, script, timeout=30):
         """Runs async privileged JS in the browser window; `return` its result.
         Use window.Services: Marionette's own sandbox has only a partial Services."""
         wrapped = f"const done = arguments[arguments.length - 1]; (async () => {{ {script} }})().then(done, e => done('ERROR: ' + e + '\\n' + e.stack));"
-        return self.call("WebDriver:ExecuteAsyncScript", {"script": wrapped, "args": [], "scriptTimeout": 30000})["value"]
+        return self.call("WebDriver:ExecuteAsyncScript", {"script": wrapped, "args": [], "scriptTimeout": int(timeout * 1000)})["value"]
+
+
+def free_port():
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
 
 
 def start(width=1280, height=800, dark=None, show=False):
-    shutil.rmtree(PROFILE, ignore_errors=True)
-    os.makedirs(PROFILE)
-    with open(os.path.join(PROFILE, "user.js"), "w") as f:
-        f.write(f'user_pref("marionette.port", {PORT});\n')
+    profile = tempfile.mkdtemp(prefix="astrelle-dev-", dir=PROFILES)
+    port = free_port()
+    with open(os.path.join(profile, "user.js"), "w") as f:
+        f.write(f'user_pref("marionette.port", {port});\n')
         if dark is not None:
             f.write(f'user_pref("ui.systemUsesDarkTheme", {1 if dark else 0});\n')
     # Its own XDG data folder, so a test run never repoints the real desktop launcher's icon.
-    env = dict(os.environ, MOZ_REMOTE_ALLOW_SYSTEM_ACCESS="1", XDG_DATA_HOME=os.path.join(PROFILE, "xdg-data"))
+    env = dict(os.environ, MOZ_REMOTE_ALLOW_SYSTEM_ACCESS="1", XDG_DATA_HOME=os.path.join(profile, "xdg-data"))
     proc = subprocess.Popen(
         [find_browser(), *([] if show else ["--headless"]), "--marionette", "--no-remote", "-purgecaches",
-         "--profile", PROFILE, "--width", str(width), "--height", str(height)],
+         "--profile", profile, "--width", str(width), "--height", str(height)],
         env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
-    m = Marionette(PORT)
+    proc.profile = profile
+    try:
+        m = Marionette(port)
+    except Exception:
+        stop(proc)
+        raise
     m.call("WebDriver:NewSession", {"capabilities": {}})
     m.call("Marionette:SetContext", {"value": "chrome"})
     # Firefox stripes the address bar while it's remote-controlled; hide that from screenshots.
@@ -103,7 +116,8 @@ def stop(proc):
         proc.wait(10)
     except subprocess.TimeoutExpired:
         proc.kill()
-    shutil.rmtree(PROFILE, ignore_errors=True)
+        proc.wait(10)
+    shutil.rmtree(proc.profile, ignore_errors=True)
 
 
 CHECK = """
@@ -133,6 +147,7 @@ def main():
     ap.add_argument("arg", nargs="?")
     ap.add_argument("--url", default="about:newtab")
     ap.add_argument("--wait", type=float, default=2)
+    ap.add_argument("--timeout", type=float, default=30, help="seconds a js file may run")
     ap.add_argument("--dark", action="store_true", help="dark mode (default: light)")
     ap.add_argument("--before", help="JS file to run in the browser window before a screenshot")
     ap.add_argument("--show", action="store_true",
@@ -157,7 +172,7 @@ def main():
             print(args.arg)
         elif args.command == "js":
             with open(args.arg) as f:
-                print(json.dumps(m.js(f.read()), indent=2))
+                print(json.dumps(m.js(f.read(), args.timeout), indent=2))
     finally:
         stop(proc)
 
