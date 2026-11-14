@@ -14,11 +14,14 @@ export function init(win) {
     const exclude = new Set(aExcludeTabs).add(aTab);
     if (win.FirefoxViewHandler?.tab) exclude.add(win.FirefoxViewHandler.tab);
 
+    // When you last looked at a tab: not lastAccessed, which a tab opened in the background gets
+    // too. Firefox gives the tabs you haven't looked at yet its start time; they count as unused.
+    const lastSeen = tab => tab.lastSeenActive === this.tabContainer.startupTime ? 0 : tab.lastSeenActive;
     let previous = null;
     for (const tab of this.visibleTabs) {
       if (exclude.has(tab) || tab.closing) continue;
-      if (!previous || tab.lastAccessed > previous.lastAccessed) previous = tab;
+      if (!previous || lastSeen(tab) > lastSeen(previous)) previous = tab;
     }
-    return previous?.lastAccessed > 0 ? previous : firefoxChoice.call(this, aTab, aExcludeTabs);
+    return previous && lastSeen(previous) > 0 ? previous : firefoxChoice.call(this, aTab, aExcludeTabs);
   };
 }
