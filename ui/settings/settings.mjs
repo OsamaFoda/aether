@@ -135,7 +135,7 @@ async function refreshAddons() {
   $("sip-budget").disabled = sip !== "on";
   if (sip === "on") {
     const { budgetGB, resetDay } = await readSipBudget();
-    if (budgetGB && document.activeElement !== $("budget-gb")) $("budget-gb").value = budgetGB;
+    if (document.activeElement !== $("budget-gb")) $("budget-gb").value = budgetGB || "";
     if (resetDay && document.activeElement !== $("reset-day")) $("reset-day").value = resetDay;
   }
 }
@@ -163,7 +163,8 @@ $("sip-on").addEventListener("change", async event => {
   event.target.disabled = true;
   try {
     await setSip(event.target.checked);
-    if (event.target.checked) await saveSipBudget(Number($("budget-gb").value), $("reset-day").value);
+    // An empty budget leaves the one Sip already has.
+    if (event.target.checked && Number($("budget-gb").value) > 0) await saveSipBudget(Number($("budget-gb").value), $("reset-day").value);
   } catch (e) {
     console.error("Astrelle settings: Sip", e);
   }

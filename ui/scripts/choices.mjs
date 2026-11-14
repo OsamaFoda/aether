@@ -116,9 +116,10 @@ export async function readSipBudget() {
   return { budgetGB: settings.budgetGB, resetDay: settings.resetDay };
 }
 
+// A budget of 0 (or none) is no budget, as in Sip's own options.
 export async function saveSipBudget(budgetGB, resetDay) {
+  budgetGB = budgetGB > 0 ? budgetGB : 0;
   resetDay = Math.min(Math.max(Math.round(Number(resetDay)) || 1, 1), 31);
-  if (!(budgetGB > 0)) return;
   const db = await sipStorage();
   if (!db) return;
   const settings = await sipSettings(db);

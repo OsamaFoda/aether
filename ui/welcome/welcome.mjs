@@ -149,7 +149,8 @@ for (const [id, on] of [["sip-on", true], ["sip-off", false]]) {
     step.querySelectorAll("button").forEach(b => (b.disabled = true));
     try {
       await setSip(on);
-      if (on) await saveSipBudget(Number($("budget-gb").value), $("reset-day").value);
+      // An empty budget leaves the one Sip already has.
+      if (on && Number($("budget-gb").value) > 0) await saveSipBudget(Number($("budget-gb").value), $("reset-day").value);
       chosen.sip = on;
     } catch (e) {
       console.error("Astrelle welcome: Sip", e);
