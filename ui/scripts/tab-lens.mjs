@@ -27,7 +27,8 @@ export function init(win) {
     if (!from?.isConnected || from.hidden || from === to) return;
     const start = from.querySelector(".tab-background")?.getBoundingClientRect();
     // A tab that's still opening (top tabs) keeps growing, and the scale would grow with it, so
-    // its glass starts at its own size.
+    // its glass starts at its own size. Asked now, at the switch: Firefox marks the tab as opened
+    // (fadein) in a frame or two, which can be before the slide below starts.
     const opening = !to.hasAttribute("fadein");
     if (!start?.width) return;
 
