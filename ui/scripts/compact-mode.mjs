@@ -115,7 +115,7 @@ export function init(win) {
     item.addEventListener("command", toggle);
     menu.prepend(item);
     menu.addEventListener("popupshowing", () => {
-      item.setAttribute("checked", Services.prefs.getBoolPref(PREF, false));
+      item.toggleAttribute("checked", Services.prefs.getBoolPref(PREF, false));
     });
   }
 
