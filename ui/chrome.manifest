@@ -12,3 +12,8 @@ override chrome://branding/content/about-logo.png chrome://aether/content/icons/
 override chrome://branding/content/about-logo@2x.png chrome://aether/content/icons/aurora.svg
 override chrome://branding/content/about-logo-private.png chrome://aether/content/icons/aurora.svg
 override chrome://branding/content/about-logo-private@2x.png chrome://aether/content/icons/aurora.svg
+
+# Firefox's own words name the browser by the build's brand; these make a build that predates the
+# name Astrelle say Astrelle too (window titles, the private window's page, the address bar's
+# label on Astrelle's own pages). The Fluent half is registered in boot.sys.mjs.
+override chrome://branding/locale/brand.properties chrome://aether/content/branding/brand.properties

@@ -7,6 +7,12 @@ const BROWSER_WINDOW = "chrome://browser/content/browser.xhtml";
 const STYLES = ["styles/palettes.css", "styles/aether.css"];
 const SCRIPTS = ["scripts/palette.mjs", "scripts/app-icon.mjs", "scripts/sidebar-urlbar.mjs", "scripts/tab-close.mjs", "scripts/tab-lens.mjs", "scripts/new-tab-position.mjs", "scripts/compact-mode.mjs", "scripts/newtab.mjs", "scripts/peek.mjs", "scripts/workspaces.mjs", "scripts/split-view.mjs", "scripts/liquid-glass.mjs", "scripts/wallpaper.mjs", "scripts/welcome.mjs", "scripts/about-aether.mjs", "scripts/customize-sidebar.mjs", "scripts/sidebar-panels.mjs", "scripts/toolbar.mjs"];
 
+// The brand name in Firefox's Fluent strings (branding/brand.ftl), from ui/branding/ (see
+// chrome.manifest).
+L10nRegistry.getInstance().registerSources([
+  new L10nFileSource("astrelle-brand", "app", Services.locale.packagedLocales, BASE),
+]);
+
 function addStyles(win) {
   for (const sheet of STYLES) {
     win.windowUtils.loadSheetUsingURIString(BASE + sheet, win.windowUtils.AUTHOR_SHEET);
