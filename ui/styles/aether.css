@@ -475,13 +475,15 @@ toolbarbutton:hover:active .toolbarbutton-badge-stack {
     }
 
     /* A sidebar panel (bookmarks, history, an add-on's) keeps the sidebar out, and sits beside it
-     * rather than under it, pushing the page along. */
+     * rather than under it, pushing the page along. Opened by a shortcut or a menu while the
+     * sidebar was away, it brings the sidebar out with it, not after the usual pause. */
     &:has(#sidebar-box:not([hidden])) {
       #sidebar-container,
       &[aether-urlbar-in-sidebar] :is(#navigator-toolbox, #urlbar) {
         transform: none;
         translate: none;
         opacity: 1;
+        transition: var(--aether-reveal);
       }
 
       #sidebar-box {
