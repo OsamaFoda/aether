@@ -36,7 +36,9 @@ function refresh() {
   $("bookmarks-bar").checked = Services.prefs.getStringPref(BOOKMARKS_BAR, "never") !== "never";
   $("liquid-background").hidden = CHOICES.glass.get() !== "liquid";
   $("wallpapers").hidden = CHOICES.background.get() !== "wallpaper";
-  const wallpaper = Services.prefs.getStringPref(WALLPAPER, "");
+  let wallpaper = Services.prefs.getStringPref(WALLPAPER, "");
+  // With no desktop picture to show (no tile for it), "desktop" shows the theme's.
+  if (wallpaper === "desktop" && !$("wallpapers").querySelector('[data-url="desktop"]')) wallpaper = "";
   for (const tile of $("wallpapers").querySelectorAll("[data-url]")) {
     tile.setAttribute("aria-pressed", tile.dataset.url === wallpaper);
   }
@@ -106,13 +108,13 @@ async function choosePicture() {
   }
 }
 
-// The theme's own wallpaper, the desktop's, the pictures in ~/Pictures/Wallpapers, one chosen from
-// elsewhere, then "Choose a picture…".
+// The theme's own wallpaper, the desktop's (if it's a picture a page can show: not GNOME's .jxl
+// ones or a slideshow), the pictures in ~/Pictures/Wallpapers, one chosen from elsewhere, then
+// "Choose a picture…".
 async function buildWallpapers() {
-  const tiles = [
-    wallpaperTile("", null, "Your theme"),
-    wallpaperTile("desktop", await desktopWallpaper(matchMedia("(prefers-color-scheme: dark)").matches), "Your desktop"),
-  ];
+  const tiles = [wallpaperTile("", null, "Your theme")];
+  const desktop = await desktopWallpaper(matchMedia("(prefers-color-scheme: dark)").matches);
+  if (desktop) tiles.push(wallpaperTile("desktop", desktop, "Your desktop"));
   const urls = await wallpaperFiles();
   const chosen = Services.prefs.getStringPref(WALLPAPER, "");
   if (chosen && chosen !== "desktop" && !urls.includes(chosen)) urls.unshift(chosen);

@@ -33,10 +33,10 @@ export async function desktopWallpaper(dark) {
   }
 }
 
-// "theme", or a picture's file: URL.
+// "theme", or a picture's file: URL. The desktop's, when there's none a page can show, is the theme's.
 export async function wallpaperURL(win) {
   const chosen = Services.prefs.getStringPref(WALLPAPER, "");
-  if (chosen === "desktop") return desktopWallpaper(win.matchMedia("(prefers-color-scheme: dark)").matches);
+  if (chosen === "desktop") return (await desktopWallpaper(win.matchMedia("(prefers-color-scheme: dark)").matches)) || "theme";
   return chosen || "theme";
 }
 
