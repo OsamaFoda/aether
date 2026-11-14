@@ -195,8 +195,9 @@ main {
  * itself, sized and placed to line up with it exactly (newtab.mjs sets --wall-*, following the
  * page as it moves), so page and window read as one background; on it, the glass really is
  * frosted. (Making the page see-through instead would make plain websites see-through too.) */
+/* Under it, the theme's colour, as under the window's, for a picture that can't be shown. */
 :root[aether-wallpaper] body {
-  background: none;
+  background: var(--sky-2);
 }
 
 :root[aether-wallpaper="theme"] {
