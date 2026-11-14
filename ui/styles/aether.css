@@ -1058,7 +1058,7 @@ notification-message {
 
   #urlbar {
     --urlbarview-background-color-selected: color-mix(in srgb, var(--aether-accent) 35%, transparent);
-    --urlbarview-text-color-selected: inherit;
+    --urlbarview-text-color-selected: var(--aether-text);
   }
 
   /* Touching a tab or a button lifts it, like a drop of glass. */
